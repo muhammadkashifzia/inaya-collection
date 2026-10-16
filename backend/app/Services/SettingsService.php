@@ -39,7 +39,7 @@ class SettingsService
                 'timezone' => 'Asia/Karachi',
             ],
             'shipping' => [
-                'free_shipping_threshold' => 350000,
+                'free_shipping_threshold' => 1200000,
                 'methods' => [
                     ['code' => 'standard', 'name' => 'Standard Delivery (3–5 working days)', 'fee' => 25000, 'is_active' => true],
                     ['code' => 'express', 'name' => 'Express Delivery (1–2 working days)', 'fee' => 50000, 'is_active' => true],
@@ -68,7 +68,7 @@ class SettingsService
                 'og_image' => null,
             ],
             'announcements' => [
-                'Free shipping on all orders above Rs. 3,500',
+                'Free shipping on all orders above Rs. 12,000',
                 'Cash on delivery available nationwide',
             ],
             'navigation' => [
@@ -76,10 +76,10 @@ class SettingsService
                 ['label' => 'Shop All', 'href' => '/collections/all'],
             ],
             'trust' => [
-                ['icon' => 'truck', 'title' => 'Free Shipping', 'text' => 'On all orders above 3500'],
-                ['icon' => 'shield', 'title' => '30 Days Warranty', 'text' => '30 days returns & warranty'],
-                ['icon' => 'map', 'title' => 'Nationwide Delivery', 'text' => 'Support Pakistani brands'],
-                ['icon' => 'lock', 'title' => '100% Secure', 'text' => '100% secure checkout'],
+                ['icon' => 'truck', 'title' => 'Free Shipping', 'text' => 'Free shipping on all orders above PKR 12,000'],
+                ['icon' => 'shield', 'title' => '2 Days Exchange Policy', 'text' => 'Easy exchange within 2 days'],
+                ['icon' => 'lock', 'title' => 'Cash on Delivery', 'text' => 'Order from anywhere and pay at your doorstep'],
+                ['icon' => 'user', 'title' => 'Customer Centric Support', 'text' => 'Customer care with satisfaction on priority'],
             ],
             'footer' => [
                 'columns' => [],
