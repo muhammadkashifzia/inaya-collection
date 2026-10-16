@@ -1,14 +1,14 @@
 name: Deploy Store (Next.js)
 
 # NOTE: The Next.js source is not in this repo. This deploys the prebuilt
-# standalone bundle in store-deploy/ (server.js + .next + node_modules).
-# Rebuild it locally, commit store-deploy/, push -> it goes live.
+# standalone bundle in store/ (server.js + .next + node_modules).
+# Rebuild it locally, commit store/, push -> it goes live.
 
 on:
   push:
     branches: [dev]
     paths:
-      - "store-deploy/**"
+      - "store/**"
       - ".github/workflows/deploy-store.yml"
       - ".github/scripts/cpanel.sh"
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build release archive
-        working-directory: store-deploy
+        working-directory: store
         run: |
           # .htaccess on the server is managed by cPanel "Setup Node.js App"; don't overwrite it.
           zip -r -q -y ../store-release.zip . -x ".htaccess" -x "*.DS_Store"
