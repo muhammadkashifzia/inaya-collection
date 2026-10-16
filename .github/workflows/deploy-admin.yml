@@ -1,0 +1,68 @@
+name: Deploy Admin (React SPA)
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - "admin/**"
+      - ".github/workflows/deploy-admin.yml"
+      - ".github/scripts/cpanel.sh"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-admin
+  cancel-in-progress: false
+
+env:
+  CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
+  CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
+  CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+  # Document root of the admin subdomain.
+  REMOTE_DIR: ${{ vars.ADMIN_REMOTE_DIR || '/home/eastlogic/galaxywear-admin.eastlogic.com' }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: admin
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Vite reads admin/.env.production (VITE_API_URL, VITE_STOREFRONT_URL).
+      - name: Build
+        run: npm run build
+
+      - name: Build release archive
+        run: |
+          # SPA fallback so client-side routes (react-router) work on refresh.
+          cat > dist/.htaccess <<'EOF'
+          <IfModule mod_rewrite.c>
+              RewriteEngine On
+              RewriteBase /
+              RewriteRule ^index\.html$ - [L]
+              RewriteCond %{REQUEST_FILENAME} !-f
+              RewriteCond %{REQUEST_FILENAME} !-d
+              RewriteRule . /index.html [L]
+          </IfModule>
+          EOF
+          cd dist
+          zip -r -q ../../admin-release.zip . -x "*.DS_Store"
+          ls -lh ../../admin-release.zip
+
+      - name: Upload & extract on cPanel
+        run: |
+          source ../.github/scripts/cpanel.sh
+          cp_upload ../admin-release.zip "$REMOTE_DIR"
+          cp_extract "$REMOTE_DIR/admin-release.zip" "$REMOTE_DIR"
+          cp_unlink "$REMOTE_DIR/admin-release.zip"

@@ -1,0 +1,135 @@
+name: Deploy Backend (Laravel API)
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - "backend/**"
+      - ".github/workflows/deploy-backend.yml"
+      - ".github/scripts/cpanel.sh"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-backend
+  cancel-in-progress: false
+
+env:
+  CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
+  CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
+  CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+  # Laravel project root on the server (document root of the API subdomain).
+  REMOTE_DIR: ${{ vars.API_REMOTE_DIR || '/home/eastlogic/galaxywear-api.eastlogic.com' }}
+  API_URL: ${{ vars.API_URL || 'https://galaxywear-api.eastlogic.com' }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, pdo_mysql, bcmath, intl, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Install production dependencies
+        run: |
+          # Server's PHP may differ slightly from CI, mirror the existing setup
+          # (deploy-setup.php disabled the platform check).
+          composer config platform-check false
+          composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: Build release archive
+        run: |
+          # Root .htaccess forwards all requests to /public (docroot is project root).
+          cat > .htaccess <<'EOF'
+          <IfModule mod_rewrite.c>
+              RewriteEngine On
+              RewriteCond %{REQUEST_URI} !^/public/
+              RewriteRule ^(.*)$ /public/$1 [L]
+          </IfModule>
+          EOF
+
+          # Server-side .env, storage/ (uploads, logs) and public/storage symlink are NOT touched.
+          zip -r -q -y ../backend-release.zip \
+            .htaccess artisan composer.json composer.lock \
+            app bootstrap config database public resources routes vendor \
+            -x "bootstrap/cache/*.php" \
+            -x "public/storage" -x "public/storage/*" \
+            -x "public/hot" \
+            -x "*.DS_Store"
+          ls -lh ../backend-release.zip
+
+      - name: Create one-time post-deploy script
+        run: |
+          DEPLOY_KEY=$(openssl rand -hex 24)
+          DEPLOY_FILE="_deploy_$(openssl rand -hex 8).php"
+          echo "::add-mask::$DEPLOY_KEY"
+          echo "DEPLOY_KEY=$DEPLOY_KEY" >> "$GITHUB_ENV"
+          echo "DEPLOY_FILE=$DEPLOY_FILE" >> "$GITHUB_ENV"
+
+          cat > "../$DEPLOY_FILE" <<EOF
+          <?php
+          if (!hash_equals('$DEPLOY_KEY', (string) (\$_GET['key'] ?? ''))) { http_response_code(404); exit; }
+          ini_set('max_execution_time', 300);
+          set_time_limit(300);
+          header('Content-Type: text/plain');
+          \$base = dirname(__DIR__);
+          require \$base . '/vendor/autoload.php';
+          \$app = require \$base . '/bootstrap/app.php';
+          \$kernel = \$app->make(Illuminate\Contracts\Console\Kernel::class);
+          \$kernel->bootstrap();
+          \$failed = false;
+          \$commands = [
+              ['optimize:clear', []],
+              ['migrate', ['--force' => true]],
+              ['storage:link', ['--force' => true]],
+              ['config:cache', []],
+              ['route:cache', []],
+              ['view:cache', []],
+          ];
+          foreach (\$commands as [\$cmd, \$args]) {
+              echo "> artisan \$cmd\n";
+              try {
+                  \$status = Illuminate\Support\Facades\Artisan::call(\$cmd, \$args);
+                  echo Illuminate\Support\Facades\Artisan::output(), "Exit: \$status\n\n";
+                  if (\$status !== 0 && \$cmd !== 'storage:link') \$failed = true;
+              } catch (Throwable \$e) {
+                  echo "ERROR: ", \$e->getMessage(), "\n\n";
+                  \$failed = true;
+              }
+          }
+          echo \$failed ? "DEPLOY_FAILED\n" : "DEPLOY_OK\n";
+          EOF
+
+      - name: Upload & extract on cPanel
+        run: |
+          source ../.github/scripts/cpanel.sh
+          cp_upload ../backend-release.zip "$REMOTE_DIR"
+          cp_extract "$REMOTE_DIR/backend-release.zip" "$REMOTE_DIR"
+          cp_unlink "$REMOTE_DIR/backend-release.zip"
+          cp_upload "../$DEPLOY_FILE" "$REMOTE_DIR/public"
+
+      - name: Run migrations & cache
+        run: |
+          out=$(curl -sS --max-time 300 "$API_URL/$DEPLOY_FILE?key=$DEPLOY_KEY" || true)
+          echo "$out"
+          echo "$out" | grep -q "DEPLOY_OK"
+
+      - name: Remove post-deploy script
+        if: always() && env.DEPLOY_FILE != ''
+        run: |
+          source ../.github/scripts/cpanel.sh
+          cp_unlink "$REMOTE_DIR/public/$DEPLOY_FILE" || true
+
+      - name: Health check
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$API_URL/up" || true)
+          echo "GET $API_URL/up -> $code"
+          [ "$code" = "200" ] || echo "::warning::Health check returned $code"

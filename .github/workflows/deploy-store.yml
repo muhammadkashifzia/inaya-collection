@@ -1,0 +1,59 @@
+name: Deploy Store (Next.js)
+
+# NOTE: The Next.js source is not in this repo. This deploys the prebuilt
+# standalone bundle in store-deploy/ (server.js + .next + node_modules).
+# Rebuild it locally, commit store-deploy/, push -> it goes live.
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - "store-deploy/**"
+      - ".github/workflows/deploy-store.yml"
+      - ".github/scripts/cpanel.sh"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-store
+  cancel-in-progress: false
+
+env:
+  CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
+  CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
+  CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+  # Passenger app root (see store-htaccess -> PassengerAppRoot).
+  REMOTE_DIR: ${{ vars.STORE_REMOTE_DIR || '/home/eastlogic/galaxywear-store.eastlogic.com' }}
+  STORE_URL: ${{ vars.STORE_URL || 'https://galaxywear-store.eastlogic.com' }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release archive
+        working-directory: store-deploy
+        run: |
+          # .htaccess on the server is managed by cPanel "Setup Node.js App"; don't overwrite it.
+          zip -r -q -y ../store-release.zip . -x ".htaccess" -x "*.DS_Store"
+          ls -lh ../store-release.zip
+
+      - name: Upload, extract & restart
+        run: |
+          source .github/scripts/cpanel.sh
+          cp_upload store-release.zip "$REMOTE_DIR"
+          cp_extract "$REMOTE_DIR/store-release.zip" "$REMOTE_DIR"
+          cp_unlink "$REMOTE_DIR/store-release.zip"
+
+          # Passenger restarts the Node app when tmp/restart.txt changes.
+          mkdir -p tmp && date > tmp/restart.txt
+          cp_upload tmp/restart.txt "$REMOTE_DIR/tmp" \
+            || echo "::warning::Could not touch tmp/restart.txt, restart the app from cPanel > Setup Node.js App"
+
+      - name: Health check
+        run: |
+          sleep 10
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "$STORE_URL" || true)
+          echo "GET $STORE_URL -> $code"
+          [ "$code" = "200" ] || echo "::warning::Store returned $code"
