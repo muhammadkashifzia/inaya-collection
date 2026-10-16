@@ -22,7 +22,7 @@ env:
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
   # Passenger app root (see store-htaccess -> PassengerAppRoot).
-  REMOTE_DIR: ${{ vars.STORE_REMOTE_DIR || '/home/eastlogic/inaya.eastlogic.com' }}
+  REMOTE_DIR: ${{ vars.STORE_REMOTE_DIR || '/home/eastlogic/galaxywear-store.eastlogic.com' }}
   STORE_URL: ${{ vars.STORE_URL || 'https://inaya.eastlogic.com' }}
 
 jobs:
