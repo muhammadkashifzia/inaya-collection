@@ -95,7 +95,12 @@ jobs:
           require \$base . '/vendor/autoload.php';
           \$app = require \$base . '/bootstrap/app.php';
           \$kernel = \$app->make(Illuminate\Contracts\Console\Kernel::class);
-          \$kernel->bootstrap();
+          try {
+              \$kernel->bootstrap();
+          } catch (Throwable \$e) {
+              echo "BOOT ERROR: ", get_class(\$e), ": ", \$e->getMessage(), "\n  at ", \$e->getFile(), ":", \$e->getLine(), "\nDEPLOY_FAILED\n";
+              exit;
+          }
           \$failed = false;
           \$commands = [
               ['optimize:clear', []],
