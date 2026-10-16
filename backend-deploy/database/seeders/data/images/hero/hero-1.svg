@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="700" viewBox="0 0 1600 700">
-<defs><pattern id="p" width="80" height="80" patternUnits="userSpaceOnUse"><circle cx="40" cy="40" r="18" fill="none" stroke="#7f9cc7" stroke-width="3" opacity=".55"/><path d="M40 10 L46 34 L70 40 L46 46 L40 70 L34 46 L10 40 L34 34Z" fill="#7f9cc7" opacity=".35"/></pattern><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1d36"/><stop offset="1" stop-color="#7f9cc7" stop-opacity=".85"/></linearGradient></defs>
-<rect width="100%" height="100%" fill="url(#g)"/><rect width="100%" height="100%" fill="url(#p)"/>
-
-</svg>
