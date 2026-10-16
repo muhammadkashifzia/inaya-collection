@@ -79,7 +79,16 @@ jobs:
           if (!hash_equals('$DEPLOY_KEY', (string) (\$_GET['key'] ?? ''))) { http_response_code(404); exit; }
           ini_set('max_execution_time', 300);
           set_time_limit(300);
+          ini_set('display_errors', '1');
+          error_reporting(E_ALL);
           header('Content-Type: text/plain');
+          register_shutdown_function(function () {
+              \$error = error_get_last();
+              if (\$error && in_array(\$error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+                  echo "FATAL: {\$error['message']} in {\$error['file']}:{\$error['line']}\nDEPLOY_FAILED\n";
+              }
+          });
+          echo "PHP ", PHP_VERSION, "\n";
           \$base = dirname(__DIR__);
           // Stale package/service/config caches can reference removed (dev) providers.
           foreach (glob(\$base . '/bootstrap/cache/*.php') ?: [] as \$cached) { @unlink(\$cached); }
@@ -120,7 +129,7 @@ jobs:
 
       - name: Run migrations & cache
         run: |
-          out=$(curl -sS --max-time 300 "$API_URL/$DEPLOY_FILE?key=$DEPLOY_KEY" || true)
+          out=$(curl -sS --max-time 300 -w "\nHTTP %{http_code}\n" "$API_URL/$DEPLOY_FILE?key=$DEPLOY_KEY" || true)
           echo "$out"
           echo "$out" | grep -q "DEPLOY_OK"
 
