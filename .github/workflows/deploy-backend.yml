@@ -124,6 +124,7 @@ jobs:
 
       - name: Remove post-deploy script
         if: always() && env.DEPLOY_FILE != ''
+        continue-on-error: true
         run: |
           source ../.github/scripts/cpanel.sh
           cp_unlink "$REMOTE_DIR/public/$DEPLOY_FILE" || true
