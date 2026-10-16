@@ -1,0 +1,101 @@
+name: Fix Store Domain (one-time)
+
+on:
+  workflow_dispatch:
+
+env:
+  CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
+  CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
+  CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+  SERVER_IP: "91.204.209.2"
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Add DNS A record for inaya.eastlogic.com
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+
+          # Check current DNS records
+          echo "=== Current DNS records ==="
+          resp=$(curl -sS -H "$auth" \
+            "$CPANEL_HOST/execute/DNS/lookup?domain=inaya.eastlogic.com")
+          echo "$resp" | jq -c '.data' 2>/dev/null || echo "$resp"
+
+          # Add A record via Zone Editor API
+          echo -e "\n=== Adding A record ==="
+          resp=$(curl -sS -H "$auth" \
+            "$CPANEL_HOST/execute/DNS/mass_edit_zone" \
+            -d "zone=eastlogic.com" \
+            -d "add={\"dname\":\"inaya.eastlogic.com.\",\"ttl\":14400,\"record_type\":\"A\",\"data\":[\"$SERVER_IP\"]}")
+          echo "$resp" | jq -c '{status, errors, messages}' 2>/dev/null || echo "$resp"
+
+          # Verify
+          echo -e "\n=== Verify ==="
+          sleep 5
+          resp=$(curl -sS -H "$auth" \
+            "$CPANEL_HOST/execute/DNS/lookup?domain=inaya.eastlogic.com")
+          echo "$resp" | jq -c '.data' 2>/dev/null || echo "$resp"
+
+      - name: Wait for DNS propagation
+        run: |
+          echo "Waiting for DNS to propagate..."
+          for i in $(seq 1 12); do
+            ip=$(dig +short inaya.eastlogic.com @ns1.eastlogic.com 2>/dev/null || true)
+            if [ -n "$ip" ]; then
+              echo "Resolved: $ip (attempt $i)"
+              break
+            fi
+            echo "Not yet... (attempt $i)"
+            sleep 10
+          done
+
+      - name: Setup Node.js app for inaya.eastlogic.com
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+
+          # List existing Node.js apps to see the current store config
+          echo "=== Existing Node.js apps ==="
+          resp=$(curl -sS -H "$auth" \
+            "$CPANEL_HOST/execute/PassengerApps/list_applications")
+          echo "$resp" | jq -r '.data[]? | "\(.name) | \(.domain) | \(.base_uri) | \(.path)"' 2>/dev/null || echo "$resp"
+
+          # Register Node.js app for new domain
+          echo -e "\n=== Creating Passenger app ==="
+          approot="/home/eastlogic/galaxywear-store.eastlogic.com"
+          resp=$(curl -sS -H "$auth" \
+            "$CPANEL_HOST/execute/PassengerApps/ensure_deps" \
+            -d "name=inaya-store" \
+            -d "path=$approot" \
+            -d "deployment_mode=production" \
+            -d "nodejs_version=v22" \
+            -d "app_startup_file=app.js" \
+            -d "domain=inaya.eastlogic.com" \
+            -d "base_uri=/")
+          echo "$resp" | jq -c '{status, errors, messages}' 2>/dev/null || echo "$resp"
+
+          # If ensure_deps doesn't create it, try the register_application endpoint
+          echo -e "\n=== Registering app (fallback) ==="
+          resp=$(curl -sS -H "$auth" \
+            "$CPANEL_HOST/execute/PassengerApps/register_application" \
+            -d "name=inaya-store" \
+            -d "path=$approot" \
+            -d "deployment_mode=production" \
+            -d "envvar_name_0=NODE_ENV" -d "envvar_value_0=production" \
+            -d "envvar_name_1=NEXT_PUBLIC_API_URL" -d "envvar_value_1=https://inaya-api.eastlogic.com" \
+            -d "envvar_name_2=API_URL" -d "envvar_value_2=https://inaya-api.eastlogic.com" \
+            -d "envvar_name_3=NEXT_PUBLIC_SITE_URL" -d "envvar_value_3=https://inaya.eastlogic.com" \
+            -d "domain=inaya.eastlogic.com" \
+            -d "base_uri=/")
+          echo "$resp" | jq -c '{status, errors, messages}' 2>/dev/null || echo "$resp"
+
+      - name: Verify store
+        run: |
+          echo "Waiting 30s for app to start..."
+          sleep 30
+          for domain in "inaya.eastlogic.com" "galaxywear-store.eastlogic.com"; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "https://$domain/" 2>/dev/null || echo "000")
+            echo "$domain -> HTTP $code"
+          done
