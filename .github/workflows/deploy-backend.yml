@@ -20,6 +20,7 @@ env:
   # Laravel project root on the server (document root of the API subdomain).
   REMOTE_DIR: ${{ vars.API_REMOTE_DIR || '/home/eastlogic/galaxywear-api.eastlogic.com' }}
   API_URL: ${{ vars.API_URL || 'https://galaxywear-api.eastlogic.com' }}
+  PHP_HANDLER: ${{ vars.API_PHP_HANDLER || 'ea-php84' }}
 
 jobs:
   deploy:
@@ -47,18 +48,10 @@ jobs:
 
       - name: Build release archive
         run: |
-          # Root .htaccess forwards all requests to /public (docroot is project root).
-          cat > .htaccess <<'EOF'
-          <IfModule mod_rewrite.c>
-              RewriteEngine On
-              RewriteCond %{REQUEST_URI} !^/public/
-              RewriteRule ^(.*)$ /public/$1 [L]
-          </IfModule>
-          EOF
-
-          # Server-side .env, storage/ (uploads, logs) and public/storage symlink are NOT touched.
+          # Server-side .env, root .htaccess (holds cPanel's PHP handler), storage/
+          # (uploads, logs) and public/storage symlink are NOT touched.
           zip -r -q -y ../backend-release.zip \
-            .htaccess artisan composer.json composer.lock \
+            artisan composer.json composer.lock \
             app bootstrap config database public resources routes vendor \
             -x "bootstrap/cache/*.php" \
             -x "public/storage" -x "public/storage/*" \
@@ -131,6 +124,24 @@ jobs:
           cp_extract "$REMOTE_DIR/backend-release.zip" "$REMOTE_DIR"
           cp_unlink "$REMOTE_DIR/backend-release.zip"
           cp_upload "../$DEPLOY_FILE" "$REMOTE_DIR/public"
+
+      # Laravel 13 / Symfony 8 need PHP >= 8.4. Make sure the API vhost uses it.
+      - name: Ensure PHP version on server
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          vhost="${API_URL#https://}"
+          installed=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/LangPHP/php_get_installed_versions")
+          echo "Installed: $(echo "$installed" | jq -c '.data.versions // .errors')"
+          current=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/LangPHP/php_get_vhost_versions" \
+            | jq -r --arg v "$vhost" '.data[]? | select(.vhost == $v) | .version')
+          echo "Current $vhost: ${current:-unknown}"
+          if [ "$current" != "$PHP_HANDLER" ]; then
+            resp=$(curl -sS -G -H "$auth" \
+              --data-urlencode "version=$PHP_HANDLER" --data-urlencode "vhost=$vhost" \
+              "$CPANEL_HOST/execute/LangPHP/php_set_vhost_versions")
+            echo "Set $vhost -> $PHP_HANDLER: $(echo "$resp" | jq -c '{status, errors}')"
+            echo "$resp" | jq -e '.status == 1' >/dev/null
+          fi
 
       - name: Run migrations & cache
         run: |
