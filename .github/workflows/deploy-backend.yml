@@ -18,8 +18,8 @@ env:
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
   # Laravel project root on the server (document root of the API subdomain).
-  REMOTE_DIR: ${{ vars.API_REMOTE_DIR || '/home/eastlogic/galaxywear-api.eastlogic.com' }}
-  API_URL: ${{ vars.API_URL || 'https://galaxywear-api.eastlogic.com' }}
+  REMOTE_DIR: ${{ vars.API_REMOTE_DIR || '/home/eastlogic/inaya-api.eastlogic.com' }}
+  API_URL: ${{ vars.API_URL || 'https://inaya-api.eastlogic.com' }}
   PHP_HANDLER: ${{ vars.API_PHP_HANDLER || 'ea-php84' }}
 
 jobs:

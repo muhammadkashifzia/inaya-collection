@@ -67,7 +67,7 @@
       "remotePatterns": [
         {
           "protocol": "https",
-          "hostname": "galaxywear-api.eastlogic.com",
+          "hostname": "inaya-api.eastlogic.com",
           "port": "",
           "pathname": "/storage/**"
         }

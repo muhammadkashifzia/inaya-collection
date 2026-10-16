@@ -18,7 +18,7 @@ env:
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
   # Document root of the admin subdomain.
-  REMOTE_DIR: ${{ vars.ADMIN_REMOTE_DIR || '/home/eastlogic/galaxywear-admin.eastlogic.com' }}
+  REMOTE_DIR: ${{ vars.ADMIN_REMOTE_DIR || '/home/eastlogic/inaya-admin.eastlogic.com' }}
 
 jobs:
   deploy:
