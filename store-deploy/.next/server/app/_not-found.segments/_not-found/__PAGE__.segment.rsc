@@ -1,0 +1,35 @@
+2:"$Sreact.fragment"
+3:"/_next/static/chunks/1tq6ppe__m8m-.js"
+4:"/_next/static/chunks/32rlk_yyffz0p.js"
+5:"/_next/static/chunks/2z4s-5-e8vbzn.js"
+6:I[39756,["$3","$4","$5"],"default"]
+7:I[37457,["$3","$4","$5"],"default"]
+c:I[22016,["$3","$4","$5"],""]
+d:I[97367,["$3","$4","$5"],"OutletBoundary"]
+e:"$Sreact.suspense"
+12:"ViewportBoundary"
+13:I[97367,["$3","$4","$5"],"$12"]
+14:"MetadataBoundary"
+15:I[97367,["$3","$4","$5"],"$14"]
+16:I[27201,["$3","$4","$5"],"IconMark"]
+9:X
+9:C
+a:X
+a:300
+a:300
+a:C
+11:X
+11:C
+b:[["children",{"s":"__PAGE__","h":49314,"d":{"r":["$","$2","c",{"children":[["$","div",null,{"className":"mx-auto w-full max-w-7xl px-4 md:px-6 py-24 text-center","children":[["$","h1",null,{"className":"font-heading font-semibold tracking-wide text-ink text-3xl md:text-5xl text-center","children":"Page not found"}],["$","p",null,{"className":"mb-8 mt-3 text-muted","children":"The page you're looking for doesn't exist or has moved."}],["$","$Lc",null,{"href":"/","className":"inline-flex items-center justify-center gap-2 font-semibold uppercase tracking-wider transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-50 bg-brand text-white hover:bg-brand-dark h-11 px-5 text-sm","children":"Back to home"}]]}],null,["$","$Ld",null,{"children":["$","$e",null,{"name":"Next.MetadataOutlet","children":"$@f"}]}]]}],"p":"$@10","v":"$11","s":"$a"}}]]
+1:[["children",{"s":"/_not-found","h":49218,"d":{"r":["$","$2","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}]}]]}],"p":"$@8","v":"$9","s":"$a"},"c":"$Qb"}]]
+18:X
+18:C
+1b:X
+1b:C
+0:{"t":{"t":{"s":"","h":49170,"c":"$Q1"},"h":{"r":["$","$2","h",{"children":[["$","meta",null,{"name":"robots","content":"noindex"}],["$","$L13",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L15",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$e",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Galaxy Wear | Unstitched Winter Khaddar & Cotton Viscose in Pakistan"}],["$","meta","1",{"name":"description","content":"Shop unstitched khaddar, karandi and cotton viscose suits with nationwide delivery."}],["$","link","2",{"rel":"canonical","href":"https://galaxywear-store.eastlogic.com"}],["$","meta","3",{"property":"og:title","content":"Galaxy Wear | Unstitched Winter Khaddar & Cotton Viscose in Pakistan"}],["$","meta","4",{"property":"og:description","content":"Shop unstitched khaddar, karandi and cotton viscose suits with nationwide delivery."}],["$","meta","5",{"property":"og:site_name","content":"Galaxy Wear"}],["$","meta","6",{"property":"og:type","content":"website"}],["$","meta","7",{"name":"twitter:card","content":"summary"}],["$","meta","8",{"name":"twitter:title","content":"Galaxy Wear | Unstitched Winter Khaddar & Cotton Viscose in Pakistan"}],["$","meta","9",{"name":"twitter:description","content":"Shop unstitched khaddar, karandi and cotton viscose suits with nationwide delivery."}],["$","link","10",{"rel":"icon","href":"/favicon.ico?favicon.117ezoe8m31dk.ico","sizes":"48x48","type":"image/x-icon"}],["$","$L16","11",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@17","v":"$18","s":"$a"}},"a":"$@19","u":"$@1a","b":"r0NtNNDys6C5EuTB7fMxg","r":"$1b"}
+f:null
+1a:false
+19:null
+8:"$undefined"
+17:"$undefined"
+10:"$undefined"

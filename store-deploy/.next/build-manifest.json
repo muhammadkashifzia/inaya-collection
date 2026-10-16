@@ -1,0 +1,234 @@
+{
+  "pages": {
+    "/_app": []
+  },
+  "devFiles": [],
+  "polyfillFiles": [
+    "static/chunks/0cz1d0mv5g_q7.js"
+  ],
+  "lowPriorityFiles": [
+    "static/r0NtNNDys6C5EuTB7fMxg/_buildManifest.js",
+    "static/r0NtNNDys6C5EuTB7fMxg/_ssgManifest.js",
+    "static/r0NtNNDys6C5EuTB7fMxg/_clientMiddlewareManifest.js"
+  ],
+  "rootMainFiles": [
+    "static/chunks/1ckvzn7sfprko.js",
+    "static/chunks/06bs-nf19b2js.js",
+    "static/chunks/03qr0cg---ut6.js",
+    "static/chunks/3l_qmp-61z4yc.js",
+    "static/chunks/turbopack-3-ry682tkyiqk.js"
+  ],
+  "rootMainFilesTree": {},
+  "pagesChunkGroupBootstrapParams": {
+    "/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/_not-found/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/_global-error/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/account/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/account/addresses/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/account/forgot-password/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/account/login/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/account/orders/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/account/orders/[number]/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/account/register/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/account/reset-password/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/cart/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/checkout/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/checkout/success/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/collections/[slug]/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/pages/[slug]/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/products/[slug]/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/search/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    },
+    "/wishlist/page": {
+      "otherChunks": [
+        "static/chunks/1ckvzn7sfprko.js",
+        "static/chunks/06bs-nf19b2js.js",
+        "static/chunks/03qr0cg---ut6.js",
+        "static/chunks/3l_qmp-61z4yc.js"
+      ],
+      "runtimeModuleIds": [
+        94553
+      ]
+    }
+  },
+  "chunkLoadingGlobal": "TURBOPACK"
+}

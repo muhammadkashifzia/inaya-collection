@@ -1,0 +1,68 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { http, setUnauthorizedHandler, ApiError } from "@/lib/api";
+import type { AdminUser, PermissionKey } from "@/types/api";
+
+/**
+ * Admin session (Sanctum cookie). Only admin/staff accounts may use the
+ * dashboard; customers are signed out immediately. The API enforces the
+ * same rules on every endpoint.
+ */
+interface AuthValue {
+  user: AdminUser | null;
+  ready: boolean;
+  can: (permission: PermissionKey) => boolean;
+  login: (email: string, password: string, remember: boolean) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthValue | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<AdminUser | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => setUser(null));
+    http
+      .get<AdminUser>("/me")
+      .then((me) => setUser(me.role === "customer" ? null : me))
+      .catch(() => setUser(null))
+      .finally(() => setReady(true));
+    return () => setUnauthorizedHandler(null);
+  }, []);
+
+  const login = useCallback(async (email: string, password: string, remember: boolean) => {
+    const res = await http.post<{ data: AdminUser }>("/auth/login", { email, password, remember });
+    if (res.data.role === "customer") {
+      await http.post("/auth/logout").catch(() => undefined);
+      throw new ApiError("This account does not have admin access.", 403);
+    }
+    // Reload to get the permission list for this session.
+    setUser(await http.get<AdminUser>("/me"));
+  }, []);
+
+  const logout = useCallback(async () => {
+    await http.post("/auth/logout").catch(() => undefined);
+    setUser(null);
+  }, []);
+
+  const value = useMemo<AuthValue>(
+    () => ({
+      user,
+      ready,
+      can: (permission) => user?.role === "admin" || Boolean(user?.permissions?.includes(permission)),
+      login,
+      logout,
+    }),
+    [user, ready, login, logout],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuth(): AuthValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
+  return ctx;
+}

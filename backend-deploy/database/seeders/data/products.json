@@ -1,0 +1,617 @@
+[
+  {
+    "id": "1000",
+    "slug": "noor-khaddar-3-piece-unstitched-design-01-brown",
+    "title": "Noor Khaddar 3 Piece Unstitched - Design 01",
+    "collection": "winter-3-piece-khaddar",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "brown",
+    "images": [
+      "/images/products/noor-khaddar-3-piece-unstitched-design-01-brown-1.svg",
+      "/images/products/noor-khaddar-3-piece-unstitched-design-01-brown-2.svg",
+      "/images/products/noor-khaddar-3-piece-unstitched-design-01-brown-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Printed Khaddar dupatta – 2.5 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich brown tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-08-31T19:00:00.000Z"
+  },
+  {
+    "id": "1001",
+    "slug": "zarri-khaddar-3-piece-unstitched-design-02-light-maroon",
+    "title": "Zarri Khaddar 3 Piece Unstitched - Design 02",
+    "collection": "winter-3-piece-khaddar",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "light maroon",
+    "images": [
+      "/images/products/zarri-khaddar-3-piece-unstitched-design-02-light-maroon-1.svg",
+      "/images/products/zarri-khaddar-3-piece-unstitched-design-02-light-maroon-2.svg",
+      "/images/products/zarri-khaddar-3-piece-unstitched-design-02-light-maroon-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Printed Khaddar dupatta – 2.5 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich light maroon tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-01T19:00:00.000Z"
+  },
+  {
+    "id": "1002",
+    "slug": "mehr-khaddar-3-piece-unstitched-design-03-dark-coffee",
+    "title": "Mehr Khaddar 3 Piece Unstitched - Design 03",
+    "collection": "winter-3-piece-khaddar",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "dark coffee",
+    "images": [
+      "/images/products/mehr-khaddar-3-piece-unstitched-design-03-dark-coffee-1.svg",
+      "/images/products/mehr-khaddar-3-piece-unstitched-design-03-dark-coffee-2.svg",
+      "/images/products/mehr-khaddar-3-piece-unstitched-design-03-dark-coffee-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Printed Khaddar dupatta – 2.5 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich dark coffee tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-02T19:00:00.000Z"
+  },
+  {
+    "id": "1003",
+    "slug": "gulnaar-khaddar-3-piece-unstitched-design-04-mustard",
+    "title": "Gulnaar Khaddar 3 Piece Unstitched - Design 04",
+    "collection": "winter-3-piece-khaddar",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "mustard",
+    "images": [
+      "/images/products/gulnaar-khaddar-3-piece-unstitched-design-04-mustard-1.svg",
+      "/images/products/gulnaar-khaddar-3-piece-unstitched-design-04-mustard-2.svg",
+      "/images/products/gulnaar-khaddar-3-piece-unstitched-design-04-mustard-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Printed Khaddar dupatta – 2.5 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich mustard tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-03T19:00:00.000Z"
+  },
+  {
+    "id": "1004",
+    "slug": "saba-khaddar-3-piece-unstitched-design-05-bottle-green",
+    "title": "Saba Khaddar 3 Piece Unstitched - Design 05",
+    "collection": "winter-3-piece-khaddar",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "bottle green",
+    "images": [
+      "/images/products/saba-khaddar-3-piece-unstitched-design-05-bottle-green-1.svg",
+      "/images/products/saba-khaddar-3-piece-unstitched-design-05-bottle-green-2.svg",
+      "/images/products/saba-khaddar-3-piece-unstitched-design-05-bottle-green-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Printed Khaddar dupatta – 2.5 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich bottle green tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-04T19:00:00.000Z"
+  },
+  {
+    "id": "1005",
+    "slug": "zarri-khaddar-2-piece-unstitched-design-03-mustard",
+    "title": "Zarri Khaddar 2 Piece Unstitched - Design 03",
+    "collection": "winter-2-piece-khaddar",
+    "price": 2799,
+    "compareAtPrice": 3499,
+    "currency": "PKR",
+    "color": "mustard",
+    "images": [
+      "/images/products/zarri-khaddar-2-piece-unstitched-design-03-mustard-1.svg",
+      "/images/products/zarri-khaddar-2-piece-unstitched-design-03-mustard-2.svg",
+      "/images/products/zarri-khaddar-2-piece-unstitched-design-03-mustard-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 2,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich mustard tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "2-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-05T19:00:00.000Z"
+  },
+  {
+    "id": "1006",
+    "slug": "mehr-khaddar-2-piece-unstitched-design-04-bottle-green",
+    "title": "Mehr Khaddar 2 Piece Unstitched - Design 04",
+    "collection": "winter-2-piece-khaddar",
+    "price": 2799,
+    "compareAtPrice": 3499,
+    "currency": "PKR",
+    "color": "bottle green",
+    "images": [
+      "/images/products/mehr-khaddar-2-piece-unstitched-design-04-bottle-green-1.svg",
+      "/images/products/mehr-khaddar-2-piece-unstitched-design-04-bottle-green-2.svg",
+      "/images/products/mehr-khaddar-2-piece-unstitched-design-04-bottle-green-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 2,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich bottle green tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "2-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-06T19:00:00.000Z"
+  },
+  {
+    "id": "1007",
+    "slug": "gulnaar-khaddar-2-piece-unstitched-design-05-navy",
+    "title": "Gulnaar Khaddar 2 Piece Unstitched - Design 05",
+    "collection": "winter-2-piece-khaddar",
+    "price": 2799,
+    "compareAtPrice": 3499,
+    "currency": "PKR",
+    "color": "navy",
+    "images": [
+      "/images/products/gulnaar-khaddar-2-piece-unstitched-design-05-navy-1.svg",
+      "/images/products/gulnaar-khaddar-2-piece-unstitched-design-05-navy-2.svg",
+      "/images/products/gulnaar-khaddar-2-piece-unstitched-design-05-navy-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 2,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich navy tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "2-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-07T19:00:00.000Z"
+  },
+  {
+    "id": "1008",
+    "slug": "saba-khaddar-2-piece-unstitched-design-06-rust",
+    "title": "Saba Khaddar 2 Piece Unstitched - Design 06",
+    "collection": "winter-2-piece-khaddar",
+    "price": 2799,
+    "compareAtPrice": 3499,
+    "currency": "PKR",
+    "color": "rust",
+    "images": [
+      "/images/products/saba-khaddar-2-piece-unstitched-design-06-rust-1.svg",
+      "/images/products/saba-khaddar-2-piece-unstitched-design-06-rust-2.svg",
+      "/images/products/saba-khaddar-2-piece-unstitched-design-06-rust-3.svg"
+    ],
+    "inStock": false,
+    "pieces": 2,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich rust tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "2-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-08T19:00:00.000Z"
+  },
+  {
+    "id": "1009",
+    "slug": "inaya-khaddar-2-piece-unstitched-design-07-plum",
+    "title": "Inaya Khaddar 2 Piece Unstitched - Design 07",
+    "collection": "winter-2-piece-khaddar",
+    "price": 2799,
+    "compareAtPrice": 3499,
+    "currency": "PKR",
+    "color": "plum",
+    "images": [
+      "/images/products/inaya-khaddar-2-piece-unstitched-design-07-plum-1.svg",
+      "/images/products/inaya-khaddar-2-piece-unstitched-design-07-plum-2.svg",
+      "/images/products/inaya-khaddar-2-piece-unstitched-design-07-plum-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 2,
+    "fabric": "Khaddar",
+    "details": [
+      "Printed Khaddar shirt – 3 meters",
+      "Dyed Khaddar trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft khaddar unstitched suit in a rich plum tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "khaddar",
+      "2-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-09T19:00:00.000Z"
+  },
+  {
+    "id": "1010",
+    "slug": "mehr-karandi-3-piece-unstitched-design-05-rust",
+    "title": "Mehr Karandi 3 Piece Unstitched - Design 05",
+    "collection": "winter-3-piece-karandi",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "rust",
+    "images": [
+      "/images/products/mehr-karandi-3-piece-unstitched-design-05-rust-1.svg",
+      "/images/products/mehr-karandi-3-piece-unstitched-design-05-rust-2.svg",
+      "/images/products/mehr-karandi-3-piece-unstitched-design-05-rust-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Karandi",
+    "details": [
+      "Printed Karandi shirt – 3 meters",
+      "Printed Karandi dupatta – 2.5 meters",
+      "Dyed Karandi trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft karandi unstitched suit in a rich rust tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "karandi",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-10T19:00:00.000Z"
+  },
+  {
+    "id": "1011",
+    "slug": "gulnaar-karandi-3-piece-unstitched-design-06-plum",
+    "title": "Gulnaar Karandi 3 Piece Unstitched - Design 06",
+    "collection": "winter-3-piece-karandi",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "plum",
+    "images": [
+      "/images/products/gulnaar-karandi-3-piece-unstitched-design-06-plum-1.svg",
+      "/images/products/gulnaar-karandi-3-piece-unstitched-design-06-plum-2.svg",
+      "/images/products/gulnaar-karandi-3-piece-unstitched-design-06-plum-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Karandi",
+    "details": [
+      "Printed Karandi shirt – 3 meters",
+      "Printed Karandi dupatta – 2.5 meters",
+      "Dyed Karandi trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft karandi unstitched suit in a rich plum tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "karandi",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-11T19:00:00.000Z"
+  },
+  {
+    "id": "1012",
+    "slug": "saba-karandi-3-piece-unstitched-design-07-teal",
+    "title": "Saba Karandi 3 Piece Unstitched - Design 07",
+    "collection": "winter-3-piece-karandi",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "teal",
+    "images": [
+      "/images/products/saba-karandi-3-piece-unstitched-design-07-teal-1.svg",
+      "/images/products/saba-karandi-3-piece-unstitched-design-07-teal-2.svg",
+      "/images/products/saba-karandi-3-piece-unstitched-design-07-teal-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Karandi",
+    "details": [
+      "Printed Karandi shirt – 3 meters",
+      "Printed Karandi dupatta – 2.5 meters",
+      "Dyed Karandi trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft karandi unstitched suit in a rich teal tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "karandi",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-12T19:00:00.000Z"
+  },
+  {
+    "id": "1013",
+    "slug": "inaya-karandi-3-piece-unstitched-design-08-olive",
+    "title": "Inaya Karandi 3 Piece Unstitched - Design 08",
+    "collection": "winter-3-piece-karandi",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "olive",
+    "images": [
+      "/images/products/inaya-karandi-3-piece-unstitched-design-08-olive-1.svg",
+      "/images/products/inaya-karandi-3-piece-unstitched-design-08-olive-2.svg",
+      "/images/products/inaya-karandi-3-piece-unstitched-design-08-olive-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Karandi",
+    "details": [
+      "Printed Karandi shirt – 3 meters",
+      "Printed Karandi dupatta – 2.5 meters",
+      "Dyed Karandi trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft karandi unstitched suit in a rich olive tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "karandi",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-13T19:00:00.000Z"
+  },
+  {
+    "id": "1014",
+    "slug": "noor-karandi-3-piece-unstitched-design-09-peach",
+    "title": "Noor Karandi 3 Piece Unstitched - Design 09",
+    "collection": "winter-3-piece-karandi",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "peach",
+    "images": [
+      "/images/products/noor-karandi-3-piece-unstitched-design-09-peach-1.svg",
+      "/images/products/noor-karandi-3-piece-unstitched-design-09-peach-2.svg",
+      "/images/products/noor-karandi-3-piece-unstitched-design-09-peach-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Karandi",
+    "details": [
+      "Printed Karandi shirt – 3 meters",
+      "Printed Karandi dupatta – 2.5 meters",
+      "Dyed Karandi trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft karandi unstitched suit in a rich peach tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "karandi",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-14T19:00:00.000Z"
+  },
+  {
+    "id": "1015",
+    "slug": "gulnaar-cotton-viscose-3-piece-unstitched-design-07-olive",
+    "title": "Gulnaar Cotton Viscose 3 Piece Unstitched - Design 07",
+    "collection": "winter-cotton-viscose",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "olive",
+    "images": [
+      "/images/products/gulnaar-cotton-viscose-3-piece-unstitched-design-07-olive-1.svg",
+      "/images/products/gulnaar-cotton-viscose-3-piece-unstitched-design-07-olive-2.svg",
+      "/images/products/gulnaar-cotton-viscose-3-piece-unstitched-design-07-olive-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Cotton Viscose",
+    "details": [
+      "Printed Cotton Viscose shirt – 3 meters",
+      "Printed Cotton Viscose dupatta – 2.5 meters",
+      "Dyed Cotton Viscose trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft cotton viscose unstitched suit in a rich olive tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "cotton viscose",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-15T19:00:00.000Z"
+  },
+  {
+    "id": "1016",
+    "slug": "saba-cotton-viscose-3-piece-unstitched-design-08-peach",
+    "title": "Saba Cotton Viscose 3 Piece Unstitched - Design 08",
+    "collection": "winter-cotton-viscose",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "peach",
+    "images": [
+      "/images/products/saba-cotton-viscose-3-piece-unstitched-design-08-peach-1.svg",
+      "/images/products/saba-cotton-viscose-3-piece-unstitched-design-08-peach-2.svg",
+      "/images/products/saba-cotton-viscose-3-piece-unstitched-design-08-peach-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Cotton Viscose",
+    "details": [
+      "Printed Cotton Viscose shirt – 3 meters",
+      "Printed Cotton Viscose dupatta – 2.5 meters",
+      "Dyed Cotton Viscose trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft cotton viscose unstitched suit in a rich peach tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "cotton viscose",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-16T19:00:00.000Z"
+  },
+  {
+    "id": "1017",
+    "slug": "inaya-cotton-viscose-3-piece-unstitched-design-09-charcoal",
+    "title": "Inaya Cotton Viscose 3 Piece Unstitched - Design 09",
+    "collection": "winter-cotton-viscose",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "charcoal",
+    "images": [
+      "/images/products/inaya-cotton-viscose-3-piece-unstitched-design-09-charcoal-1.svg",
+      "/images/products/inaya-cotton-viscose-3-piece-unstitched-design-09-charcoal-2.svg",
+      "/images/products/inaya-cotton-viscose-3-piece-unstitched-design-09-charcoal-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Cotton Viscose",
+    "details": [
+      "Printed Cotton Viscose shirt – 3 meters",
+      "Printed Cotton Viscose dupatta – 2.5 meters",
+      "Dyed Cotton Viscose trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft cotton viscose unstitched suit in a rich charcoal tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "cotton viscose",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-17T19:00:00.000Z"
+  },
+  {
+    "id": "1018",
+    "slug": "noor-cotton-viscose-3-piece-unstitched-design-10-brown",
+    "title": "Noor Cotton Viscose 3 Piece Unstitched - Design 10",
+    "collection": "winter-cotton-viscose",
+    "price": 3299,
+    "compareAtPrice": 3999,
+    "currency": "PKR",
+    "color": "brown",
+    "images": [
+      "/images/products/noor-cotton-viscose-3-piece-unstitched-design-10-brown-1.svg",
+      "/images/products/noor-cotton-viscose-3-piece-unstitched-design-10-brown-2.svg",
+      "/images/products/noor-cotton-viscose-3-piece-unstitched-design-10-brown-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Cotton Viscose",
+    "details": [
+      "Printed Cotton Viscose shirt – 3 meters",
+      "Printed Cotton Viscose dupatta – 2.5 meters",
+      "Dyed Cotton Viscose trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft cotton viscose unstitched suit in a rich brown tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "cotton viscose",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-18T19:00:00.000Z"
+  },
+  {
+    "id": "1019",
+    "slug": "zarri-cotton-viscose-3-piece-unstitched-design-11-light-maroon",
+    "title": "Zarri Cotton Viscose 3 Piece Unstitched - Design 11",
+    "collection": "winter-cotton-viscose",
+    "price": 3299,
+    "compareAtPrice": null,
+    "currency": "PKR",
+    "color": "light maroon",
+    "images": [
+      "/images/products/zarri-cotton-viscose-3-piece-unstitched-design-11-light-maroon-1.svg",
+      "/images/products/zarri-cotton-viscose-3-piece-unstitched-design-11-light-maroon-2.svg",
+      "/images/products/zarri-cotton-viscose-3-piece-unstitched-design-11-light-maroon-3.svg"
+    ],
+    "inStock": true,
+    "pieces": 3,
+    "fabric": "Cotton Viscose",
+    "details": [
+      "Printed Cotton Viscose shirt – 3 meters",
+      "Printed Cotton Viscose dupatta – 2.5 meters",
+      "Dyed Cotton Viscose trouser – 2.5 meters"
+    ],
+    "description": "A warm, soft cotton viscose unstitched suit in a rich light maroon tone, designed for everyday winter comfort and easy tailoring.",
+    "tags": [
+      "cotton viscose",
+      "3-piece",
+      "winter",
+      "unstitched"
+    ],
+    "createdAt": "2026-09-19T19:00:00.000Z"
+  }
+]

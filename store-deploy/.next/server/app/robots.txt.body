@@ -1,0 +1,9 @@
+User-Agent: *
+Allow: /
+Disallow: /account
+Disallow: /cart
+Disallow: /checkout
+Disallow: /wishlist
+Disallow: /search
+
+Sitemap: https://galaxywear-store.eastlogic.com/sitemap.xml

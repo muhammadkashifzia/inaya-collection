@@ -1,0 +1,85 @@
+{
+  "name": "Galaxy Wear",
+  "tagline": "Unstitched Winter Khaddar & Cotton Viscose in Pakistan",
+  "announcements": [
+    "Free shipping on all orders above Rs. 3,500",
+    "Winter Collection is live – shop unstitched khaddar & karandi",
+    "Cash on delivery available nationwide"
+  ],
+  "freeShippingThreshold": 3500,
+  "shippingFee": 250,
+  "navigation": [
+    { "label": "Home", "href": "/" },
+    { "label": "Shop All", "href": "/collections/all" },
+    { "label": "3 PC Khaddar", "href": "/collections/winter-3-piece-khaddar" },
+    { "label": "2 PC Khaddar", "href": "/collections/winter-2-piece-khaddar" },
+    { "label": "3 PC Karandi", "href": "/collections/winter-3-piece-karandi" },
+    { "label": "Cotton Viscose", "href": "/collections/winter-cotton-viscose" },
+    { "label": "Track Order", "href": "/pages/track-your-order" }
+  ],
+  "hero": {
+    "heading": "Winter Khaddar & Cotton Viscose",
+    "subheading": "Unstitched 2 & 3 piece suits made for cosy, colourful winters.",
+    "image": "/images/hero/hero-1.svg",
+    "mobileImage": "/images/hero/hero-2.svg",
+    "ctas": [
+      { "label": "3 PC Khaddar", "href": "/collections/winter-3-piece-khaddar" },
+      { "label": "2 PC Khaddar", "href": "/collections/winter-2-piece-khaddar" },
+      { "label": "3 PC Karandi", "href": "/collections/winter-3-piece-karandi" },
+      { "label": "Cotton Viscose", "href": "/collections/winter-cotton-viscose" }
+    ]
+  },
+  "trust": [
+    { "icon": "truck", "title": "Free Shipping", "text": "On all orders above 3500" },
+    { "icon": "shield", "title": "30 Days Warranty", "text": "30 days returns & warranty" },
+    { "icon": "map", "title": "Nationwide Delivery", "text": "Support Pakistani brands" },
+    { "icon": "lock", "title": "100% Secure", "text": "100% secure checkout" }
+  ],
+  "sections": {
+    "collections": "Shop by Collection",
+    "collectionTabs": "Our Recent Winter Unstitched Collections",
+    "reviews": "Reviews From Sisters"
+  },
+  "footer": {
+    "about": "Galaxy Wear brings you affordable, quality unstitched fabrics for every season, delivered across Pakistan.",
+    "columns": [
+      {
+        "heading": "Quick Links",
+        "links": [
+          { "label": "Shop All", "href": "/collections/all" },
+          { "label": "3 PC Khaddar", "href": "/collections/winter-3-piece-khaddar" },
+          { "label": "2 PC Khaddar", "href": "/collections/winter-2-piece-khaddar" },
+          { "label": "Cotton Viscose", "href": "/collections/winter-cotton-viscose" }
+        ]
+      },
+      {
+        "heading": "Customer Care",
+        "links": [
+          { "label": "Contact Us", "href": "/pages/contact-us" },
+          { "label": "FAQ", "href": "/pages/faq" },
+          { "label": "Track Your Order", "href": "/pages/track-your-order" },
+          { "label": "Shipping Policy", "href": "/pages/shipping-policy" }
+        ]
+      },
+      {
+        "heading": "Legal",
+        "links": [
+          { "label": "Privacy Policy", "href": "/pages/privacy-policy" },
+          { "label": "Refund & Return Policy", "href": "/pages/refund-return-policy" },
+          { "label": "Terms & Conditions", "href": "/pages/terms-conditions" }
+        ]
+      }
+    ],
+    "contact": {
+      "phone": "+92 300 0000000",
+      "email": "support@example.com",
+      "hours": "Mon – Sat, 10am – 7pm"
+    },
+    "social": [
+      { "label": "Facebook", "href": "https://facebook.com" },
+      { "label": "Instagram", "href": "https://instagram.com" },
+      { "label": "TikTok", "href": "https://tiktok.com" }
+    ],
+    "copyright": "2026 Galaxy Wear. All rights reserved."
+  }
+}

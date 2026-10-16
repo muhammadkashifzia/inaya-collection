@@ -1,0 +1,32 @@
+2:"$Sreact.fragment"
+3:"/_next/static/chunks/1tq6ppe__m8m-.js"
+4:"/_next/static/chunks/32rlk_yyffz0p.js"
+5:"/_next/static/chunks/2z4s-5-e8vbzn.js"
+6:I[39756,["$3","$4","$5"],"default"]
+7:I[37457,["$3","$4","$5"],"default"]
+e:"$Sreact.suspense"
+10:I[97367,["$3","$4","$5"],"OutletBoundary"]
+14:"ViewportBoundary"
+15:I[97367,["$3","$4","$5"],"$14"]
+16:"MetadataBoundary"
+17:I[97367,["$3","$4","$5"],"$16"]
+9:X
+9:C
+a:X
+a:300
+a:300
+13:X
+d:[["children",{"s":"__PAGE__","h":49314,"d":{"r":["$","$2","c",{"children":[["$","$e",null,{"fallback":["$","div",null,{"className":"mx-auto w-full max-w-7xl px-4 md:px-6 grid gap-8 py-12 lg:grid-cols-2","children":[["$","div",null,{"className":"aspect-[3/4] animate-pulse bg-cream"}],["$","div",null,{"className":"space-y-4","children":[["$","div",null,{"className":"h-8 w-3/4 animate-pulse bg-cream"}],["$","div",null,{"className":"h-6 w-1/3 animate-pulse bg-cream"}],["$","div",null,{"className":"h-12 animate-pulse bg-cream"}]]}]]}],"children":"$Lf"}],null,["$","$L10",null,{"children":["$","$e",null,{"name":"Next.MetadataOutlet","children":"$@11"}]}]]}],"p":"$@12","v":"$13","s":"$a"}}]]
+b:[["children",{"s":{"n":"slug","t":"d","k":null,"s":[]},"h":49250,"d":{"r":["$","$2","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}]}]]}],"p":"$@c","v":"$9","s":"$a"},"c":"$Qd"}]]
+1:[["children",{"s":"products","h":49218,"d":{"r":["$","$2","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}]}]]}],"p":"$@8","v":"$9","s":"$a"},"c":"$Qb"}]]
+1a:X
+1d:X
+0:{"t":{"t":{"s":"","h":49170,"c":"$Q1"},"h":{"r":["$","$2","h",{"children":[null,["$","$L15",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L17",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$e",null,{"name":"Next.Metadata","children":"$L18"}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@19","v":"$1a","s":"$a"}},"a":"$@1b","u":"$@1c","b":"r0NtNNDys6C5EuTB7fMxg","r":"$1d","f":true}
+a:C
+1a:C
+1d:C
+13:C
+1c:true
+1b:2122
+c:"$undefined"
+8:"$undefined"

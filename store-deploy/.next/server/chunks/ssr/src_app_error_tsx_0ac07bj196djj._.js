@@ -1,0 +1,3 @@
+module.exports=[23953,a=>{"use strict";var b=a.i(87924),c=a.i(72131);a.i(42680);var d=a.i(90832),e=a.i(30299),f=a.i(97537);a.s(["default",0,function({error:a,reset:g}){return(0,c.useEffect)(()=>{console.error(a)},[a]),(0,b.jsxs)(e.f,{className:"py-24 text-center",children:[(0,b.jsx)(f.f,{level:1,align:"center",children:"Something went wrong"}),(0,b.jsx)("p",{className:"mb-8 mt-3 text-muted",children:"We couldn't load this page. Please try again in a moment."}),(0,b.jsxs)("div",{className:"flex justify-center gap-3",children:[(0,b.jsx)(d.K,{onClick:g,children:"Try again"}),(0,b.jsx)(d.L,{href:"/",variant:"outline",children:"Back to home"})]})]})}])}];
+
+//# sourceMappingURL=src_app_error_tsx_0ac07bj196djj._.js.map

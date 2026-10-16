@@ -1,0 +1,43 @@
+{
+  "status": 200,
+  "headers": {
+    "link": "</_next/static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"",
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/pages/layout,_N_T_/pages/[slug]/layout,_N_T_/pages/[slug]/page,settings"
+  },
+  "postponed": "3342:8[\"slug\"][1,{\"nextSegmentId\":5,\"rootFormatContext\":{\"insertionMode\":0,\"selectedValue\":null,\"tagScope\":0,\"viewTransition\":null},\"progressiveChunkSize\":12800,\"resumableState\":{\"idPrefix\":\"\",\"nextFormID\":0,\"streamingFormat\":0,\"instructions\":96,\"hasBody\":true,\"hasHtml\":true,\"unknownResources\":{\"font\":{\"/_next/static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2\":[],\"/_next/static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2\":[]}},\"dnsResources\":{},\"connectResources\":{\"default\":{},\"anonymous\":{},\"credentials\":{}},\"imageResources\":{},\"styleResources\":{\"/_next/static/chunks/2h_ivjyyip8fe.css\":null},\"scriptResources\":{\"/_next/static/chunks/1ckvzn7sfprko.js\":null,\"/_next/static/chunks/06bs-nf19b2js.js\":null,\"/_next/static/chunks/03qr0cg---ut6.js\":null,\"/_next/static/chunks/3l_qmp-61z4yc.js\":null,\"/_next/static/chunks/turbopack-3-ry682tkyiqk.js\":null,\"/_next/static/chunks/1tq6ppe__m8m-.js\":null,\"/_next/static/chunks/32rlk_yyffz0p.js\":null,\"/_next/static/chunks/2z4s-5-e8vbzn.js\":null,\"/_next/static/chunks/2r7onqikw78tb.js\":null,\"/_next/static/chunks/02cug1cpqxxot.js\":null},\"moduleUnknownResources\":{},\"moduleScriptResources\":{\"/_next/static/chunks/1ckvzn7sfprko.js\":null}},\"replayNodes\":[[\"sl\",0,[[\"Context\",0,[[\"Context\",0,[[\"ServerInsertedHTMLProvider\",0,[[\"Context\",0,[[\"io\",0,[[\"aV\",0,[[\"az\",0,[[\"aq\",0,[[\"is\",0,[[\"Fragment\",0,[[\"Context\",2,[[\"Context\",0,[[\"Context\",0,[[\"Context\",0,[[\"Context\",0,[[\"Context\",0,[[\"Context\",0,[[\"aV\",0,[[\"az\",0,[[\"aq\",0,[[\"ai\",0,[[\"aa\",0,[[\"__next_root_layout_boundary__\",1,[[\"Fragment\",\"c\",[[\"html\",1,[[\"body\",0,[[null,0,[[\"Context\",0,[[\"Suspense\",2,[],0,[\"Suspense Fallback\",2,[],null],0],[\"Suspense\",5,[],1,[\"Suspense Fallback\",5,[],null],1],[\"main\",3,[[null,0,[[\"Activity\",\"pages\",[[\"Context\",\"pages\",[[null,2,[[\"Fragment\",0,[[\"E\",0,[[\"D\",0,[[\"Fragment\",0,[[\"n\",0,[[\"m\",0,[[\"G\",0,[[\"Fragment\",0,[[null,0,[[\"l\",0,[[\"x\",0,[[\"w\",0,[[\"F\",0,[[\"Context\",0,[[\"Fragment\",\"c\",[[null,1,[[\"Activity\",\"slug|d\",[[\"Context\",\"slug|d\",[[null,2,[[\"Fragment\",0,[[\"E\",0,[[\"D\",0,[[\"Fragment\",0,[[\"n\",0,[[\"Fragment\",0,[[\"G\",0,[[\"Fragment\",0,[[null,0,[[\"Fragment\",0,[[\"x\",0,[[\"w\",0,[[\"F\",0,[[\"Context\",0,[[\"Fragment\",\"c\",[[null,1,[[\"Activity\",\"__PAGE__\",[[\"Context\",\"__PAGE__\",[[null,2,[[\"Fragment\",0,[[\"E\",0,[[\"D\",0,[[\"Fragment\",0,[[\"n\",0,[[\"Fragment\",0,[[\"G\",0,[[\"Fragment\",0,[[null,0,[[\"Fragment\",0,[[\"x\",0,[[\"w\",0,[[\"F\",0,[[\"Context\",0,[[\"Fragment\",\"c\",[[\"Suspense\",0,[],3,[\"Suspense Fallback\",0,[],null],3],[\"__next_outlet_boundary__\",2,[[\"Suspense\",0,[],4,[\"Suspense Fallback\",0,[],null],4]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null],[\"ii\",\"/pages/$d$slug/__PAGE__/_head\",[[\"Fragment\",\"h\",[[\"__next_metadata_boundary__\",2,[[\"div\",0,[[\"Suspense\",0,[],2,[\"Suspense Fallback\",0,[],null],2]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],null]],\"replaySlots\":null}]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",
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/_index",
+    "/pages/$d$slug/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 49152,
+    "slots": {
+      "children": {
+        "hints": 49216,
+        "slots": {
+          "children": {
+            "hints": 49248,
+            "slots": {
+              "children": {
+                "hints": 49312,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/8b08fd7cdbe4882051d75d587eaf8192324a6a1d8b5f13f09a2aea8c9dee9ef8/$/pages/[slug]",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/pages/[slug]/page"
+    },
+    "isFallback": true
+  }
+}

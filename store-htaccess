@@ -1,0 +1,9 @@
+PassengerAppRoot "/home/eastlogic/galaxywear-store.eastlogic.com"
+PassengerAppType node
+PassengerStartupFile app.js
+PassengerNodejs /opt/alt/alt-nodejs22/root/usr/bin/node
+
+SetEnv NEXT_PUBLIC_API_URL https://galaxywear-api.eastlogic.com
+SetEnv API_URL https://galaxywear-api.eastlogic.com
+SetEnv NEXT_PUBLIC_SITE_URL https://galaxywear-store.eastlogic.com
+SetEnv NODE_ENV production
