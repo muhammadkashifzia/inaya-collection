@@ -117,7 +117,7 @@ export default function Coupons() {
 
   return (
     <>
-      <PageMeta title="Coupons | Galaxy Wear Admin" description="Discount codes." />
+      <PageMeta title="Coupons | Inaya Collection Admin" description="Discount codes." />
       <PageHeader title="Coupons" description="Discount codes customers enter in the cart or at checkout." actions={<Button onClick={() => open()}>+ New coupon</Button>} />
       <Card bodyClassName="p-4 md:p-5">
         <FilterBar search={values.q} onSearch={(q) => set("q", q)} placeholder="Search code" />

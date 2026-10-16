@@ -22,7 +22,7 @@ export default function OrderList() {
 
   return (
     <>
-      <PageMeta title="Orders | Galaxy Wear Admin" description="View and manage customer orders." />
+      <PageMeta title="Orders | Inaya Collection Admin" description="View and manage customer orders." />
       <PageHeader title="Orders" description="Search, filter and process customer orders." />
       <Card bodyClassName="p-4 md:p-5">
         <FilterBar search={values.q} onSearch={(q) => set("q", q)} placeholder="Order number, name, email or phone">

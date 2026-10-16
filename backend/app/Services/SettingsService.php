@@ -23,9 +23,9 @@ class SettingsService
     {
         return [
             'store' => [
-                'name' => 'Galaxy Wear',
+                'name' => 'Inaya Collection',
                 'tagline' => 'Unstitched Winter Khaddar & Cotton Viscose in Pakistan',
-                'about' => 'Galaxy Wear brings you affordable, quality unstitched fabrics for every season, delivered across Pakistan.',
+                'about' => 'Inaya Collection brings you affordable, quality unstitched fabrics for every season, delivered across Pakistan.',
                 'email' => 'support@example.com',
                 'phone' => '+92 300 0000000',
                 'whatsapp' => null,
@@ -63,7 +63,7 @@ class SettingsService
                 ['label' => 'TikTok', 'href' => 'https://tiktok.com'],
             ],
             'seo' => [
-                'default_title' => 'Galaxy Wear | Unstitched Winter Khaddar & Cotton Viscose in Pakistan',
+                'default_title' => 'Inaya Collection | Unstitched Winter Khaddar & Cotton Viscose in Pakistan',
                 'default_description' => 'Shop unstitched khaddar, karandi and cotton viscose suits with nationwide delivery.',
                 'og_image' => null,
             ],
@@ -83,7 +83,7 @@ class SettingsService
             ],
             'footer' => [
                 'columns' => [],
-                'copyright' => 'Galaxy Wear. All rights reserved.',
+                'copyright' => 'Inaya Collection. All rights reserved.',
             ],
             'inventory' => [
                 'default_low_stock_threshold' => 5,

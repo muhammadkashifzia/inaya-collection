@@ -103,7 +103,7 @@ export default function Categories() {
 
   return (
     <>
-      <PageMeta title="Categories | Galaxy Wear Admin" description="Manage collections and subcategories." />
+      <PageMeta title="Categories | Inaya Collection Admin" description="Manage collections and subcategories." />
       <PageHeader title="Categories" description="Collections shown in the storefront menu and homepage." actions={<Button onClick={() => open()}>+ Add category</Button>} />
       <div className="mb-4">
         <Notice tone={notice?.tone ?? "success"}>{notice?.text}</Notice>

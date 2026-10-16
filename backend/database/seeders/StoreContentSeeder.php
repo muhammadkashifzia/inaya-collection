@@ -91,7 +91,7 @@ class StoreContentSeeder extends Seeder
         CmsPage::query()->firstOrCreate(['slug' => 'about-us'], [
             'title' => 'About Us',
             'sections' => [
-                ['heading' => null, 'body' => 'Galaxy Wear offers quality unstitched fabrics for every season, delivered across Pakistan.'],
+                ['heading' => null, 'body' => 'Inaya Collection offers quality unstitched fabrics for every season, delivered across Pakistan.'],
             ],
             'is_published' => true,
         ]);

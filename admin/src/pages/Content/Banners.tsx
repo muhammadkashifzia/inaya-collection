@@ -95,7 +95,7 @@ export default function Banners() {
 
   return (
     <>
-      <PageMeta title="Banners | Galaxy Wear Admin" description="Homepage hero and promo banners." />
+      <PageMeta title="Banners | Inaya Collection Admin" description="Homepage hero and promo banners." />
       <PageHeader title="Banners" description="The first active hero banner is shown at the top of the homepage." actions={<Button onClick={() => open()}>+ New banner</Button>} />
       <DataState loading={loading} error={error} onRetry={reload} hasData={Boolean(data)} empty={data?.length === 0} emptyTitle="No banners yet.">
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

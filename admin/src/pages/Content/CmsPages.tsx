@@ -75,7 +75,7 @@ export default function CmsPages() {
 
   return (
     <>
-      <PageMeta title="Pages | Galaxy Wear Admin" description="About, policies and other content pages." />
+      <PageMeta title="Pages | Inaya Collection Admin" description="About, policies and other content pages." />
       <PageHeader title="Pages" description="Content pages linked from the footer and menus." actions={<Button onClick={() => open()}>+ New page</Button>} />
       <Card bodyClassName="p-0">
         <DataState loading={loading} error={error} onRetry={reload} hasData={Boolean(data)} empty={data?.length === 0} emptyTitle="No pages yet.">

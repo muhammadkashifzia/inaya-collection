@@ -99,7 +99,7 @@ export default function OrderDetail() {
 
   return (
     <>
-      <PageMeta title={`Order ${number} | Galaxy Wear Admin`} description="Order details." />
+      <PageMeta title={`Order ${number} | Inaya Collection Admin`} description="Order details." />
       <PageHeader
         title={`Order ${number}`}
         description={order ? `Placed ${date(order.placed_at, true)}` : undefined}

@@ -49,8 +49,8 @@ class CatalogSeeder extends Seeder
                 $product = Product::query()->updateOrCreate(['slug' => $row['slug']], [
                     'category_id' => $categoryIds[$row['collection']],
                     'name' => $row['title'],
-                    'sku' => 'GW-'.$row['id'],
-                    'brand' => 'Galaxy Wear',
+                    'sku' => 'IC-'.$row['id'],
+                    'brand' => 'Inaya Collection',
                     'short_description' => $row['description'],
                     'description' => $row['description'],
                     'details' => $row['details'],
@@ -73,7 +73,7 @@ class CatalogSeeder extends Seeder
                     ]);
                 }
 
-                $variant = $product->variants()->firstOrCreate(['sku' => 'GW-'.$row['id'].'-D'], [
+                $variant = $product->variants()->firstOrCreate(['sku' => 'IC-'.$row['id'].'-D'], [
                     'name' => 'Default',
                     'options' => ['color' => ucwords($row['color'])],
                     'is_active' => true,

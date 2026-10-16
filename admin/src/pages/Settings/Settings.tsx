@@ -49,7 +49,7 @@ export default function Settings() {
 
   return (
     <>
-      <PageMeta title="Settings | Galaxy Wear Admin" description="Store configuration." />
+      <PageMeta title="Settings | Inaya Collection Admin" description="Store configuration." />
       <PageHeader
         title="Settings"
         description="Store details, shipping, payments and storefront content. Changes reach the website within about a minute."

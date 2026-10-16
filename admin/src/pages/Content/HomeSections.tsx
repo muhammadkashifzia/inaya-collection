@@ -85,7 +85,7 @@ export default function HomeSections() {
 
   return (
     <>
-      <PageMeta title="Homepage sections | Galaxy Wear Admin" description="Choose what appears on the homepage." />
+      <PageMeta title="Homepage sections | Inaya Collection Admin" description="Choose what appears on the homepage." />
       <PageHeader
         title="Homepage sections"
         description="Sections appear on the homepage in this order, below the hero banner."

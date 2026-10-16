@@ -15,7 +15,7 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = strtolower((string) env('ADMIN_EMAIL', 'admin@galaxywear.local'));
+        $email = strtolower((string) env('ADMIN_EMAIL', 'admin@inayacollection.local'));
 
         if (User::query()->where('email', $email)->exists()) {
             $this->command?->info("Admin {$email} already exists; skipping.");

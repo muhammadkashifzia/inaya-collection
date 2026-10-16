@@ -5,7 +5,7 @@ import AuthLayout from "./AuthPageLayout";
 export default function SignIn() {
   return (
     <>
-      <PageMeta title="Sign in | Galaxy Wear Admin" description="Sign in to the Galaxy Wear store admin." />
+      <PageMeta title="Sign in | Inaya Collection Admin" description="Sign in to the Inaya Collection store admin." />
       <AuthLayout>
         <SignInForm />
       </AuthLayout>
