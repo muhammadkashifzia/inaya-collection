@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Node
+node_modules/
+store/node_modules/
+store/.next/
+dist/
+.env
+.env.local
+*.log

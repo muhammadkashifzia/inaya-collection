@@ -1,76 +1,12 @@
 {
   "app": {
     "[project]/src/app/_not-found/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/account/addresses/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/account/forgot-password/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/account/login/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/account/orders/[number]/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/account/orders/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/account/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/account/register/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/account/reset-password/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/cart/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/checkout/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/checkout/success/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/collections/[slug]/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2"
     ],
     "[project]/src/app/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/pages/[slug]/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/products/[slug]/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/search/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
-    ],
-    "[project]/src/app/wishlist/page": [
-      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2",
-      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2"
+      "static/media/01e4147cff8141ee-s.p.3huc2loe0ie8a.woff2",
+      "static/media/81cef6a21128489e-s.p.2csanl8cs02r-.woff2"
     ]
   },
   "appUsingSizeAdjust": true,

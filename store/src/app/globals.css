@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #c8102e;
+  --color-brand-dark: #a30d24;
+  --color-ink: #111111;
+  --color-cream: #f5f1eb;
+  --color-muted: #8d8d8d;
+  --color-line: #e8e4db;
+
+  --font-heading: "Cormorant Garamond", "Cormorant Garamond Fallback", serif;
+  --font-body: "Jost", "Jost Fallback", sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hide scrollbar for carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

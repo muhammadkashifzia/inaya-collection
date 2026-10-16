@@ -1,3 +1,0 @@
-module.exports=[26508,a=>{"use strict";var b=a.i(87924);a.i(42680);var c=a.i(30299),d=a.i(97537);a.s(["v",0,function({title:a,children:e,footer:f}){return(0,b.jsxs)(c.f,{className:"max-w-md py-12 md:py-16",children:[(0,b.jsx)(d.f,{level:1,align:"center",className:"mb-8",children:a}),(0,b.jsx)("div",{className:"border border-line p-6 md:p-8",children:e}),f&&(0,b.jsx)("div",{className:"mt-6 text-center text-sm",children:f})]})},"L",0,function(a,b="/account"){return a&&a.startsWith("/")&&!a.startsWith("//")?a:b}])}];
-
-//# sourceMappingURL=src_app_account_AuthCard_tsx_18mguicvmzd3o._.js.map
