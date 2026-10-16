@@ -135,13 +135,13 @@ jobs:
           current=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/LangPHP/php_get_vhost_versions" \
             | jq -r --arg v "$vhost" '.data[]? | select(.vhost == $v) | .version')
           echo "Current $vhost: ${current:-unknown}"
-          if [ "$current" != "$PHP_HANDLER" ]; then
-            resp=$(curl -sS -G -H "$auth" \
-              --data-urlencode "version=$PHP_HANDLER" --data-urlencode "vhost=$vhost" \
-              "$CPANEL_HOST/execute/LangPHP/php_set_vhost_versions")
-            echo "Set $vhost -> $PHP_HANDLER: $(echo "$resp" | jq -c '{status, errors}')"
-            echo "$resp" | jq -e '.status == 1' >/dev/null
-          fi
+          # Always (re)apply: this rewrites cPanel's AddHandler block in the docroot .htaccess.
+          resp=$(curl -sS -G -H "$auth" \
+            --data-urlencode "version=$PHP_HANDLER" --data-urlencode "vhost=$vhost" \
+            "$CPANEL_HOST/execute/LangPHP/php_set_vhost_versions")
+          echo "Set $vhost -> $PHP_HANDLER: $(echo "$resp" | jq -c '{status, errors}')"
+          echo "$resp" | jq -e '.status == 1' >/dev/null
+          sleep 5
 
       - name: Run migrations & cache
         run: |
