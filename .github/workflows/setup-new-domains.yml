@@ -1,0 +1,138 @@
+name: Setup New Subdomains (one-time)
+
+on:
+  workflow_dispatch:
+
+env:
+  CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
+  CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
+  CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Create subdomains pointing to existing folders
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+
+          # Map: new subdomain -> existing document root (same folder, no data moves)
+          declare -A SUBS=(
+            ["inaya-api"]="/home/eastlogic/galaxywear-api.eastlogic.com"
+            ["inaya-admin"]="/home/eastlogic/galaxywear-admin.eastlogic.com"
+            ["inaya"]="/home/eastlogic/galaxywear-store.eastlogic.com"
+          )
+
+          for sub in "${!SUBS[@]}"; do
+            dir="${SUBS[$sub]}"
+            echo "Creating $sub.eastlogic.com -> $dir"
+            resp=$(curl -sS -G -H "$auth" \
+              --data-urlencode "domain=$sub" \
+              --data-urlencode "rootdomain=eastlogic.com" \
+              --data-urlencode "dir=$dir" \
+              "$CPANEL_HOST/execute/SubDomain/addsubdomain" || true)
+            echo "$resp" | jq -c '{status, errors, messages}' 2>/dev/null || echo "$resp"
+            echo
+          done
+
+      - name: Set PHP 8.4 for API subdomain
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          resp=$(curl -sS -G -H "$auth" \
+            --data-urlencode "version=ea-php84" \
+            --data-urlencode "vhost=inaya-api.eastlogic.com" \
+            "$CPANEL_HOST/execute/LangPHP/php_set_vhost_versions")
+          echo "PHP handler: $(echo "$resp" | jq -c '{status, errors}')"
+
+      - name: Verify subdomains
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          resp=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/SubDomain/listsubdomains")
+          echo "$resp" | jq -r '.data[]? | "\(.domain) -> \(.dir)"' | grep -E "inaya|galaxywear"
+
+      - name: Update backend .env on server
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          envdir="/home/eastlogic/galaxywear-api.eastlogic.com"
+
+          # Download current .env
+          resp=$(curl -sS -H "$auth" \
+            "$CPANEL_HOST/execute/Fileman/get_file_content?dir=$envdir&file=.env")
+          content=$(echo "$resp" | jq -r '.data.content')
+
+          if [ -z "$content" ] || [ "$content" = "null" ]; then
+            echo "::error::Could not read .env"
+            exit 1
+          fi
+
+          # Replace domain references
+          updated=$(echo "$content" \
+            | sed 's|galaxywear-api\.eastlogic\.com|inaya-api.eastlogic.com|g' \
+            | sed 's|galaxywear-admin\.eastlogic\.com|inaya-admin.eastlogic.com|g' \
+            | sed 's|galaxywear-store\.eastlogic\.com|inaya.eastlogic.com|g')
+
+          echo "--- Updated .env (domains only) ---"
+          echo "$updated" | grep -E "APP_URL|SANCTUM|CORS|FRONTEND|ADMIN_URL|SESSION_DOMAIN"
+
+          # Upload updated .env
+          resp=$(curl -sS -H "$auth" \
+            -F "dir=$envdir" \
+            -F "file=.env" \
+            -F "content=$updated" \
+            "$CPANEL_HOST/execute/Fileman/save_file_content")
+          echo "$resp" | jq -c '{status, errors}'
+
+      - name: Clear config cache
+        run: |
+          # Quick deploy script to clear caches with new URLs
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          envdir="/home/eastlogic/galaxywear-api.eastlogic.com"
+          DEPLOY_KEY=$(openssl rand -hex 24)
+          DEPLOY_FILE="_clearcache_$(openssl rand -hex 6).php"
+
+          cat > "/tmp/$DEPLOY_FILE" <<EOFPHP
+          <?php
+          if (!hash_equals('$DEPLOY_KEY', (\$_GET['key'] ?? ''))) { http_response_code(404); exit; }
+          header('Content-Type: text/plain');
+          \$base = dirname(__DIR__);
+          foreach (glob(\$base . '/bootstrap/cache/*.php') ?: [] as \$f) @unlink(\$f);
+          require \$base . '/vendor/autoload.php';
+          \$app = require \$base . '/bootstrap/app.php';
+          \$kernel = \$app->make(Illuminate\Contracts\Console\Kernel::class);
+          \$kernel->bootstrap();
+          Illuminate\Support\Facades\Artisan::call('optimize:clear');
+          echo Illuminate\Support\Facades\Artisan::output();
+          Illuminate\Support\Facades\Artisan::call('config:cache');
+          echo Illuminate\Support\Facades\Artisan::output();
+          Illuminate\Support\Facades\Artisan::call('route:cache');
+          echo Illuminate\Support\Facades\Artisan::output();
+          echo "CACHE_OK\n";
+          EOFPHP
+
+          # Upload
+          curl -sS -H "$auth" \
+            -F "dir=$envdir/public" -F "overwrite=1" -F "file-1=@/tmp/$DEPLOY_FILE" \
+            "$CPANEL_HOST/execute/Fileman/upload_files" | jq -c '{status}'
+
+          # Try both old and new domain
+          sleep 5
+          for domain in "inaya-api.eastlogic.com" "galaxywear-api.eastlogic.com"; do
+            out=$(curl -sS --max-time 30 "https://$domain/$DEPLOY_FILE?key=$DEPLOY_KEY" 2>/dev/null || true)
+            if echo "$out" | grep -q "CACHE_OK"; then
+              echo "Cache cleared via $domain"
+              break
+            fi
+          done
+
+          # Cleanup
+          curl -sS -G -H "$auth" \
+            --data-urlencode "cpanel_jsonapi_user=$CPANEL_USER" \
+            --data-urlencode "cpanel_jsonapi_apiversion=2" \
+            --data-urlencode "cpanel_jsonapi_module=Fileman" \
+            --data-urlencode "cpanel_jsonapi_func=fileop" \
+            --data-urlencode "op=unlink" \
+            --data-urlencode "sourcefiles=$envdir/public/$DEPLOY_FILE" \
+            --data-urlencode "destfiles=" \
+            --data-urlencode "doubledecode=0" \
+            "$CPANEL_HOST/json-api/cpanel" | jq -c '{result: .cpanelresult.data[0].result}'
