@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\StoreSetting;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Key/value store configuration with typed defaults. Only non-secret values
@@ -23,15 +24,16 @@ class SettingsService
     {
         return [
             'store' => [
-                'name' => 'Inaya Collection',
+                'name' => 'Anaya Collection',
                 'tagline' => 'Unstitched Winter Khaddar & Cotton Viscose in Pakistan',
-                'about' => 'Inaya Collection brings you affordable, quality unstitched fabrics for every season, delivered across Pakistan.',
+                'about' => 'Anaya Collection brings you affordable, quality unstitched fabrics for every season, delivered across Pakistan.',
                 'email' => 'support@example.com',
                 'phone' => '+92 300 0000000',
                 'whatsapp' => null,
                 'address' => null,
                 'hours' => 'Mon – Sat, 10am – 7pm',
                 'logo' => null,
+                'logo_type' => 'image',
             ],
             'localization' => [
                 'currency' => 'PKR',
@@ -63,7 +65,7 @@ class SettingsService
                 ['label' => 'TikTok', 'href' => 'https://tiktok.com'],
             ],
             'seo' => [
-                'default_title' => 'Inaya Collection | Unstitched Winter Khaddar & Cotton Viscose in Pakistan',
+                'default_title' => 'Anaya Collection | Unstitched Winter Khaddar & Cotton Viscose in Pakistan',
                 'default_description' => 'Shop unstitched khaddar, karandi and cotton viscose suits with nationwide delivery.',
                 'og_image' => null,
             ],
@@ -83,7 +85,7 @@ class SettingsService
             ],
             'footer' => [
                 'columns' => [],
-                'copyright' => 'Inaya Collection. All rights reserved.',
+                'copyright' => 'Anaya Collection. All rights reserved.',
             ],
             'inventory' => [
                 'default_low_stock_threshold' => 5,
@@ -103,6 +105,11 @@ class SettingsService
             $merged[$key] = array_key_exists($key, $stored) && $stored[$key] !== null ? $stored[$key] : $default;
         }
 
+        // Older stored "store" rows predate these keys; fill them so clients always get the full shape.
+        $merged['store'] = [...self::defaults()['store'], ...$merged['store']];
+        $logoPath = $merged['store']['logo'];
+        $merged['store']['logo_url'] = is_string($logoPath) && $logoPath !== '' ? Storage::disk('public')->url($logoPath) : null;
+
         return $merged;
     }
 
@@ -118,6 +125,9 @@ class SettingsService
      */
     public function update(array $values): void
     {
+        // logo_url is derived from the stored path on read; never persist it.
+        Arr::forget($values, 'store.logo_url');
+
         foreach (Arr::only($values, array_keys(self::defaults())) as $key => $value) {
             StoreSetting::query()->updateOrCreate(['key' => $key], ['value' => $value]);
         }

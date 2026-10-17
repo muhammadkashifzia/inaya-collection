@@ -288,7 +288,22 @@ export interface DashboardData {
 
 /** Store settings (money values in minor units / paisa). */
 export interface StoreSettings {
-  store: { name: string; tagline: string | null; about: string | null; email: string | null; phone: string | null; whatsapp: string | null; address: string | null; hours: string | null; logo: string | null };
+  store: {
+    name: string;
+    tagline: string | null;
+    about: string | null;
+    email: string | null;
+    phone: string | null;
+    whatsapp: string | null;
+    address: string | null;
+    hours: string | null;
+    /** Storage path of the uploaded logo (e.g. logos/abc.png). */
+    logo: string | null;
+    /** Read-only public URL derived from `logo` by the API. */
+    logo_url: string | null;
+    /** What the storefront header shows: the uploaded image or the store name as text. */
+    logo_type: "text" | "image";
+  };
   localization: { currency: string; currency_symbol: string; timezone: string };
   shipping: { free_shipping_threshold: number | null; methods: { code: string; name: string; fee: number; is_active: boolean }[] };
   tax: { rate_percent: number; prices_include_tax: boolean };

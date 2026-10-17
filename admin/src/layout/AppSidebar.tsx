@@ -326,12 +326,12 @@ const AppSidebar: React.FC = () => {
           !isExpanded && !isHovered ? "xl:justify-center" : "justify-start",
         )}
       >
-        <Link to="/" className="flex items-center gap-3" aria-label="Inaya Collection admin home">
+        <Link to="/" className="flex items-center gap-3" aria-label="Anaya Collection admin home">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-500 font-display text-xl font-bold text-white">G</span>
           {(isExpanded || isHovered || isMobileOpen) && (
             <span className="leading-tight">
               <span className="block font-display text-xl font-semibold tracking-[0.18em] text-white uppercase">
-                Inaya<span className="text-brand-400">Collection</span>
+                Anaya<span className="text-brand-400">Collection</span>
               </span>
               <span className="block text-[11px] tracking-[0.3em] text-ink-300 uppercase">Admin</span>
             </span>

@@ -40,7 +40,7 @@ export default function CustomerDetail() {
 
   return (
     <>
-      <PageMeta title={`${customer?.name ?? "Customer"} | Inaya Collection Admin`} description="Customer profile." />
+      <PageMeta title={`${customer?.name ?? "Customer"} | Anaya Collection Admin`} description="Customer profile." />
       <PageHeader
         title={customer?.name ?? "Customer"}
         description={customer ? `Customer since ${date(customer.created_at)}` : undefined}

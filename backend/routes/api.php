@@ -138,6 +138,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::middleware('can:'.Permission::ManageSettings->value)->group(function (): void {
             Route::get('settings', [Admin\SettingsController::class, 'show'])->name('settings.show');
             Route::put('settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
+            Route::post('settings/logo', [Admin\SettingsController::class, 'uploadLogo'])->name('settings.logo');
         });
     });
 });

@@ -2,7 +2,7 @@ import GridShape from "@/components/common/GridShape";
 import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
 import React from "react";
 
-/** Split-screen sign-in layout in the Inaya Collection brand colours. */
+/** Split-screen sign-in layout in the Anaya Collection brand colours. */
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative z-1 bg-white p-6 sm:p-0 dark:bg-gray-900">
@@ -14,7 +14,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <div className="flex max-w-sm flex-col items-center text-center">
               <span className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-brand-500 font-display text-3xl font-bold text-white">G</span>
               <p className="font-display text-4xl font-semibold tracking-[0.2em] text-white uppercase">
-                Inaya<span className="text-brand-400">Collection</span>
+                Anaya<span className="text-brand-400">Collection</span>
               </p>
               <p className="mt-2 text-xs tracking-[0.4em] text-ink-300 uppercase">Store admin</p>
               <p className="mt-8 text-sm text-ink-200">Manage products, orders, customers and your storefront in one place.</p>

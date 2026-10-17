@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Card from "@/components/admin/Card";
 import DataState from "@/components/admin/DataState";
-import { Notice, TextAreaInput, TextInput, Toggle } from "@/components/admin/Fields";
+import { Notice, SelectInput, TextAreaInput, TextInput, Toggle } from "@/components/admin/Fields";
+import ImageUpload from "@/components/admin/ImageUpload";
 import PageHeader from "@/components/admin/PageHeader";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
@@ -49,7 +50,7 @@ export default function Settings() {
 
   return (
     <>
-      <PageMeta title="Settings | Inaya Collection Admin" description="Store configuration." />
+      <PageMeta title="Settings | Anaya Collection Admin" description="Store configuration." />
       <PageHeader
         title="Settings"
         description="Store details, shipping, payments and storefront content. Changes reach the website within about a minute."
@@ -97,6 +98,31 @@ export default function Settings() {
                       <TextInput label="WhatsApp" value={s.store.whatsapp ?? ""} onChange={(e) => update("store", { ...s.store, whatsapp: e.target.value })} maxLength={30} />
                       <TextInput label="Opening hours" value={s.store.hours ?? ""} onChange={(e) => update("store", { ...s.store, hours: e.target.value })} maxLength={120} />
                       <TextAreaInput className="md:col-span-2" label="Address" rows={2} value={s.store.address ?? ""} onChange={(e) => update("store", { ...s.store, address: e.target.value })} maxLength={500} />
+                    </div>
+                  </Card>
+                  <Card title="Logo" description="Choose what the website header shows: your uploaded logo or the store name as text.">
+                    <div className="grid items-start gap-4 md:grid-cols-2">
+                      <SelectInput
+                        label="Header shows"
+                        value={s.store.logo_type}
+                        onChange={(e) => update("store", { ...s.store, logo_type: e.target.value as StoreSettings["store"]["logo_type"] })}
+                        error={fe("store.logo_type")}
+                        options={[
+                          { value: "image", label: "Logo image" },
+                          { value: "text", label: "Store name (text)" },
+                        ]}
+                        hint={s.store.logo_type === "image" && !s.store.logo_url ? "No logo uploaded yet, so the built-in Anaya logo is shown." : undefined}
+                      />
+                      <ImageUpload
+                        label="Logo image"
+                        endpoint="/admin/settings/logo"
+                        value={{ path: s.store.logo, url: s.store.logo_url }}
+                        onChange={({ path, url }) => update("store", { ...s.store, logo: path, logo_url: url, ...(path ? { logo_type: "image" as const } : {}) })}
+                        error={fe("store.logo")}
+                        hint="PNG with transparent background works best. JPG, PNG or WebP, up to 5 MB."
+                        aspect="aspect-[5/2] max-h-40"
+                        fit="contain"
+                      />
                     </div>
                   </Card>
                   <Card title="Localization">

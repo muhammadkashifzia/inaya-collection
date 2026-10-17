@@ -7,6 +7,7 @@ use App\Services\SettingsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Store settings. Money values (fees, thresholds) are minor units here,
@@ -31,7 +32,8 @@ class SettingsController extends Controller
             'store.whatsapp' => ['nullable', 'string', 'max:30'],
             'store.address' => ['nullable', 'string', 'max:500'],
             'store.hours' => ['nullable', 'string', 'max:120'],
-            'store.logo' => ['nullable', 'string', 'max:255'],
+            'store.logo' => ['nullable', 'string', 'max:255', 'regex:#^logos/[A-Za-z0-9._-]+$#'],
+            'store.logo_type' => ['sometimes', 'in:text,image'],
 
             'localization' => ['sometimes', 'array'],
             'localization.currency' => ['required_with:localization', 'string', 'size:3'],
@@ -95,5 +97,20 @@ class SettingsController extends Controller
         Log::info('Store settings updated', ['keys' => array_keys($validated), 'admin_id' => $request->user()->id]);
 
         return response()->json(['data' => $settings->all()]);
+    }
+
+    /**
+     * Store a logo file. The returned path is saved later via update() as store.logo.
+     * SVG is rejected: it can carry scripts and would be served from the API origin.
+     */
+    public function uploadLogo(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'image' => ['required', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        $path = $validated['image']->store('logos', 'public');
+
+        return response()->json(['path' => $path, 'url' => Storage::disk('public')->url($path)], 201);
     }
 }

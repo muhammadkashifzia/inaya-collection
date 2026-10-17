@@ -18,9 +18,11 @@ env:
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
   # Laravel project root on the server (document root of the API subdomain).
-  REMOTE_DIR: ${{ vars.API_REMOTE_DIR || '/home/eastlogic/galaxywear-api.eastlogic.com' }}
-  API_URL: ${{ vars.API_URL || 'https://inaya-api.eastlogic.com' }}
+  REMOTE_DIR: /home/eastlogic/anaya-api.eastlogic.com
+  API_URL: https://anaya-api.eastlogic.com
   PHP_HANDLER: ${{ vars.API_PHP_HANDLER || 'ea-php84' }}
+  # Previous API folder: .env, root .htaccess and storage/ (uploads) are copied from here if missing.
+  OLD_REMOTE_DIR: /home/eastlogic/galaxywear-api.eastlogic.com
 
 jobs:
   deploy:
@@ -31,6 +33,46 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+
+      # First deploy into a new folder: bring over server-only files, point .env at the anaya domains.
+      - name: Prepare server folder (.env, .htaccess, storage)
+        run: |
+          source ../.github/scripts/cpanel.sh
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          has() { # has <dir> <name>
+            curl -sS -G -H "$auth" --data-urlencode "dir=$1" --data-urlencode "include_hidden=1" \
+              "$CPANEL_HOST/execute/Fileman/list_files" | jq -e --arg n "$2" '[.data[]?.file] | index($n) != null' >/dev/null
+          }
+          for item in .env .htaccess storage; do
+            if has "$REMOTE_DIR" "$item"; then
+              echo "$item: present"
+            elif has "$OLD_REMOTE_DIR" "$item"; then
+              echo "$item: copying from $OLD_REMOTE_DIR"
+              _cp_fileop copy "$OLD_REMOTE_DIR/$item" "$REMOTE_DIR"
+            else
+              echo "::warning::$item missing in $REMOTE_DIR and $OLD_REMOTE_DIR"
+            fi
+          done
+
+          content=$(curl -sS -G -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.env" \
+            "$CPANEL_HOST/execute/Fileman/get_file_content" | jq -r '.data.content // empty')
+          if [ -z "$content" ]; then
+            echo "::error::$REMOTE_DIR/.env not found. Create it in cPanel File Manager (see backend/.env.example), then re-run."
+            exit 1
+          fi
+          updated=$(printf '%s' "$content" | sed -E \
+            -e 's#(galaxywear|inaya)-api\.eastlogic\.com#anaya-api.eastlogic.com#g' \
+            -e 's#(galaxywear|inaya)-admin\.eastlogic\.com#anaya-admin.eastlogic.com#g' \
+            -e 's#galaxywear-store\.eastlogic\.com#anaya.eastlogic.com#g' \
+            -e 's#(^|[^a-z-])inaya\.eastlogic\.com#\1anaya.eastlogic.com#g' \
+            -e 's#^APP_NAME=.*#APP_NAME="Anaya Collection API"#')
+          printf '%s\n' "$updated" | grep -E '^(APP_NAME|APP_URL|FRONTEND_URL|ADMIN_URL|SANCTUM_STATEFUL_DOMAINS|CORS_ALLOWED_ORIGINS|SESSION_DOMAIN)=' || true
+          if [ "$updated" != "$content" ]; then
+            resp=$(curl -sS -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.env" \
+              --data-urlencode "content=$updated" "$CPANEL_HOST/execute/Fileman/save_file_content")
+            echo "$resp" | jq -e '.status == 1' >/dev/null || { echo "::error::Saving .env failed: $resp"; exit 1; }
+            echo ".env updated"
+          fi
 
       - uses: shivammathur/setup-php@v2
         with:

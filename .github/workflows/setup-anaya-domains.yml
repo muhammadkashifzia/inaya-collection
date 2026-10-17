@@ -1,0 +1,169 @@
+name: Setup Anaya Domains (one-time)
+# Run once from GitHub > Actions > "Setup Anaya Domains" > Run workflow.
+# Safe to re-run: every step only adds what is missing.
+#
+#   anaya-api.eastlogic.com    -> /home/eastlogic/anaya-api.eastlogic.com    (Laravel)
+#   anaya-admin.eastlogic.com  -> /home/eastlogic/anaya-admin.eastlogic.com  (static admin)
+#   anaya.eastlogic.com        -> /home/eastlogic/anaya.eastlogic.com        (Next.js, Passenger)
+on:
+  workflow_dispatch:
+    inputs:
+      copy_from_old:
+        description: "Copy .env, root .htaccess and storage/ (uploaded images) from the old API folder if missing"
+        type: boolean
+        default: true
+env:
+  CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
+  CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
+  CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+  ROOT_DOMAIN: eastlogic.com
+  SERVER_IP: ${{ vars.SERVER_IP || '91.204.209.2' }}
+  HOME_DIR: /home/eastlogic
+  OLD_API_DIR: /home/eastlogic/galaxywear-api.eastlogic.com
+  API_DIR: /home/eastlogic/anaya-api.eastlogic.com
+  ADMIN_DIR: /home/eastlogic/anaya-admin.eastlogic.com
+  STORE_DIR: /home/eastlogic/anaya.eastlogic.com
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Subdomains (create if missing)
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          existing=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/SubDomain/listsubdomains" | jq -r '.data[]?.domain')
+          declare -A SUBS=(
+            ["anaya-api"]="$API_DIR"
+            ["anaya-admin"]="$ADMIN_DIR"
+            ["anaya"]="$STORE_DIR"
+          )
+          for sub in "${!SUBS[@]}"; do
+            fqdn="$sub.$ROOT_DOMAIN"
+            if echo "$existing" | grep -qx "$fqdn"; then
+              echo "$fqdn already exists"
+              continue
+            fi
+            echo "Creating $fqdn -> ${SUBS[$sub]}"
+            resp=$(curl -sS -G -H "$auth" \
+              --data-urlencode "domain=$sub" \
+              --data-urlencode "rootdomain=$ROOT_DOMAIN" \
+              --data-urlencode "dir=${SUBS[$sub]}" \
+              "$CPANEL_HOST/execute/SubDomain/addsubdomain")
+            echo "$resp" | jq -c '{status, errors}'
+          done
+          echo "--- current"
+          curl -sS -H "$auth" "$CPANEL_HOST/execute/SubDomain/listsubdomains" \
+            | jq -r '.data[]? | "\(.domain) -> \(.dir)"' | grep -E "anaya" || true
+
+      - name: DNS A records (add if missing)
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          zone=$(curl -sS -G -H "$auth" --data-urlencode "zone=$ROOT_DOMAIN" "$CPANEL_HOST/execute/DNS/parse_zone")
+          serial=$(echo "$zone" | jq -r '[.data[]? | select(.record_type == "SOA")][0].data_b64[2] // empty' | base64 -d 2>/dev/null || true)
+          names=$(echo "$zone" | jq -r '.data[]? | select(.type == "record" and (.record_type == "A" or .record_type == "CNAME")) | .dname_b64' | while read -r b; do echo "$b" | base64 -d; echo; done)
+          for host in anaya-api anaya-admin anaya; do
+            fqdn="$host.$ROOT_DOMAIN."
+            if echo "$names" | grep -qxE "($host|$fqdn)"; then
+              echo "DNS record for $fqdn already exists"
+              continue
+            fi
+            echo "Adding A $fqdn -> $SERVER_IP"
+            resp=$(curl -sS -G -H "$auth" \
+              --data-urlencode "zone=$ROOT_DOMAIN" \
+              --data-urlencode "serial=$serial" \
+              --data-urlencode "add={\"dname\":\"$fqdn\",\"ttl\":14400,\"record_type\":\"A\",\"data\":[\"$SERVER_IP\"]}" \
+              "$CPANEL_HOST/execute/DNS/mass_edit_zone")
+            echo "$resp" | jq -c '{status, errors}'
+            serial=$(echo "$resp" | jq -r '.data.new_serial // empty')
+          done
+          for host in anaya-api anaya-admin anaya; do
+            echo "$host.$ROOT_DOMAIN -> $(dig +short "$host.$ROOT_DOMAIN" @8.8.8.8 | tr '\n' ' ')"
+          done
+
+      - name: PHP 8.4 for API
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          resp=$(curl -sS -G -H "$auth" \
+            --data-urlencode "version=ea-php84" \
+            --data-urlencode "vhost=anaya-api.$ROOT_DOMAIN" \
+            "$CPANEL_HOST/execute/LangPHP/php_set_vhost_versions")
+          echo "$resp" | jq -c '{status, errors}'
+
+      - name: Backend .env / .htaccess / storage (copy from old folder if missing)
+        if: inputs.copy_from_old
+        run: |
+          source .github/scripts/cpanel.sh
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          has() { # has <dir> <name>
+            curl -sS -G -H "$auth" --data-urlencode "dir=$1" --data-urlencode "include_hidden=1" \
+              "$CPANEL_HOST/execute/Fileman/list_files" | jq -e --arg n "$2" '[.data[]?.file] | index($n) != null' >/dev/null
+          }
+          for item in .env .htaccess storage; do
+            if has "$API_DIR" "$item"; then
+              echo "$API_DIR/$item already exists, skipping"
+            elif has "$OLD_API_DIR" "$item"; then
+              echo "Copying $OLD_API_DIR/$item -> $API_DIR/"
+              _cp_fileop copy "$OLD_API_DIR/$item" "$API_DIR"
+            else
+              echo "::warning::$item not found in $OLD_API_DIR either"
+            fi
+          done
+
+      - name: Backend .env -> anaya URLs
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          resp=$(curl -sS -G -H "$auth" --data-urlencode "dir=$API_DIR" --data-urlencode "file=.env" \
+            "$CPANEL_HOST/execute/Fileman/get_file_content")
+          content=$(echo "$resp" | jq -r '.data.content // empty')
+          if [ -z "$content" ]; then
+            echo "::error::$API_DIR/.env not found. Create it in cPanel File Manager, then re-run."
+            exit 1
+          fi
+          updated=$(printf '%s' "$content" | sed -E \
+            -e 's#(galaxywear|inaya)-api\.eastlogic\.com#anaya-api.eastlogic.com#g' \
+            -e 's#(galaxywear|inaya)-admin\.eastlogic\.com#anaya-admin.eastlogic.com#g' \
+            -e 's#galaxywear-store\.eastlogic\.com#anaya.eastlogic.com#g' \
+            -e 's#(^|[^a-z-])inaya\.eastlogic\.com#\1anaya.eastlogic.com#g' \
+            -e 's#^APP_NAME=.*#APP_NAME="Anaya Collection API"#')
+          echo "--- domain keys after update"
+          printf '%s\n' "$updated" | grep -E '^(APP_NAME|APP_URL|FRONTEND_URL|ADMIN_URL|SANCTUM_STATEFUL_DOMAINS|CORS_ALLOWED_ORIGINS|SESSION_DOMAIN)=' || true
+          resp=$(curl -sS -H "$auth" \
+            --data-urlencode "dir=$API_DIR" \
+            --data-urlencode "file=.env" \
+            --data-urlencode "content=$updated" \
+            "$CPANEL_HOST/execute/Fileman/save_file_content")
+          echo "$resp" | jq -c '{status, errors}'
+          echo "$resp" | jq -e '.status == 1' >/dev/null
+
+      - name: Node.js app for anaya.eastlogic.com
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          apps=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/PassengerApps/list_applications")
+          if echo "$apps" | jq -e --arg p "$STORE_DIR" '[.data[]? | .path] | index($p) != null' >/dev/null; then
+            echo "Passenger app already registered for $STORE_DIR"
+          else
+            resp=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/PassengerApps/register_application" \
+              --data-urlencode "name=anaya-store" \
+              --data-urlencode "path=$STORE_DIR" \
+              --data-urlencode "domain=anaya.$ROOT_DOMAIN" \
+              --data-urlencode "base_uri=/" \
+              --data-urlencode "deployment_mode=production" \
+              --data-urlencode "envvar_name_0=NODE_ENV" --data-urlencode "envvar_value_0=production" \
+              --data-urlencode "envvar_name_1=NEXT_PUBLIC_API_URL" --data-urlencode "envvar_value_1=https://anaya-api.$ROOT_DOMAIN" \
+              --data-urlencode "envvar_name_2=API_URL" --data-urlencode "envvar_value_2=https://anaya-api.$ROOT_DOMAIN" \
+              --data-urlencode "envvar_name_3=NEXT_PUBLIC_SITE_URL" --data-urlencode "envvar_value_3=https://anaya.$ROOT_DOMAIN")
+            echo "$resp" | jq -c '{status, errors}'
+          fi
+          curl -sS -H "$auth" "$CPANEL_HOST/execute/PassengerApps/list_applications" \
+            | jq -r '.data[]? | "\(.name) | \(.domain) | \(.path)"'
+          echo "::notice::If the app is not listed, open cPanel > Setup Node.js App and create it: root $STORE_DIR, URL anaya.$ROOT_DOMAIN, startup file app.js, Node 22."
+
+      - name: Status
+        run: |
+          for d in anaya-api anaya-admin anaya; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://$d.$ROOT_DOMAIN/" || echo 000)
+            echo "https://$d.$ROOT_DOMAIN -> HTTP $code"
+          done
+          echo "Next: run Deploy Backend, Deploy Admin and Deploy Store (Actions > Run workflow), or push to dev."

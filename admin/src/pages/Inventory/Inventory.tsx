@@ -58,7 +58,7 @@ export default function Inventory() {
 
   return (
     <>
-      <PageMeta title="Inventory | Inaya Collection Admin" description="Stock levels by variant." />
+      <PageMeta title="Inventory | Anaya Collection Admin" description="Stock levels by variant." />
       <PageHeader
         title="Inventory"
         description="Stock per variant. Every change is recorded with a reason and the staff member."

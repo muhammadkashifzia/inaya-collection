@@ -44,7 +44,7 @@ export default function ProductList() {
 
   return (
     <>
-      <PageMeta title="Products | Inaya Collection Admin" description="Manage products, pricing and variants." />
+      <PageMeta title="Products | Anaya Collection Admin" description="Manage products, pricing and variants." />
       <PageHeader
         title="Products"
         description="Everything listed on the storefront."

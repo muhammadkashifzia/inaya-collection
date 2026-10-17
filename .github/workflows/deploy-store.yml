@@ -1,59 +1,132 @@
 name: Deploy Store (Next.js)
-
-# NOTE: The Next.js source is not in this repo. This deploys the prebuilt
-# standalone bundle in store/ (server.js + .next + node_modules).
-# Rebuild it locally, commit store/, push -> it goes live.
-
+# Builds the Next.js storefront from app/ on GitHub (output: standalone),
+# zips it, uploads to cPanel, extracts it and restarts the Passenger app.
 on:
   push:
     branches: [dev]
     paths:
-      - "store/**"
+      - "app/**"
       - ".github/workflows/deploy-store.yml"
       - ".github/scripts/cpanel.sh"
   workflow_dispatch:
-
 concurrency:
   group: deploy-store
   cancel-in-progress: false
-
 env:
   CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
-  # Passenger app root (see store-htaccess -> PassengerAppRoot).
-  REMOTE_DIR: ${{ vars.STORE_REMOTE_DIR || '/home/eastlogic/galaxywear-store.eastlogic.com' }}
-  STORE_URL: ${{ vars.STORE_URL || 'https://inaya.eastlogic.com' }}
-
+  # Passenger app root (cPanel "Setup Node.js App", startup file app.js).
+  REMOTE_DIR: /home/eastlogic/anaya.eastlogic.com
+  STORE_URL: https://anaya.eastlogic.com
+  API_URL: https://anaya-api.eastlogic.com
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: app
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build release archive
-        working-directory: store
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      # Pages are prerendered from the live API, so the build needs it up (Deploy Backend may still be running).
+      - name: Wait for API
         run: |
-          # .htaccess on the server is managed by cPanel "Setup Node.js App"; don't overwrite it.
-          zip -r -q -y ../store-release.zip . -x ".htaccess" -x "*.DS_Store"
-          ls -lh ../store-release.zip
+          for i in $(seq 1 40); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$API_URL/up" || true)
+            echo "[$i] GET $API_URL/up -> $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 30
+          done
+          echo "::error::API $API_URL is not reachable. Deploy the backend first, then re-run this workflow."
+          exit 1
+      # NEXT_PUBLIC_* values are baked in at build time; app/.env* is gitignored, so write it here.
+      - name: Build
+        run: |
+          printf 'NEXT_PUBLIC_API_URL=%s\nAPI_URL=%s\nNEXT_PUBLIC_SITE_URL=%s\n' \
+            "$API_URL" "$API_URL" "$STORE_URL" > .env.production
+          npm run build
+      - name: Build release archive
+        run: |
+          set -euo pipefail
+          # server.js is at .next/standalone/ (or a sub-folder if Next picks a parent tracing root).
+          SERVER_JS=$(find .next/standalone -name server.js -not -path '*/node_modules/*' | head -n 1)
+          [ -n "$SERVER_JS" ] || { echo "::error::standalone server.js not found (is output: 'standalone' set?)"; exit 1; }
+          REL="$RUNNER_TEMP/store"
+          mkdir -p "$REL/.next"
+          cp -r "$(dirname "$SERVER_JS")/." "$REL/"
+          cp -r .next/static "$REL/.next/static"
+          [ -d public ] && cp -r public "$REL/public"
+          rm -f "$REL"/.env*
 
+          # Passenger startup file. Env from cPanel "Setup Node.js App" takes precedence.
+          cat > "$REL/app.js" <<EOF
+          process.env.NODE_ENV = 'production';
+          process.env.HOSTNAME = process.env.HOSTNAME || '0.0.0.0';
+          process.env.PORT = process.env.PORT || '3000';
+          process.env.NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || '$API_URL';
+          process.env.API_URL = process.env.API_URL || '$API_URL';
+          process.env.NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || '$STORE_URL';
+          require('./server.js');
+          EOF
+
+          cd "$REL"
+          # .htaccess on the server is managed by cPanel "Setup Node.js App"; don't overwrite it.
+          zip -r -q -y "$GITHUB_WORKSPACE/store-release.zip" . -x ".htaccess" -x "*.DS_Store"
+          ls -lh "$GITHUB_WORKSPACE/store-release.zip"
       - name: Upload, extract & restart
+        working-directory: .
         run: |
           source .github/scripts/cpanel.sh
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+
+          # New folder: no Passenger config yet -> add the same .htaccess the old store used.
+          current=$(curl -sS -G -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.htaccess" \
+            "$CPANEL_HOST/execute/Fileman/get_file_content" | jq -r '.data.content // empty')
+          if echo "$current" | grep -q "PassengerAppRoot"; then
+            echo ".htaccess already has Passenger config"
+          else
+            echo "Writing Passenger .htaccess"
+            mkdir -p "$RUNNER_TEMP/ht"
+            {
+              printf '%s\n' "$current" | grep -v '^$' || true
+              echo "PassengerAppRoot \"$REMOTE_DIR\""
+              echo "PassengerBaseURI \"/\""
+              echo "PassengerAppType node"
+              echo "PassengerStartupFile app.js"
+              echo "PassengerNodejs /opt/alt/alt-nodejs22/root/usr/bin/node"
+              echo "SetEnv NODE_ENV production"
+              echo "SetEnv NEXT_PUBLIC_API_URL $API_URL"
+              echo "SetEnv API_URL $API_URL"
+              echo "SetEnv NEXT_PUBLIC_SITE_URL $STORE_URL"
+              echo "Options -Indexes"
+            } > "$RUNNER_TEMP/ht/.htaccess"
+            cp_upload "$RUNNER_TEMP/ht/.htaccess" "$REMOTE_DIR"
+          fi
+
           cp_upload store-release.zip "$REMOTE_DIR"
           cp_extract "$REMOTE_DIR/store-release.zip" "$REMOTE_DIR"
           cp_unlink "$REMOTE_DIR/store-release.zip"
-
           # Passenger restarts the Node app when tmp/restart.txt changes.
           mkdir -p tmp && date > tmp/restart.txt
           cp_upload tmp/restart.txt "$REMOTE_DIR/tmp" \
             || echo "::warning::Could not touch tmp/restart.txt, restart the app from cPanel > Setup Node.js App"
-
       - name: Health check
+        working-directory: .
         run: |
-          sleep 10
-          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "$STORE_URL" || true)
+          sleep 15
+          body=$(curl -s --max-time 60 -w "\n%{http_code}" "$STORE_URL" || true)
+          code=$(echo "$body" | tail -n 1)
           echo "GET $STORE_URL -> $code"
-          [ "$code" = "200" ] || echo "::warning::Store returned $code"
+          if [ "$code" = "200" ] && echo "$body" | grep -q "/_next/"; then
+            echo "Next.js store is live"
+          else
+            echo "::warning::Store did not return the Next.js app (HTTP $code). Check cPanel > Setup Node.js App / stderr.log."
+          fi

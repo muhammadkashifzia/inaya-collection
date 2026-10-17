@@ -22,7 +22,7 @@ export default function CustomerList() {
 
   return (
     <>
-      <PageMeta title="Customers | Inaya Collection Admin" description="Customer accounts." />
+      <PageMeta title="Customers | Anaya Collection Admin" description="Customer accounts." />
       <PageHeader title="Customers" description="Registered customer accounts. Guest orders appear under Orders." />
       <Card bodyClassName="p-4 md:p-5">
         <FilterBar search={values.q} onSearch={(q) => set("q", q)} placeholder="Name, email or phone">

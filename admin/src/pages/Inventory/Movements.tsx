@@ -26,7 +26,7 @@ export default function Movements() {
 
   return (
     <>
-      <PageMeta title="Stock history | Inaya Collection Admin" description="Audit log of stock changes." />
+      <PageMeta title="Stock history | Anaya Collection Admin" description="Audit log of stock changes." />
       <PageHeader
         title="Stock history"
         description="Every stock change: sales, cancellations and manual adjustments."

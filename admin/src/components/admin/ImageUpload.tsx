@@ -11,13 +11,15 @@ interface ImageUploadProps {
   error?: string;
   hint?: string;
   aspect?: string;
+  /** "contain" keeps the whole image visible (logos); "cover" fills the frame (photos). */
+  fit?: "cover" | "contain";
 }
 
 const ACCEPT = "image/jpeg,image/png,image/webp";
 const MAX_BYTES = 8 * 1024 * 1024;
 
 /** Uploads one image immediately and stores the returned storage path. */
-export default function ImageUpload({ label, endpoint, value, onChange, error, hint, aspect = "aspect-video" }: ImageUploadProps) {
+export default function ImageUpload({ label, endpoint, value, onChange, error, hint, aspect = "aspect-video", fit = "cover" }: ImageUploadProps) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export default function ImageUpload({ label, endpoint, value, onChange, error, h
       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
       <div className={cn("relative overflow-hidden rounded-xl border border-dashed bg-gray-50 dark:bg-white/3", aspect, message ? "border-error-400" : "border-gray-300 dark:border-gray-700")}>
         {value.url ? (
-          <img src={value.url} alt="" className="h-full w-full object-cover" />
+          <img src={value.url} alt="" className={cn("h-full w-full", fit === "contain" ? "object-contain p-3" : "object-cover")} />
         ) : (
           <div className="flex h-full items-center justify-center text-theme-xs text-gray-400">No image</div>
         )}

@@ -23,7 +23,7 @@ export default function Ecommerce() {
 
   return (
     <>
-      <PageMeta title="Dashboard | Inaya Collection Admin" description="Store overview: revenue, orders, customers and stock." />
+      <PageMeta title="Dashboard | Anaya Collection Admin" description="Store overview: revenue, orders, customers and stock." />
       <PageHeader
         title={`${greeting}, ${user?.name.split(" ")[0] ?? ""}`}
         description="Here's how the store is doing."

@@ -73,7 +73,7 @@ const AppHeader: React.FC = () => {
           </button>
 
           <Link to="/" className="font-display text-lg font-semibold tracking-[0.18em] text-ink-900 uppercase xl:hidden dark:text-white">
-            Inaya<span className="text-brand-500">Collection</span>
+            Anaya<span className="text-brand-500">Collection</span>
           </Link>
 
           <button
