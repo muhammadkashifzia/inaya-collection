@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Helpers for deploying to cPanel using an API token (no SSH needed).
+# Used by deploy-admin.yml, deploy-backend.yml and deploy-store.yml (anaya-*.eastlogic.com).
 #
 # Required env:
 #   CPANEL_HOST   e.g. https://eastlogic.com:2083
