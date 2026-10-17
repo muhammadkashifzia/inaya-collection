@@ -2,16 +2,16 @@ name: Setup Anaya Domains (one-time)
 # Run once from GitHub > Actions > "Setup Anaya Domains" > Run workflow.
 # Safe to re-run: every step only adds what is missing.
 #
-#   anaya-api.eastlogic.com    -> /home/eastlogic/anaya-api.eastlogic.com    (Laravel)
+#   anaya-api.eastlogic.com    -> /home/eastlogic/anaya-api.eastlogic.com/public (Laravel)
 #   anaya-admin.eastlogic.com  -> /home/eastlogic/anaya-admin.eastlogic.com  (static admin)
 #   anaya.eastlogic.com        -> /home/eastlogic/anaya.eastlogic.com        (Next.js, Passenger)
 on:
   workflow_dispatch:
     inputs:
       copy_from_old:
-        description: "Copy .env, root .htaccess and storage/ (uploaded images) from the old API folder if missing"
+        description: "Legacy migration only: copy .env, root .htaccess and storage/ from the old galaxywear API folder if missing"
         type: boolean
-        default: true
+        default: false
 env:
   CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
@@ -35,7 +35,7 @@ jobs:
           auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
           existing=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/SubDomain/listsubdomains" | jq -r '.data[]?.domain')
           declare -A SUBS=(
-            ["anaya-api"]="$API_DIR"
+            ["anaya-api"]="$API_DIR/public"
             ["anaya-admin"]="$ADMIN_DIR"
             ["anaya"]="$STORE_DIR"
           )

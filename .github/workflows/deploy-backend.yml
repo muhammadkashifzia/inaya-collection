@@ -8,6 +8,12 @@ on:
       - ".github/workflows/deploy-backend.yml"
       - ".github/scripts/cpanel.sh"
   workflow_dispatch:
+    inputs:
+      admin_email:
+        description: "Optional: create/reset this admin account (password comes from the ADMIN_PASSWORD secret)"
+        type: string
+        required: false
+        default: ""
 
 concurrency:
   group: deploy-backend
@@ -17,12 +23,13 @@ env:
   CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
-  # Laravel project root on the server (document root of the API subdomain).
+  # Laravel project root on the server. The subdomain document root is moved to
+  # $REMOTE_DIR/public; the root .htaccess (managed below) is a fallback for when it isn't.
   REMOTE_DIR: /home/eastlogic/anaya-api.eastlogic.com
   API_URL: https://anaya-api.eastlogic.com
+  ADMIN_ORIGIN: https://anaya-admin.eastlogic.com
   PHP_HANDLER: ${{ vars.API_PHP_HANDLER || 'ea-php84' }}
-  # Previous API folder: .env, root .htaccess and storage/ (uploads) are copied from here if missing.
-  OLD_REMOTE_DIR: /home/eastlogic/galaxywear-api.eastlogic.com
+  ADMIN_EMAIL: ${{ inputs.admin_email || '' }}
 
 jobs:
   deploy:
@@ -34,45 +41,79 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # First deploy into a new folder: bring over server-only files, point .env at the anaya domains.
-      - name: Prepare server folder (.env, .htaccess, storage)
+      - name: Check admin bootstrap input
+        if: env.ADMIN_EMAIL != ''
+        env:
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         run: |
-          source ../.github/scripts/cpanel.sh
-          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
-          has() { # has <dir> <name>
-            curl -sS -G -H "$auth" --data-urlencode "dir=$1" --data-urlencode "include_hidden=1" \
-              "$CPANEL_HOST/execute/Fileman/list_files" | jq -e --arg n "$2" '[.data[]?.file] | index($n) != null' >/dev/null
-          }
-          for item in .env .htaccess storage; do
-            if has "$REMOTE_DIR" "$item"; then
-              echo "$item: present"
-            elif has "$OLD_REMOTE_DIR" "$item"; then
-              echo "$item: copying from $OLD_REMOTE_DIR"
-              _cp_fileop copy "$OLD_REMOTE_DIR/$item" "$REMOTE_DIR"
-            else
-              echo "::warning::$item missing in $REMOTE_DIR and $OLD_REMOTE_DIR"
-            fi
-          done
+          if [ -z "$ADMIN_PASSWORD" ]; then
+            echo "::error::admin_email was given but the ADMIN_PASSWORD repository secret is not set."
+            exit 1
+          fi
 
+      # The server .env is created once by hand (see backend/.env.example) and never
+      # generated or rewritten by CI. Here we only verify it is usable.
+      - name: Verify server .env
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
           content=$(curl -sS -G -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.env" \
             "$CPANEL_HOST/execute/Fileman/get_file_content" | jq -r '.data.content // empty')
           if [ -z "$content" ]; then
-            echo "::error::$REMOTE_DIR/.env not found. Create it in cPanel File Manager (see backend/.env.example), then re-run."
+            echo "::error::$REMOTE_DIR/.env not found. Create it in cPanel File Manager from backend/.env.example, then re-run."
             exit 1
           fi
-          updated=$(printf '%s' "$content" | sed -E \
-            -e 's#(galaxywear|inaya)-api\.eastlogic\.com#anaya-api.eastlogic.com#g' \
-            -e 's#(galaxywear|inaya)-admin\.eastlogic\.com#anaya-admin.eastlogic.com#g' \
-            -e 's#galaxywear-store\.eastlogic\.com#anaya.eastlogic.com#g' \
-            -e 's#(^|[^a-z-])inaya\.eastlogic\.com#\1anaya.eastlogic.com#g' \
-            -e 's#^APP_NAME=.*#APP_NAME="Anaya Collection API"#')
-          printf '%s\n' "$updated" | grep -E '^(APP_NAME|APP_URL|FRONTEND_URL|ADMIN_URL|SANCTUM_STATEFUL_DOMAINS|CORS_ALLOWED_ORIGINS|SESSION_DOMAIN)=' || true
-          if [ "$updated" != "$content" ]; then
-            resp=$(curl -sS -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.env" \
-              --data-urlencode "content=$updated" "$CPANEL_HOST/execute/Fileman/save_file_content")
-            echo "$resp" | jq -e '.status == 1' >/dev/null || { echo "::error::Saving .env failed: $resp"; exit 1; }
-            echo ".env updated"
+          value() { printf '%s\n' "$content" | grep -E "^$1=" | tail -n1 | cut -d= -f2- | tr -d '"' | tr -d "'" ; }
+
+          # Non-secret keys only.
+          printf '%s\n' "$content" | grep -E '^(APP_ENV|APP_DEBUG|APP_URL|FRONTEND_URL|ADMIN_URL|SANCTUM_STATEFUL_DOMAINS|SESSION_DOMAIN|SESSION_SECURE_COOKIE)=' || true
+
+          problems=()
+          [ -n "$(value APP_KEY)" ] || problems+=("APP_KEY is empty")
+          [ "$(value APP_URL)" = "$API_URL" ] || problems+=("APP_URL must be $API_URL")
+          [ "$(value APP_ENV)" = "production" ] || problems+=("APP_ENV must be production")
+          [ "$(value APP_DEBUG)" = "false" ] || problems+=("APP_DEBUG must be false")
+          value SANCTUM_STATEFUL_DOMAINS | grep -q "anaya-admin.eastlogic.com" || problems+=("SANCTUM_STATEFUL_DOMAINS must include anaya-admin.eastlogic.com")
+          [ -n "$(value DB_DATABASE)" ] || problems+=("DB_DATABASE is empty")
+          if printf '%s\n' "$content" | grep -qE '(galaxywear[a-z-]*|inaya(-api|-admin)?)\.eastlogic\.com'; then
+            problems+=("old galaxywear/inaya domains are still referenced")
           fi
+
+          if [ ${#problems[@]} -gt 0 ]; then
+            for p in "${problems[@]}"; do echo "::error::.env: $p"; done
+            exit 1
+          fi
+          echo ".env OK"
+
+      # Root .htaccess: hide the project root and forward everything into public/.
+      # cPanel's PHP handler block (written by MultiPHP) is preserved as-is.
+      - name: Write root .htaccess
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          current=$(curl -sS -G -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.htaccess" \
+            "$CPANEL_HOST/execute/Fileman/get_file_content" | jq -r '.data.content // empty')
+          handler=$(printf '%s\n' "$current" | awk '/# php -- BEGIN cPanel-generated handler/{f=1} f{print} /# php -- END cPanel-generated handler/{f=0}')
+
+          managed=$(cat <<'EOF'
+          # BEGIN managed by deploy-backend.yml (do not edit)
+          Options -Indexes
+          <IfModule mod_rewrite.c>
+              RewriteEngine On
+              # Let cPanel AutoSSL validation through.
+              RewriteRule ^\.well-known/ - [L]
+              # Never serve dotfiles (.env, .git, ...) from the project root.
+              RewriteRule (^|/)\. - [F,L]
+              RewriteCond %{REQUEST_URI} !^/public/
+              RewriteRule ^(.*)$ public/$1 [L]
+          </IfModule>
+          # END managed by deploy-backend.yml
+          EOF
+          )
+          updated=$(printf '%s\n\n%s\n' "$managed" "$handler")
+          printf '%s\n' "$updated"
+
+          resp=$(curl -sS -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.htaccess" \
+            --data-urlencode "content=$updated" "$CPANEL_HOST/execute/Fileman/save_file_content")
+          echo "$resp" | jq -e '.status == 1' >/dev/null || { echo "::error::Saving .htaccess failed: $resp"; exit 1; }
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -90,8 +131,8 @@ jobs:
 
       - name: Build release archive
         run: |
-          # Server-side .env, root .htaccess (holds cPanel's PHP handler), storage/
-          # (uploads, logs) and public/storage symlink are NOT touched.
+          # Server-side .env, root .htaccess, storage/ (uploads, logs) and the
+          # public/storage symlink are NOT part of the release.
           zip -r -q -y ../backend-release.zip \
             artisan composer.json composer.lock \
             app bootstrap config database public resources routes vendor \
@@ -124,7 +165,19 @@ jobs:
               }
           });
           echo "PHP ", PHP_VERSION, "\n";
+          if (PHP_VERSION_ID < 80400) {
+              echo "PHP >= 8.4 is required (MultiPHP handler not applied?)\nDEPLOY_FAILED\n";
+              exit;
+          }
           \$base = dirname(__DIR__);
+          // storage/ lives only on the server; make sure the skeleton exists.
+          foreach (['storage/app/public', 'storage/app/private', 'storage/framework/cache/data', 'storage/framework/sessions',
+                    'storage/framework/views', 'storage/logs', 'bootstrap/cache'] as \$dir) {
+              if (!is_dir("\$base/\$dir") && !mkdir("\$base/\$dir", 0775, true) && !is_dir("\$base/\$dir")) {
+                  echo "Cannot create \$dir\nDEPLOY_FAILED\n";
+                  exit;
+              }
+          }
           // Stale package/service/config caches can reference removed (dev) providers.
           foreach (glob(\$base . '/bootstrap/cache/*.php') ?: [] as \$cached) { @unlink(\$cached); }
           require \$base . '/vendor/autoload.php';
@@ -145,6 +198,15 @@ jobs:
               ['route:cache', []],
               ['view:cache', []],
           ];
+          \$adminEmail = trim((string) (\$_POST['admin_email'] ?? ''));
+          if (\$adminEmail !== '') {
+              \$commands[] = ['app:create-admin', [
+                  'email' => \$adminEmail,
+                  '--password' => (string) (\$_POST['admin_password'] ?? ''),
+                  '--reset' => true,
+                  '--no-interaction' => true,
+              ]];
+          }
           foreach (\$commands as [\$cmd, \$args]) {
               echo "> artisan \$cmd\n";
               try {
@@ -167,27 +229,76 @@ jobs:
           cp_unlink "$REMOTE_DIR/backend-release.zip"
           cp_upload "../$DEPLOY_FILE" "$REMOTE_DIR/public"
 
-      # Laravel 13 / Symfony 8 need PHP >= 8.4. Make sure the API vhost uses it.
+      # Serve only public/. The root .htaccess above stays as a fallback if this fails.
+      # Runs before the PHP step: MultiPHP writes its handler into the docroot .htaccess.
+      - name: Point document root at public/
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+          domain="${API_URL#https://}"
+          want="${REMOTE_DIR#/home/$CPANEL_USER/}/public"
+          current=$(curl -sS -G -H "$auth" --data-urlencode "domain=$domain" \
+            "$CPANEL_HOST/execute/DomainInfo/single_domain_data" | jq -r '.data.documentroot // empty')
+          echo "Current docroot: ${current:-unknown}"
+          if [ "$current" = "/home/$CPANEL_USER/$want" ]; then
+            echo "Already on $want"
+            exit 0
+          fi
+
+          resp=$(curl -sS -G -H "$auth" --data-urlencode "domain=$domain" --data-urlencode "docroot=$want" \
+            "$CPANEL_HOST/execute/SubDomain/changedocroot")
+          if echo "$resp" | jq -e '.status == 1' >/dev/null 2>&1; then
+            echo "Docroot -> $want (UAPI)"
+            exit 0
+          fi
+          echo "UAPI changedocroot unavailable: $(echo "$resp" | jq -c '.errors // .' 2>/dev/null || echo "$resp")"
+
+          # Older cPanel: API2 fallback.
+          resp=$(curl -sS -G -H "$auth" \
+            --data-urlencode "cpanel_jsonapi_user=$CPANEL_USER" \
+            --data-urlencode "cpanel_jsonapi_apiversion=2" \
+            --data-urlencode "cpanel_jsonapi_module=SubDomain" \
+            --data-urlencode "cpanel_jsonapi_func=changedocroot" \
+            --data-urlencode "subdomain=${domain%%.*}" \
+            --data-urlencode "rootdomain=${domain#*.}" \
+            --data-urlencode "dir=$want" \
+            "$CPANEL_HOST/json-api/cpanel")
+          if echo "$resp" | jq -e '.cpanelresult.data[0].result == 1' >/dev/null 2>&1; then
+            echo "Docroot -> $want (API2)"
+          else
+            echo "::warning::Could not change docroot ($resp). Set it to $want in cPanel > Domains; the root .htaccess rewrite keeps the site working meanwhile."
+          fi
+
+      # Laravel 13 / Symfony 8 need PHP >= 8.4. Apply it and verify it stuck.
       - name: Ensure PHP version on server
         run: |
           auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
           vhost="${API_URL#https://}"
           installed=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/LangPHP/php_get_installed_versions")
           echo "Installed: $(echo "$installed" | jq -c '.data.versions // .errors')"
-          current=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/LangPHP/php_get_vhost_versions" \
-            | jq -r --arg v "$vhost" '.data[]? | select(.vhost == $v) | .version')
-          echo "Current $vhost: ${current:-unknown}"
           # Always (re)apply: this rewrites cPanel's AddHandler block in the docroot .htaccess.
           resp=$(curl -sS -G -H "$auth" \
             --data-urlencode "version=$PHP_HANDLER" --data-urlencode "vhost=$vhost" \
             "$CPANEL_HOST/execute/LangPHP/php_set_vhost_versions")
           echo "Set $vhost -> $PHP_HANDLER: $(echo "$resp" | jq -c '{status, errors}')"
           echo "$resp" | jq -e '.status == 1' >/dev/null
+          current=$(curl -sS -H "$auth" "$CPANEL_HOST/execute/LangPHP/php_get_vhost_versions" \
+            | jq -r --arg v "$vhost" '.data[]? | select(.vhost == $v) | .version')
+          echo "Current $vhost: ${current:-unknown}"
+          if [ "$current" != "$PHP_HANDLER" ]; then
+            echo "::error::$vhost is on '${current:-unknown}', expected $PHP_HANDLER. Set it in cPanel > MultiPHP Manager."
+            exit 1
+          fi
           sleep 5
 
       - name: Run migrations & cache
+        env:
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         run: |
-          out=$(curl -sS --max-time 300 -w "\nHTTP %{http_code}\n" "$API_URL/$DEPLOY_FILE?key=$DEPLOY_KEY" || true)
+          args=()
+          if [ -n "$ADMIN_EMAIL" ]; then
+            args+=(--data-urlencode "admin_email=$ADMIN_EMAIL" --data-urlencode "admin_password=$ADMIN_PASSWORD")
+          fi
+          out=$(curl -sS --max-time 300 -w "\nHTTP %{http_code}\n" "${args[@]}" "$API_URL/$DEPLOY_FILE?key=$DEPLOY_KEY" || true)
           echo "$out"
           echo "$out" | grep -q "DEPLOY_OK"
 
@@ -198,8 +309,24 @@ jobs:
           source ../.github/scripts/cpanel.sh
           cp_unlink "$REMOTE_DIR/public/$DEPLOY_FILE" || true
 
+      # Fails the job: a green deploy must mean the admin panel can actually sign in.
       - name: Health check
         run: |
-          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$API_URL/up" || true)
-          echo "GET $API_URL/up -> $code"
-          [ "$code" = "200" ] || echo "::warning::Health check returned $code"
+          check() { # check <expected-code> <url> [curl args...]
+            local expected="$1" url="$2"; shift 2
+            local code
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$@" "$url" || true)
+            echo "GET $url -> $code (expected $expected)"
+            [ "$code" = "$expected" ]
+          }
+          ok=true
+          check 200 "$API_URL/up" || ok=false
+          check 204 "$API_URL/sanctum/csrf-cookie" -H "Origin: $ADMIN_ORIGIN" -H "Referer: $ADMIN_ORIGIN/" || ok=false
+          check 403 "$API_URL/.env" || check 404 "$API_URL/.env" || ok=false
+          check 404 "$API_URL/composer.json" || ok=false
+          index=$(curl -s --max-time 30 "$API_URL/" || true)
+          if echo "$index" | grep -q "Index of /"; then
+            echo "::error::Directory listing is exposed at $API_URL/"
+            ok=false
+          fi
+          $ok || { echo "::error::Health check failed"; exit 1; }
