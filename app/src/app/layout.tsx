@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import { Suspense } from "react";
-import { AnnouncementBar, CartDrawer, Footer, Header, MobileTabBar } from "@/components/organisms";
+import { AnnouncementBar, CartDrawer, Footer, Header, MobileTabBar, ServiceHighlights } from "@/components/organisms";
 import { StoreProvider } from "@/context/StoreProvider";
 import { getSite } from "@/lib/data";
 import { siteUrl } from "@/lib/seo";
@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const site = await getSite();
   return (
     <html lang="en" className={`${body.variable} ${display.variable}`}>
-      <body className="min-h-screen">
+      <body className="min-h-screen" suppressHydrationWarning>
         <StoreProvider>
           <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[60] focus:bg-white focus:p-3">
             Skip to content
@@ -36,6 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Header siteName={site.name} logoType={site.logoType} logoUrl={site.logoUrl} navigation={site.navigation} />
           </Suspense>
           <main id="main">{children}</main>
+          <ServiceHighlights freeShippingThreshold={site.freeShippingThreshold} />
           <Footer site={site} />
           <Suspense fallback={null}>
             <MobileTabBar />

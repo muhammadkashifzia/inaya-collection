@@ -27,6 +27,9 @@ class Product extends Model
     /** @use HasFactory<ProductFactory> */
     use HasFactory, SoftDeletes;
 
+    /** Images sent with each product card for the hover slideshow. */
+    public const CARD_IMAGE_LIMIT = 4;
+
     /**
      * @return array<string, string>
      */
@@ -83,7 +86,8 @@ class Product extends Model
 
     /**
      * Everything a product card needs without loading all variants:
-     * primary image, category, stock flag, active variant count and the default variant id.
+     * primary image, the first few images for the hover slideshow, category,
+     * stock flag, active variant count and the default variant id.
      *
      * @param  Builder<Product>  $query
      */
@@ -92,7 +96,11 @@ class Product extends Model
     {
         $active = fn (Builder $q) => $q->where('is_active', true);
 
-        $query->with(['primaryImage', 'category'])
+        $query->with([
+            'primaryImage',
+            'images' => fn (HasMany $q) => $q->orderBy('id')->limit(self::CARD_IMAGE_LIMIT),
+            'category',
+        ])
             ->withExists(['variants as in_stock' => fn (Builder $q) => $active($q)->where('stock', '>', 0)])
             ->withCount(['variants as variants_count' => $active])
             ->addSelect(['default_variant_id' => ProductVariant::query()

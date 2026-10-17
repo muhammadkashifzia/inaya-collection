@@ -2,7 +2,8 @@ import type { Paginated } from "@/types/api";
 import { cn } from "@/utils";
 
 /** Server-side pagination controls for Laravel paginated responses. */
-export default function Pagination({ meta, onPage }: { meta: Paginated<unknown>["meta"]; onPage: (page: number) => void }) {
+export default function Pagination({ meta, onPage }: { meta?: Paginated<unknown>["meta"] | null; onPage: (page: number) => void }) {
+  if (!meta) return null;
   if (meta.last_page <= 1) {
     return meta.total > 0 ? <p className="mt-4 text-theme-xs text-gray-500">{meta.total} result{meta.total === 1 ? "" : "s"}</p> : null;
   }

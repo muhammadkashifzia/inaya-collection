@@ -7,7 +7,7 @@ export function ShopByCollection({ title, collections }: { title: string; collec
     <section className="py-14 md:py-20">
       <Container>
         <SectionHeader title={title} />
-        <div className="grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-1 gap-y-5 md:gap-x-2 md:gap-y-8 lg:grid-cols-4">
           {collections.map((c) => (
             <CollectionTile key={c.id} collection={c} />
           ))}

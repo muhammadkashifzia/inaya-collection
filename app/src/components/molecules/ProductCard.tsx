@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type PointerEvent } from "react";
 import { AppImage, Icon } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
 import { cn, formatPrice } from "@/lib/format";
@@ -16,7 +16,8 @@ interface ProductCardProps {
 
 /**
  * Product card
- * - 3:4 image slider with prev/next arrows (desktop hover only)
+ * - 3:4 image slider with prev/next arrows (desktop hover only); hovering
+ *   slides to the second image, leaving slides back to the first
  * - Wishlist heart top-left, "Sale" pill top-right
  * - Desktop: full-width black "Add to cart" bar slides up on hover
  * - Mobile: round black cart-plus button, always visible bottom-right
@@ -37,6 +38,19 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
   const go = (dir: 1 | -1) => setIndex((i) => (i + dir + count) % count);
 
+  /** Mouse hover slides the first image away to reveal the second; leaving resets it. */
+  function onPointerEnter(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "mouse" && count > 1) {
+      setIndex((i) => (i === 0 ? 1 : i));
+    }
+  }
+
+  function onPointerLeave(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "mouse") {
+      setIndex(0);
+    }
+  }
+
   async function onAdd() {
     if (product.variantsCount !== 1 || product.defaultVariantId === null) {
       router.push(href);
@@ -52,7 +66,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
       <WishlistButton product={product} className="absolute left-2 top-2 z-[4]" />
 
       <div className="flex h-full flex-col">
-        <div className="relative aspect-[3/4] overflow-hidden bg-[#e8e4db]">
+        <div
+          className="relative aspect-[3/4] overflow-hidden bg-[#e8e4db]"
+          onPointerEnter={onPointerEnter}
+          onPointerLeave={onPointerLeave}
+        >
           <Link href={href} aria-label={product.title} className="block h-full">
             <div
               className="flex h-full transition-transform duration-[450ms] ease-out will-change-transform"

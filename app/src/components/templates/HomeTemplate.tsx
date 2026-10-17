@@ -1,4 +1,4 @@
-import { CollectionTabs, HeroBanner, ProductRail, ShopByCollection, TrustBar } from "@/components/organisms";
+import { CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection } from "@/components/organisms";
 import type { HomeData, HomeSection, SiteConfig } from "@/types";
 
 /**
@@ -7,14 +7,21 @@ import type { HomeData, HomeSection, SiteConfig } from "@/types";
  */
 export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData }) {
   const hero = home.banners[0];
+  const tabsSection = home.sections.find((s) => s.type === "category_tabs");
 
   return (
     <>
       {hero && <HeroBanner banner={hero} />}
-      {site.trust.length > 0 && <TrustBar items={site.trust} />}
       {home.sections.map((section) => (
         <Section key={section.id} section={section} />
       ))}
+      {tabsSection?.type === "category_tabs" && (
+        <FeaturedTabs
+          title="Best Sellers"
+          description={`With impeccable artistry and authentic designs, ${site.name} has something for everyone.`}
+          tabs={tabsSection.tabs.filter((t) => t.products.length > 0)}
+        />
+      )}
     </>
   );
 }
