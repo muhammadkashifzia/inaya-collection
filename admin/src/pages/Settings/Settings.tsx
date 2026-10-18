@@ -9,14 +9,13 @@ import Button from "@/components/ui/button/Button";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http } from "@/lib/api";
 import type { StoreSettings } from "@/types/api";
-import AccountSettings from "./AccountSettings";
 import LinkListEditor from "./LinkListEditor";
 
 /** Money settings are stored in paisa; the form edits rupees. */
 const toRs = (minor: number | null | undefined) => (minor == null ? "" : String(minor / 100));
 const toMinor = (rs: string) => (rs === "" ? null : Math.round(Number(rs) * 100));
 
-const TABS = ["Store", "Shipping & tax", "Checkout & payments", "Navigation & footer", "SEO & social", "Account"] as const;
+const TABS = ["Store", "Shipping & tax", "Checkout & payments", "Navigation & footer", "SEO & social"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function Settings() {
@@ -54,14 +53,12 @@ export default function Settings() {
       <PageMeta title="Settings | Anaya Collection Admin" description="Store configuration." />
       <PageHeader
         title="Settings"
-        description="Store details, shipping, payments, storefront content and your account. Store changes reach the website within about a minute."
+        description="Store details, shipping, payments and storefront content. Changes reach the website within about a minute."
         actions={
-          tab === "Account" ? undefined : (
-            <>
-              {draft && <Button variant="outline" onClick={() => setDraft(null)}>Discard changes</Button>}
-              <Button onClick={() => void save()} loading={busy} disabled={!draft}>Save settings</Button>
-            </>
-          )
+          <>
+            {draft && <Button variant="outline" onClick={() => setDraft(null)}>Discard changes</Button>}
+            <Button onClick={() => void save()} loading={busy} disabled={!draft}>Save settings</Button>
+          </>
         }
       />
       <div className="mb-4 space-y-3">
@@ -89,7 +86,6 @@ export default function Settings() {
             </nav>
 
             <div className="col-span-12 space-y-6 lg:col-span-9">
-              {tab === "Account" && <AccountSettings />}
               {tab === "Store" && (
                 <>
                   <Card title="Store details">
@@ -238,8 +234,7 @@ export default function Settings() {
                         fit="contain"
                       />
                     </div>
-                  </Card>
-                  <Card title="Footer columns">
+                  </Card>                  <Card title="Footer columns">
                     <div className="space-y-6">
                       {s.footer.columns.map((col, ci) => (
                         <fieldset key={ci} className="space-y-3 rounded-xl border border-gray-200 p-4 dark:border-gray-800">

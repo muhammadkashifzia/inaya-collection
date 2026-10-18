@@ -163,8 +163,6 @@ export function mapSettings(s: Raw): SiteConfig {
     about: s.store?.about ?? "",
     email: s.store?.email ?? null,
     phone: s.store?.phone ?? null,
-    whatsapp: s.store?.whatsapp ?? null,
-    address: s.store?.address ?? null,
     hours: s.store?.hours ?? null,
     currencySymbol: s.localization?.currency_symbol ?? "Rs.",
     announcements: s.announcements ?? [],
