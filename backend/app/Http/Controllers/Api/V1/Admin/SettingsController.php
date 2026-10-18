@@ -83,6 +83,7 @@ class SettingsController extends Controller
 
             'footer' => ['sometimes', 'array'],
             'footer.copyright' => ['nullable', 'string', 'max:160'],
+            'footer.logo' => ['nullable', 'string', 'max:255', 'regex:#^logos/[A-Za-z0-9._-]+$#'],
             'footer.columns' => ['nullable', 'array', 'max:5'],
             'footer.columns.*.heading' => ['required', 'string', 'max:60'],
             'footer.columns.*.links' => ['required', 'array', 'max:10'],

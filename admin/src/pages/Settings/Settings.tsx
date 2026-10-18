@@ -9,13 +9,14 @@ import Button from "@/components/ui/button/Button";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http } from "@/lib/api";
 import type { StoreSettings } from "@/types/api";
+import AccountSettings from "./AccountSettings";
 import LinkListEditor from "./LinkListEditor";
 
 /** Money settings are stored in paisa; the form edits rupees. */
 const toRs = (minor: number | null | undefined) => (minor == null ? "" : String(minor / 100));
 const toMinor = (rs: string) => (rs === "" ? null : Math.round(Number(rs) * 100));
 
-const TABS = ["Store", "Shipping & tax", "Checkout & payments", "Navigation & footer", "SEO & social"] as const;
+const TABS = ["Store", "Shipping & tax", "Checkout & payments", "Navigation & footer", "SEO & social", "Account"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function Settings() {
@@ -53,12 +54,14 @@ export default function Settings() {
       <PageMeta title="Settings | Anaya Collection Admin" description="Store configuration." />
       <PageHeader
         title="Settings"
-        description="Store details, shipping, payments and storefront content. Changes reach the website within about a minute."
+        description="Store details, shipping, payments, storefront content and your account. Store changes reach the website within about a minute."
         actions={
-          <>
-            {draft && <Button variant="outline" onClick={() => setDraft(null)}>Discard changes</Button>}
-            <Button onClick={() => void save()} loading={busy} disabled={!draft}>Save settings</Button>
-          </>
+          tab === "Account" ? undefined : (
+            <>
+              {draft && <Button variant="outline" onClick={() => setDraft(null)}>Discard changes</Button>}
+              <Button onClick={() => void save()} loading={busy} disabled={!draft}>Save settings</Button>
+            </>
+          )
         }
       />
       <div className="mb-4 space-y-3">
@@ -86,6 +89,7 @@ export default function Settings() {
             </nav>
 
             <div className="col-span-12 space-y-6 lg:col-span-9">
+              {tab === "Account" && <AccountSettings />}
               {tab === "Store" && (
                 <>
                   <Card title="Store details">
@@ -220,6 +224,20 @@ export default function Settings() {
                 <>
                   <Card title="Main menu">
                     <LinkListEditor links={s.navigation} onChange={(navigation) => update("navigation", navigation)} max={20} />
+                  </Card>
+                  <Card title="Footer logo" description="Shown at the top of the first footer column. Leave empty to show the store name as text.">
+                    <div className="max-w-md">
+                      <ImageUpload
+                        label="Footer logo"
+                        endpoint="/admin/settings/logo"
+                        value={{ path: s.footer.logo ?? null, url: s.footer.logo_url ?? null }}
+                        onChange={({ path, url }) => update("footer", { ...s.footer, logo: path, logo_url: url })}
+                        error={fe("footer.logo")}
+                        hint="The footer is dark navy, so use a white or light logo. PNG with transparent background, JPG or WebP, up to 5 MB."
+                        aspect="aspect-[5/2] max-h-40"
+                        fit="contain"
+                      />
+                    </div>
                   </Card>
                   <Card title="Footer columns">
                     <div className="space-y-6">

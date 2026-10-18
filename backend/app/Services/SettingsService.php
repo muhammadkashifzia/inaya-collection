@@ -86,6 +86,7 @@ class SettingsService
             'footer' => [
                 'columns' => [],
                 'copyright' => 'Anaya Collection. All rights reserved.',
+                'logo' => null,
             ],
             'inventory' => [
                 'default_low_stock_threshold' => 5,
@@ -107,10 +108,19 @@ class SettingsService
 
         // Older stored "store" rows predate these keys; fill them so clients always get the full shape.
         $merged['store'] = [...self::defaults()['store'], ...$merged['store']];
-        $logoPath = $merged['store']['logo'];
-        $merged['store']['logo_url'] = is_string($logoPath) && $logoPath !== '' ? Storage::disk('public')->url($logoPath) : null;
+        $merged['store']['logo_url'] = $this->publicUrl($merged['store']['logo']);
+        $merged['footer'] = [...self::defaults()['footer'], ...$merged['footer']];
+        $merged['footer']['logo_url'] = $this->publicUrl($merged['footer']['logo']);
 
         return $merged;
+    }
+
+    /**
+     * Public URL of an uploaded file on the public disk, or null when nothing is stored.
+     */
+    private function publicUrl(mixed $path): ?string
+    {
+        return is_string($path) && $path !== '' ? Storage::disk('public')->url($path) : null;
     }
 
     public function get(string $dottedKey, mixed $fallback = null): mixed
@@ -126,7 +136,7 @@ class SettingsService
     public function update(array $values): void
     {
         // logo_url is derived from the stored path on read; never persist it.
-        Arr::forget($values, 'store.logo_url');
+        Arr::forget($values, ['store.logo_url', 'footer.logo_url']);
 
         foreach (Arr::only($values, array_keys(self::defaults())) as $key => $value) {
             StoreSetting::query()->updateOrCreate(['key' => $key], ['value' => $value]);

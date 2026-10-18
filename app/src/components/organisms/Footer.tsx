@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/atoms";
 import { FooterLinks } from "@/components/molecules";
@@ -10,9 +11,23 @@ export function Footer({ site }: { site: SiteConfig }) {
       <Container>
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <Link href="/" className="font-heading text-2xl font-bold uppercase tracking-[0.2em]">
-              {site.name}
-            </Link>
+            {site.footer.logoUrl ? (
+              <Link href="/" aria-label={`${site.name} home`} className="inline-block">
+                {/* Served as-is like the header logo; CSS height + w-auto keeps the file's aspect ratio. */}
+                <Image
+                  src={site.footer.logoUrl}
+                  alt={site.name}
+                  width={850}
+                  height={375}
+                  unoptimized
+                  className="h-14 w-auto max-w-60 object-contain md:h-16"
+                />
+              </Link>
+            ) : (
+              <Link href="/" className="font-heading text-2xl font-bold uppercase tracking-[0.2em]">
+                {site.name}
+              </Link>
+            )}
             {site.about && <p className="mt-4 max-w-sm text-sm text-white/70">{site.about}</p>}
             <address className="mt-6 space-y-1 text-sm not-italic text-white/70">
               {site.phone && (

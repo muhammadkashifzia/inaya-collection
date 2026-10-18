@@ -67,6 +67,42 @@ class SettingsLogoTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_admin_can_set_footer_logo_and_storefront_receives_its_url(): void
+    {
+        Storage::fake('public');
+        $admin = User::factory()->admin()->create();
+
+        $path = $this->actingAs($admin, 'sanctum')
+            ->postJson('/api/v1/admin/settings/logo', [
+                // Real 1x1 PNG, so the test does not need the GD extension.
+                'image' => UploadedFile::fake()->createWithContent('footer-logo.png', (string) base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==')),
+            ])
+            ->assertCreated()
+            ->json('path');
+
+        $footer = $this->actingAs($admin, 'sanctum')->getJson('/api/v1/admin/settings')->json('data.footer');
+        $this->assertNull($footer['logo_url']);
+        $footer['logo'] = $path;
+
+        $this->actingAs($admin, 'sanctum')->putJson('/api/v1/admin/settings', ['footer' => $footer])->assertOk();
+
+        $this->getJson('/api/v1/settings')
+            ->assertOk()
+            ->assertJsonPath('data.footer.logo', $path)
+            ->assertJsonPath('data.footer.logo_url', Storage::disk('public')->url($path));
+    }
+
+    public function test_footer_logo_path_must_point_inside_the_logos_folder(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $footer = $this->actingAs($admin, 'sanctum')->getJson('/api/v1/admin/settings')->json('data.footer');
+        $footer['logo'] = '../.env';
+
+        $this->actingAs($admin, 'sanctum')->putJson('/api/v1/admin/settings', ['footer' => $footer])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('footer.logo');
+    }
+
     public function test_logo_path_must_point_inside_the_logos_folder(): void
     {
         $admin = User::factory()->admin()->create();
