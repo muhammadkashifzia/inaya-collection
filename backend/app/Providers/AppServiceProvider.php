@@ -59,5 +59,15 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('order-tracking', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
 
         RateLimiter::for('newsletter', fn (Request $request) => Limit::perMinute(5)->by($request->ip()));
+
+        RateLimiter::for('reviews', fn (Request $request) => [
+            Limit::perMinute(3)->by($request->ip()),
+            Limit::perHour(20)->by($request->ip()),
+        ]);
+
+        RateLimiter::for('contact', fn (Request $request) => [
+            Limit::perMinute(3)->by($request->ip()),
+            Limit::perHour(15)->by($request->ip()),
+        ]);
     }
 }

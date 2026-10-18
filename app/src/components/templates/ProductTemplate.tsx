@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/atoms";
 import { SectionHeader } from "@/components/molecules";
-import { ProductDetail, ProductGrid } from "@/components/organisms";
+import { ProductDetail, ProductGrid, ProductReviews } from "@/components/organisms";
 import type { Product } from "@/types";
 
 interface ProductTemplateProps {
@@ -25,6 +25,7 @@ export function ProductTemplate({ product, related, maxQuantity }: ProductTempla
         <span aria-current="page">{product.title}</span>
       </nav>
       <ProductDetail product={product} maxQuantity={maxQuantity} />
+      <ProductReviews slug={product.slug} />
       {related.length > 0 && (
         <section className="mt-20">
           <SectionHeader title="You may also like" />

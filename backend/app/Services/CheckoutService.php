@@ -31,6 +31,7 @@ class CheckoutService
         private InventoryService $inventory,
         private PaymentManager $payments,
         private SettingsService $settings,
+        private OrderMailer $mailer,
     ) {}
 
     /**
@@ -192,6 +193,8 @@ class CheckoutService
 
         $cart->items()->delete();
         $cart->forceFill(['coupon_code' => null])->save();
+
+        $this->mailer->sendForStatus($order, OrderStatus::Pending);
 
         return $order->load(['items', 'payments', 'statusHistory']);
     }

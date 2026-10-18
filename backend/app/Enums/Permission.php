@@ -17,5 +17,6 @@ enum Permission: string
     case ManageCustomers = 'manage-customers';
     case ManageCoupons = 'manage-coupons';
     case ManageContent = 'manage-content';
+    case ManageMessages = 'manage-messages';
     case ManageSettings = 'manage-settings';
 }

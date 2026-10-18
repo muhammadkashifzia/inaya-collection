@@ -27,7 +27,7 @@ class ProductWriter
     public function save(?Product $product, array $data, User $actor): Product
     {
         return DB::transaction(function () use ($product, $data, $actor): Product {
-            $attributes = Arr::except($data, ['variants']);
+            $attributes = Arr::except($data, ['variants', 'tag_ids']);
             $attributes['slug'] = $this->uniqueSlug($data['slug'] ?? null ?: $data['name'], $product?->id);
             $attributes['price'] = Money::toMinor($data['price']);
             $attributes['sale_price'] = Money::toMinor($data['sale_price'] ?? null);
@@ -44,7 +44,12 @@ class ProductWriter
 
             $this->syncVariants($product, $data['variants'], $actor);
 
-            return $product->refresh()->load(['images', 'primaryImage', 'category', 'variants']);
+            // Omitting tag_ids leaves tags untouched; an empty array clears them.
+            if (array_key_exists('tag_ids', $data)) {
+                $product->tags()->sync($data['tag_ids'] ?? []);
+            }
+
+            return $product->refresh()->load(['images', 'primaryImage', 'category', 'variants', 'tags']);
         });
     }
 

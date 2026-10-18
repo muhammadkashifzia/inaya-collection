@@ -3,9 +3,7 @@
     "slug": "contact-us",
     "title": "Contact Us",
     "sections": [
-      { "body": "Have a question about an order, fabric or delivery? Our team is happy to help." },
-      { "heading": "Phone / WhatsApp", "body": "+92 300 0000000 (Mon – Sat, 10am – 7pm)" },
-      { "heading": "Email", "body": "support@example.com – we reply within 24 hours." }
+      { "body": "Have a question about an order, fabric or delivery? Our team is happy to help. Reach us on the channels below or send a message using the form and we will get back to you within one working day." }
     ]
   },
   {

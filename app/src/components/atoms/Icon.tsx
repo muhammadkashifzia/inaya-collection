@@ -69,6 +69,20 @@ const paths = {
   minus: <path d="M5 12h14" />,
   check: <path d="M5 12l5 5 9-10" />,
   trash: <path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14" />,
+  phone: <path d="M5 3h4l2 5-2.5 1.5a11 11 0 006 6L16 13l5 2v4a2 2 0 01-2 2A16 16 0 013 5a2 2 0 012-2z" />,
+  mail: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="1" />
+      <path d="M3 7l9 6 9-6" />
+    </>
+  ),
+  chat: <path d="M21 12a8 8 0 01-11.6 7.1L4 20.5l1.4-5A8 8 0 1121 12z" />,
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof paths;

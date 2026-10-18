@@ -55,6 +55,13 @@ jobs:
               RewriteCond %{REQUEST_FILENAME} !-d
               RewriteRule . /index.html [L]
           </IfModule>
+          # PWA: always revalidate the service worker, shell and manifest so updates roll out.
+          <IfModule mod_headers.c>
+              <FilesMatch "^(sw\.js|index\.html|manifest\.webmanifest)$">
+                  Header set Cache-Control "no-cache, no-store, must-revalidate"
+              </FilesMatch>
+          </IfModule>
+          AddType application/manifest+json .webmanifest
           EOF
           cd dist
           zip -r -q ../../admin-release.zip . -x "*.DS_Store"

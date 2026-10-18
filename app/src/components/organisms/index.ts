@@ -10,6 +10,7 @@ export { MobileTabBar } from "./MobileTabBar";
 export { ProductDetail } from "./ProductDetail";
 export { ProductGrid, ProductGridSkeleton } from "./ProductGrid";
 export { ProductRail } from "./ProductRail";
+export { ProductReviews } from "./ProductReviews";
 export { ServiceHighlights } from "./ServiceHighlights";
 export { ShopByCollection } from "./ShopByCollection";
 export { TrustBar } from "./TrustBar";

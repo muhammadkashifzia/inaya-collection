@@ -61,6 +61,7 @@ class ProductResource extends JsonResource
             'images' => ProductImageResource::collection($this->whenLoaded('images')),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'variants' => ProductVariantResource::collection($variants),
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'published_at' => $this->published_at,

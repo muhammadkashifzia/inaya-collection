@@ -23,6 +23,7 @@ class OrderStatusService
     public function __construct(
         private InventoryService $inventory,
         private PaymentManager $payments,
+        private OrderMailer $mailer,
     ) {}
 
     /**
@@ -63,6 +64,10 @@ class OrderStatusService
                 'to_status' => $to,
                 'note' => $note,
             ]);
+
+            if ($to->notifiesCustomer()) {
+                $this->mailer->sendForStatus($locked, $to);
+            }
 
             if ($actor?->isStaffMember()) {
                 Log::info('Order status changed', [

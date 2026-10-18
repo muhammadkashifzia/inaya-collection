@@ -1,7 +1,9 @@
+import { useId } from "react";
 import Card from "@/components/admin/Card";
 import Button from "@/components/ui/button/Button";
 import { TrashBinIcon } from "@/icons";
 import type { ApiError } from "@/lib/api";
+import type { ProductAttribute } from "@/types/api";
 
 export interface VariantDraft {
   id?: number;
@@ -21,9 +23,23 @@ const input =
  * Variants (size / colour). Stock is only editable for new variants;
  * existing stock is changed from Inventory so every change is logged.
  */
-export default function VariantEditor({ variants, onChange, error }: { variants: VariantDraft[]; onChange: (v: VariantDraft[]) => void; error: ApiError | null }) {
+export default function VariantEditor({
+  variants,
+  onChange,
+  error,
+  attributes = [],
+}: {
+  variants: VariantDraft[];
+  onChange: (v: VariantDraft[]) => void;
+  error: ApiError | null;
+  /** Attributes from Products → Attributes, offered as option/value suggestions. */
+  attributes?: ProductAttribute[];
+}) {
   const update = (index: number, patch: Partial<VariantDraft>) => onChange(variants.map((v, i) => (i === index ? { ...v, ...patch } : v)));
   const err = (index: number, field: string) => error?.errors[`variants.${index}.${field}`]?.[0];
+  const listId = useId();
+  const valueListId = (key: string) => `${listId}-values-${key}`;
+  const known = new Set(attributes.map((a) => a.slug));
 
   return (
     <Card
@@ -35,6 +51,19 @@ export default function VariantEditor({ variants, onChange, error }: { variants:
         </Button>
       }
     >
+      {/* Suggestions from Products → Attributes; free text still works. */}
+      <datalist id={`${listId}-keys`}>
+        {attributes.map((a) => (
+          <option key={a.id} value={a.slug}>{a.name}</option>
+        ))}
+      </datalist>
+      {attributes.map((a) => (
+        <datalist key={a.id} id={valueListId(a.slug)}>
+          {a.values.map((val) => (
+            <option key={val.id} value={val.value} />
+          ))}
+        </datalist>
+      ))}
       {error?.field("variants") && !Object.keys(error.errors).some((k) => k.startsWith("variants.")) && (
         <p className="mb-3 text-theme-xs font-medium text-error-600">{error.field("variants")}</p>
       )}
@@ -69,11 +98,17 @@ export default function VariantEditor({ variants, onChange, error }: { variants:
                 <div key={oi} className="flex items-end gap-1">
                   <label>
                     <span className="mb-1 block text-theme-xs text-gray-500">Option</span>
-                    <input className={`${input} w-28`} value={o.key} placeholder="color" onChange={(e) => update(i, { options: v.options.map((x, xi) => (xi === oi ? { ...x, key: e.target.value.toLowerCase() } : x)) })} />
+                    <input className={`${input} w-28`} value={o.key} placeholder="color" list={`${listId}-keys`} onChange={(e) => update(i, { options: v.options.map((x, xi) => (xi === oi ? { ...x, key: e.target.value.toLowerCase() } : x)) })} />
                   </label>
                   <label>
                     <span className="mb-1 block text-theme-xs text-gray-500">Value</span>
-                    <input className={`${input} w-32`} value={o.value} placeholder="Maroon" onChange={(e) => update(i, { options: v.options.map((x, xi) => (xi === oi ? { ...x, value: e.target.value } : x)) })} />
+                    <input
+                      className={`${input} w-32`}
+                      value={o.value}
+                      placeholder="Maroon"
+                      list={known.has(o.key) ? valueListId(o.key) : undefined}
+                      onChange={(e) => update(i, { options: v.options.map((x, xi) => (xi === oi ? { ...x, value: e.target.value } : x)) })}
+                    />
                   </label>
                   <button type="button" aria-label="Remove option" className="mb-2 px-1 text-gray-400 hover:text-error-500" onClick={() => update(i, { options: v.options.filter((_, xi) => xi !== oi) })}>
                     ×

@@ -2,13 +2,14 @@ import { AppImage } from "@/components/atoms";
 import { cn, formatDate, formatPrice } from "@/lib/format";
 import type { Order, OrderStatus } from "@/types";
 
-const STEPS: OrderStatus[] = ["pending", "confirmed", "processing", "shipped", "delivered"];
+const STEPS: OrderStatus[] = ["pending", "confirmed", "processing", "shipped", "out_for_delivery", "delivered"];
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
   pending: "Order placed",
   confirmed: "Confirmed",
   processing: "Processing",
   shipped: "Shipped",
+  out_for_delivery: "Out for delivery",
   delivered: "Delivered",
   cancelled: "Cancelled",
   refunded: "Refunded",
@@ -37,7 +38,7 @@ export function OrderSummaryCard({ order }: { order: Order }) {
       </header>
 
       {!closed && (
-        <ol className="grid grid-cols-5 gap-2 text-center text-[11px] font-semibold uppercase tracking-wider" aria-label="Order progress">
+        <ol className="grid grid-cols-6 gap-2 text-center text-[11px] font-semibold uppercase tracking-wider" aria-label="Order progress">
           {STEPS.map((step, i) => (
             <li key={step} aria-current={i === stepIndex ? "step" : undefined} className="flex flex-col items-center gap-2">
               <span className={cn("h-1.5 w-full", i <= stepIndex ? "bg-brand" : "bg-cream")} aria-hidden="true" />

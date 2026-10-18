@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Container } from "@/components/atoms";
-import { ContentPageTemplate } from "@/components/templates";
-import { getContentPage, getContentPages } from "@/lib/data";
+import { ContactPageTemplate, ContentPageTemplate } from "@/components/templates";
+import { getContentPage, getContentPages, getSite } from "@/lib/data";
+import { ContactForm } from "./ContactForm";
 import { TrackOrderForm } from "./TrackOrderForm";
 
 export async function generateStaticParams() {
@@ -22,6 +23,15 @@ async function PageContent({ params }: Pick<PageProps<"/pages/[slug]">, "params"
   const { slug } = await params;
   const page = await getContentPage(slug);
   if (!page) notFound();
+
+  if (slug === "contact-us") {
+    const site = await getSite();
+    return (
+      <ContactPageTemplate page={page} site={site}>
+        <ContactForm />
+      </ContactPageTemplate>
+    );
+  }
 
   return <ContentPageTemplate page={page}>{slug === "track-your-order" && <TrackOrderForm />}</ContentPageTemplate>;
 }

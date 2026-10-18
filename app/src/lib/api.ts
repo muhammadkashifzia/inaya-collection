@@ -9,7 +9,7 @@
 "use client";
 
 import { mapAddress, mapCart, mapOrder, mapPaginated, mapProduct, mapUser } from "@/lib/mappers";
-import type { Address, AddressInput, Cart, CheckoutInput, Order, Paginated, Product, ProductQuery, User } from "@/types";
+import type { Address, AddressInput, Cart, CheckoutInput, ContactInput, Order, Paginated, Product, ProductQuery, ReviewInput, ReviewPage, User } from "@/types";
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 const CART_TOKEN_KEY = "gw-cart-token";
@@ -262,4 +262,48 @@ export const api = {
 
   // ----- Newsletter
   subscribe: (email: string) => request<{ message: string }>("POST", "/newsletter", { body: { email } }),
+
+  // ----- Reviews
+  async productReviews(slug: string, page = 1): Promise<ReviewPage> {
+    const json = await request<{
+      data: Record<string, unknown>[];
+      meta: { current_page: number; last_page: number; total: number };
+      summary: { average: number | null; count: number; distribution: Record<string, number> };
+    }>("GET", `/products/${encodeURIComponent(slug)}/reviews?page=${page}`);
+    return {
+      reviews: json.data.map((r) => ({
+        id: Number(r.id),
+        name: String(r.name ?? ""),
+        rating: Number(r.rating ?? 0),
+        title: (r.title as string | null) ?? null,
+        body: String(r.body ?? ""),
+        isVerifiedBuyer: Boolean(r.is_verified_buyer),
+        createdAt: (r.created_at as string | null) ?? null,
+      })),
+      page: json.meta.current_page,
+      lastPage: json.meta.last_page,
+      summary: {
+        average: json.summary.average,
+        count: json.summary.count,
+        distribution: [5, 4, 3, 2, 1].map((stars) => ({ stars, count: Number(json.summary.distribution[stars] ?? 0) })),
+      },
+    };
+  },
+  submitReview: (slug: string, input: ReviewInput) =>
+    request<{ message: string }>("POST", `/products/${encodeURIComponent(slug)}/reviews`, {
+      body: { name: input.name, email: input.email, rating: input.rating, title: input.title || null, body: input.body, website: input.website || null },
+    }),
+
+  // ----- Contact
+  submitContact: (input: ContactInput) =>
+    request<{ message: string }>("POST", "/contact", {
+      body: {
+        name: input.name,
+        email: input.email,
+        phone: input.phone || null,
+        subject: input.subject || null,
+        message: input.message,
+        website: input.website || null,
+      },
+    }),
 };

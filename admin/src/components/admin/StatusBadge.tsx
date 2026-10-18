@@ -9,6 +9,7 @@ const ORDER_COLOR: Record<OrderStatus, Color> = {
   confirmed: "info",
   processing: "info",
   shipped: "primary",
+  out_for_delivery: "primary",
   delivered: "success",
   cancelled: "light",
   refunded: "error",

@@ -51,6 +51,8 @@ class ProductRequest extends FormRequest
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'published_at' => ['nullable', 'date'],
+            'tag_ids' => ['nullable', 'array', 'max:30'],
+            'tag_ids.*' => ['integer', 'distinct', Rule::exists('tags', 'id')],
 
             'variants' => ['required', 'array', 'min:1', 'max:100'],
             'variants.*.id' => ['nullable', 'integer', Rule::in($variantIds)],

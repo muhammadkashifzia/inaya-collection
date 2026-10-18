@@ -14,6 +14,7 @@ import {
   HorizontaLDots,
   LayoutIcon,
   ListIcon,
+  MailIcon,
   PageIcon,
   SettingsAltIcon,
   StackIcon,
@@ -44,16 +45,20 @@ const navItems: NavItem[] = [
   { icon: <CartIcon fontSize={24} />, name: "Orders", path: "/orders", permission: "manage-orders" },
   {
     icon: <BoxCubeIcon fontSize={24} />,
-    name: "Catalog",
+    name: "Products",
     subItems: [
-      { name: "Products", path: "/products", permission: "manage-products" },
-      { name: "Add product", path: "/products/new", permission: "manage-products" },
+      { name: "All Products", path: "/products", permission: "manage-products" },
+      { name: "Add new product", path: "/products/new", permission: "manage-products" },
       { name: "Categories", path: "/categories", permission: "manage-categories" },
+      { name: "Tags", path: "/products/tags", permission: "manage-products" },
+      { name: "Attributes", path: "/products/attributes", permission: "manage-products" },
+      { name: "Reviews", path: "/products/reviews", permission: "manage-products" },
     ],
   },
   { icon: <StackIcon fontSize={24} />, name: "Inventory", path: "/inventory", permission: "manage-inventory" },
-  { icon: <GroupIcon fontSize={24} />, name: "Customers", path: "/customers", permission: "view-customers" },
+  { icon: <GroupIcon fontSize={24} />, name: "Users", path: "/customers", permission: "view-customers" },
   { icon: <DollarLineIcon fontSize={24} />, name: "Coupons", path: "/coupons", permission: "manage-coupons" },
+  { icon: <MailIcon fontSize={24} />, name: "Messages", path: "/messages", permission: "manage-messages" },
 ];
 
 const othersItems: NavItem[] = [
@@ -71,7 +76,7 @@ const othersItems: NavItem[] = [
 ];
 
 /** Paths that must not also highlight their parent ("/products" vs "/products/new"). */
-const EXACT_ONLY = ["/products/new", "/inventory/movements"];
+const EXACT_ONLY = ["/products/new", "/products/tags", "/products/attributes", "/products/reviews", "/inventory/movements"];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, setIsMobileOpen } =
@@ -258,7 +263,7 @@ const AppSidebar: React.FC = () => {
                     : "0px",
               }}
             >
-              <ul className="ms-9 mt-2 space-y-1">
+              <ul className="ms-0 mt-2 space-y-1">
                 {nav.subItems.map((subItem) => (
                   <li key={subItem.name}>
                     <Link

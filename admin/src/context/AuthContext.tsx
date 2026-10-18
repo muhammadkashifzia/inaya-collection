@@ -13,6 +13,8 @@ interface AuthValue {
   can: (permission: PermissionKey) => boolean;
   login: (email: string, password: string, remember: boolean) => Promise<void>;
   logout: () => Promise<void>;
+  /** Re-read the signed-in user (e.g. after changing the email). */
+  refresh: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -46,6 +48,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const refresh = useCallback(async () => {
+    const me = await http.get<AdminUser>("/me");
+    setUser(me.role === "customer" ? null : me);
+  }, []);
+
   const value = useMemo<AuthValue>(
     () => ({
       user,
@@ -53,8 +60,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       can: (permission) => user?.role === "admin" || Boolean(user?.permissions?.includes(permission)),
       login,
       logout,
+      refresh,
     }),
-    [user, ready, login, logout],
+    [user, ready, login, logout, refresh],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

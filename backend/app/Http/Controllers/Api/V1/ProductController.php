@@ -32,7 +32,7 @@ class ProductController extends Controller
         $product = Product::query()
             ->visible()
             ->where('slug', $slug)
-            ->with(['images', 'primaryImage', 'category.parent', 'variants' => fn ($q) => $q->where('is_active', true)])
+            ->with(['images', 'primaryImage', 'category.parent', 'tags', 'variants' => fn ($q) => $q->where('is_active', true)])
             ->firstOrFail();
 
         $product->variants->each->setRelation('product', $product);

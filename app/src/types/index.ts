@@ -104,6 +104,8 @@ export interface SiteConfig {
   about: string;
   email: string | null;
   phone: string | null;
+  whatsapp: string | null;
+  address: string | null;
   hours: string | null;
   currencySymbol: string;
   announcements: string[];
@@ -235,7 +237,7 @@ export type AddressInput = Omit<Address, "id" | "isDefaultShipping" | "isDefault
   isDefaultBilling?: boolean;
 };
 
-export type OrderStatus = "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded";
+export type OrderStatus = "pending" | "confirmed" | "processing" | "shipped" | "out_for_delivery" | "delivered" | "cancelled" | "refunded";
 
 export interface OrderItem {
   id: number;
@@ -296,4 +298,41 @@ export interface CheckoutInput {
   paymentMethod: string;
   customerNote?: string;
   saveAddress?: boolean;
+}
+
+/** Storefront "Contact Us" form payload. `website` is a spam honeypot and must stay empty. */
+export interface ContactInput {
+  name: string;
+  email: string;
+  phone?: string;
+  subject?: string;
+  message: string;
+  website?: string;
+}
+
+export interface ProductReview {
+  id: number;
+  name: string;
+  rating: number;
+  title: string | null;
+  body: string;
+  isVerifiedBuyer: boolean;
+  createdAt: string | null;
+}
+
+export interface ReviewPage {
+  reviews: ProductReview[];
+  page: number;
+  lastPage: number;
+  summary: { average: number | null; count: number; distribution: { stars: number; count: number }[] };
+}
+
+/** Storefront review form payload. `website` is a spam honeypot and must stay empty. */
+export interface ReviewInput {
+  name: string;
+  email: string;
+  rating: number;
+  title?: string;
+  body: string;
+  website?: string;
 }

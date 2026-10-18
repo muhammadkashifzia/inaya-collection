@@ -8,6 +8,7 @@ use App\Enums\Permission;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
+use App\Services\OrderMailer;
 use App\Services\OrderStatusService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -72,7 +73,7 @@ class OrderController extends Controller
         return $this->show($order->refresh());
     }
 
-    public function updateShipment(Request $request, Order $order): OrderResource
+    public function updateShipment(Request $request, Order $order, OrderMailer $mailer): OrderResource
     {
         $validated = $request->validate([
             'carrier' => ['nullable', 'string', 'max:60'],
@@ -80,7 +81,14 @@ class OrderController extends Controller
             'tracking_url' => ['nullable', 'url:https', 'max:500'],
         ]);
 
+        $previousTrackingNumber = $order->shipment?->tracking_number;
         $order->shipment()->updateOrCreate([], $validated);
+
+        // Tracking added after the order was marked shipped: send the shipped email again with tracking details.
+        $trackingNumber = $validated['tracking_number'] ?? null;
+        if ($order->status === OrderStatus::Shipped && filled($trackingNumber) && $trackingNumber !== $previousTrackingNumber) {
+            $mailer->sendForStatus($order, OrderStatus::Shipped);
+        }
 
         return $this->show($order->refresh());
     }

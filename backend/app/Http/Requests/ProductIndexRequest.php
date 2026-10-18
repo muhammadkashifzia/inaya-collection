@@ -26,6 +26,7 @@ class ProductIndexRequest extends FormRequest
             'fabric' => ['nullable', 'array', 'max:20'],
             'fabric.*' => ['string', 'max:60'],
             'pieces' => ['nullable', 'integer', 'min:1', 'max:10'],
+            'tag' => ['nullable', 'string', 'max:100'],
             'min_price' => ['nullable', 'numeric', 'min:0'],
             'max_price' => ['nullable', 'numeric', 'min:0', Rule::when($this->filled('min_price'), ['gte:min_price'])],
             'availability' => ['nullable', Rule::in(['in_stock', 'out_of_stock'])],

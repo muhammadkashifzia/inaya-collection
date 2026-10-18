@@ -52,7 +52,7 @@ class ProductController extends Controller
 
     public function show(int $product): ProductResource
     {
-        $model = Product::withTrashed()->with(['images', 'primaryImage', 'category', 'variants'])->findOrFail($product);
+        $model = Product::withTrashed()->with(['images', 'primaryImage', 'category', 'variants', 'tags'])->findOrFail($product);
         $model->variants->each->setRelation('product', $model);
 
         return new ProductResource($model);
@@ -84,7 +84,7 @@ class ProductController extends Controller
         $model->restore();
         $model->update(['status' => ProductStatus::Draft]);
 
-        return new ProductResource($model->load(['images', 'primaryImage', 'category', 'variants']));
+        return new ProductResource($model->load(['images', 'primaryImage', 'category', 'variants', 'tags']));
     }
 
     public function uploadImage(Request $request, Product $product): JsonResponse

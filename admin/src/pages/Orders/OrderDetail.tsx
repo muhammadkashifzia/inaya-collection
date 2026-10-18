@@ -17,6 +17,7 @@ const ACTION_LABEL: Partial<Record<OrderStatus, string>> = {
   confirmed: "Confirm order",
   processing: "Start processing",
   shipped: "Mark as shipped",
+  out_for_delivery: "Mark out for delivery",
   delivered: "Mark as delivered",
   cancelled: "Cancel order",
   refunded: "Refund order",

@@ -24,6 +24,7 @@ enum UserRole: string
                 Permission::ManageOrders,
                 Permission::ManageInventory,
                 Permission::ViewCustomers,
+                Permission::ManageMessages,
             ],
             self::Customer => [],
         };

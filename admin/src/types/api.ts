@@ -17,6 +17,7 @@ export type PermissionKey =
   | "manage-customers"
   | "manage-coupons"
   | "manage-content"
+  | "manage-messages"
   | "manage-settings";
 
 export interface AdminUser {
@@ -103,6 +104,7 @@ export interface Product {
   images?: ProductImage[];
   category?: Category | null;
   variants?: Variant[];
+  tags?: Tag[];
   meta_title: string | null;
   meta_description: string | null;
   published_at: string | null;
@@ -111,7 +113,7 @@ export interface Product {
   deleted_at?: string | null;
 }
 
-export type OrderStatus = "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded";
+export type OrderStatus = "pending" | "confirmed" | "processing" | "shipped" | "out_for_delivery" | "delivered" | "cancelled" | "refunded";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded" | "cancelled";
 
 export interface Address {
@@ -323,4 +325,53 @@ export interface StoreSettings {
     logo_url: string | null;
   };
   inventory: { default_low_stock_threshold: number };
+}
+
+/** Storefront "Contact Us" form submission. */
+export interface ContactMessage {
+  id: number;
+  user_id: number | null;
+  name: string;
+  email: string;
+  phone: string | null;
+  subject: string | null;
+  message: string;
+  is_read: boolean;
+  read_at: string | null;
+  ip_address: string | null;
+  created_at: string;
+}
+
+export interface Tag {
+  id: number;
+  name: string;
+  slug: string;
+  products_count?: number;
+}
+
+/** Variant attribute (Color, Size…). `slug` is the key stored in variant options. */
+export interface ProductAttribute {
+  id: number;
+  name: string;
+  slug: string;
+  sort_order: number;
+  values: { id: number; value: string; sort_order: number }[];
+}
+
+export type ReviewStatus = "pending" | "approved" | "rejected";
+
+export interface ProductReview {
+  id: number;
+  name: string;
+  email: string | null;
+  rating: number;
+  title: string | null;
+  body: string;
+  status: ReviewStatus;
+  is_verified_buyer: boolean;
+  user_id: number | null;
+  ip_address: string | null;
+  product: { id: number; name: string; slug: string } | null;
+  created_at: string;
+  updated_at: string;
 }

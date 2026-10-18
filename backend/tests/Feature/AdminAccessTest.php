@@ -29,6 +29,7 @@ class AdminAccessTest extends TestCase
             'coupons' => ['GET', '/api/v1/admin/coupons'],
             'settings' => ['GET', '/api/v1/admin/settings'],
             'banners' => ['GET', '/api/v1/admin/banners'],
+            'messages' => ['GET', '/api/v1/admin/messages'],
         ];
     }
 
@@ -69,6 +70,7 @@ class AdminAccessTest extends TestCase
         $staffAllowed = [
             Permission::ViewDashboard, Permission::ManageProducts, Permission::ManageCategories,
             Permission::ManageOrders, Permission::ManageInventory, Permission::ViewCustomers,
+            Permission::ManageMessages,
         ];
 
         foreach (Permission::cases() as $permission) {

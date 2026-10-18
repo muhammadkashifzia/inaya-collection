@@ -9,8 +9,9 @@ import Button from "@/components/ui/button/Button";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http, STOREFRONT_URL } from "@/lib/api";
 import { slugify, toLocalInput } from "@/lib/format";
-import type { Category, Product, ProductStatus } from "@/types/api";
+import type { Category, Product, ProductAttribute, ProductStatus, Tag } from "@/types/api";
 import ProductImages from "./ProductImages";
+import TagPicker from "./TagPicker";
 import VariantEditor, { type VariantDraft } from "./VariantEditor";
 
 interface FormState {
@@ -84,6 +85,9 @@ export default function ProductForm() {
   const isNew = !id || id === "new";
   const navigate = useNavigate();
   const categories = useApi(() => http.get<Category[]>("/admin/categories"), []);
+  const tags = useApi(() => http.get<Tag[]>("/admin/tags"), []);
+  const attributes = useApi(() => http.get<ProductAttribute[]>("/admin/attributes"), []);
+  const [tagIds, setTagIds] = useState<number[]>([]);
   const product = useApi(() => (isNew ? Promise.resolve(null) : http.get<Product>(`/admin/products/${id}`)), [id]);
 
   const [form, setForm] = useState<FormState>(empty);
@@ -98,6 +102,7 @@ export default function ProductForm() {
   if (product.data && product.data.id !== loadedId) {
     setLoadedId(product.data.id);
     setForm(fromProduct(product.data));
+    setTagIds((product.data.tags ?? []).map((t) => t.id));
     setSlugTouched(true);
     setVariants(
       (product.data.variants ?? []).map((v) => ({
@@ -145,6 +150,8 @@ export default function ProductForm() {
       meta_title: form.meta_title || null,
       meta_description: form.meta_description || null,
       published_at: form.published_at ? new Date(form.published_at).toISOString() : null,
+      // Only send tags once the list loaded, so a failed load never clears saved tags.
+      ...(tags.data ? { tag_ids: tagIds } : {}),
       variants: variants.map((v) => ({
         id: v.id ?? null,
         sku: v.sku,
@@ -248,7 +255,7 @@ export default function ProductForm() {
               </div>
             </Card>
 
-            <VariantEditor variants={variants} onChange={setVariants} error={error} />
+            <VariantEditor variants={variants} onChange={setVariants} error={error} attributes={attributes.data ?? []} />
 
             {!isNew && p && <ProductImages product={p} onChange={product.reload} />}
 
@@ -278,6 +285,7 @@ export default function ProductForm() {
                 <Toggle label="Featured product" description="Shown in featured sections" checked={form.is_featured} onChange={(v) => set("is_featured", v)} />
               </div>
             </Card>
+            <TagPicker tags={tags.data} loading={tags.loading} selected={tagIds} onChange={setTagIds} onCreated={tags.reload} error={fieldError("tag_ids")} />
             <div className="sticky top-24 space-y-3">
               <Button type="submit" className="w-full" loading={busy}>
                 {isNew ? "Create product" : "Save changes"}

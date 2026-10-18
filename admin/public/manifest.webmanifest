@@ -1,0 +1,18 @@
+{
+  "id": "/",
+  "name": "Anaya Collection Admin",
+  "short_name": "Anaya Admin",
+  "description": "Manage orders, products and store settings for Anaya Collection.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1d36",
+  "theme_color": "#0b1d36",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

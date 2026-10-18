@@ -88,6 +88,9 @@ class ProductCatalog
         if (! empty($filters['pieces'])) {
             $query->where('products.pieces', (int) $filters['pieces']);
         }
+        if (! empty($filters['tag'])) {
+            $query->whereHas('tags', fn (Builder $t) => $t->where('slug', $filters['tag']));
+        }
 
         $price = $this->effectivePriceExpression();
         if (isset($filters['min_price'])) {

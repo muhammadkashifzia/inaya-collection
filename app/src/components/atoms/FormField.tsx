@@ -39,21 +39,29 @@ export function TextField({ label, error, hint, className, id, ...props }: Field
   );
 }
 
-export function TextAreaField({ label, error, className, id, ...props }: FieldProps & TextareaHTMLAttributes<HTMLTextAreaElement>) {
+export function TextAreaField({ label, error, hint, className, id, ...props }: FieldProps & TextareaHTMLAttributes<HTMLTextAreaElement>) {
   const autoId = useId();
   const inputId = id ?? autoId;
+  const errorId = `${inputId}-error`;
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
       <label htmlFor={inputId} className="text-xs font-semibold uppercase tracking-widest text-ink">
         {label}
+        {props.required && <span aria-hidden="true" className="text-brand"> *</span>}
       </label>
       <textarea
         id={inputId}
         aria-invalid={error ? true : undefined}
-        className="min-h-24 w-full border border-line bg-white p-3 text-sm outline-none focus:border-ink"
+        aria-describedby={error ? errorId : undefined}
+        className="min-h-24 w-full border border-line bg-white p-3 text-sm outline-none focus:border-ink aria-[invalid=true]:border-brand"
         {...props}
       />
-      {error && <p className="text-xs font-semibold text-brand">{error}</p>}
+      {hint && !error && <p className="text-xs text-muted">{hint}</p>}
+      {error && (
+        <p id={errorId} className="text-xs font-semibold text-brand">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

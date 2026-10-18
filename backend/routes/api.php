@@ -10,9 +10,11 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CheckoutController;
+use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\HomeController;
 use App\Http\Controllers\Api\V1\OrderTrackingController;
 use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\ProductReviewController;
 use App\Http\Controllers\Api\V1\StorefrontController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +27,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::get('pages', [StorefrontController::class, 'pages'])->name('pages.index');
     Route::get('pages/{slug}', [StorefrontController::class, 'page'])->name('pages.show');
     Route::post('newsletter', [StorefrontController::class, 'subscribe'])->middleware('throttle:newsletter')->name('newsletter');
+    Route::post('contact', ContactController::class)->middleware('throttle:contact')->name('contact');
 
     Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('categories/{slug}', [CategoryController::class, 'show'])->name('categories.show');
@@ -32,6 +35,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
     Route::get('products/filters', [ProductController::class, 'facets'])->name('products.filters');
     Route::get('products/{slug}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('products/{slug}/reviews', [ProductReviewController::class, 'index'])->name('products.reviews.index');
+    Route::post('products/{slug}/reviews', [ProductReviewController::class, 'store'])->middleware('throttle:reviews')->name('products.reviews.store');
 
     Route::post('orders/track', OrderTrackingController::class)->middleware('throttle:order-tracking')->name('orders.track');
 
@@ -59,6 +64,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::middleware(['auth:sanctum', 'active'])->group(function (): void {
         Route::get('me', [AuthController::class, 'me'])->name('me');
         Route::put('me', [ProfileController::class, 'update'])->name('me.update');
+        Route::put('me/email', [ProfileController::class, 'updateEmail'])->middleware('throttle:login')->name('me.email');
         Route::put('me/password', [ProfileController::class, 'updatePassword'])->middleware('throttle:login')->name('me.password');
 
         Route::apiResource('me/addresses', AddressController::class)->except('show')->names('me.addresses');
@@ -86,6 +92,10 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::post('products/{product}/images', [Admin\ProductController::class, 'uploadImage'])->name('products.images.store');
             Route::put('products/{product}/images/order', [Admin\ProductController::class, 'reorderImages'])->name('products.images.reorder');
             Route::delete('products/{product}/images/{image}', [Admin\ProductController::class, 'destroyImage'])->name('products.images.destroy');
+
+            Route::apiResource('tags', Admin\TagController::class)->except('show');
+            Route::apiResource('attributes', Admin\ProductAttributeController::class)->except('show');
+            Route::apiResource('reviews', Admin\ProductReviewController::class)->except('show');
         });
 
         Route::middleware('can:'.Permission::ManageCategories->value)->group(function (): void {
@@ -133,6 +143,13 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::get('pages/{page:id}', [Admin\ContentController::class, 'showPage'])->name('pages.show');
             Route::put('pages/{page:id}', [Admin\ContentController::class, 'updatePage'])->name('pages.update');
             Route::delete('pages/{page:id}', [Admin\ContentController::class, 'destroyPage'])->name('pages.destroy');
+        });
+
+        Route::middleware('can:'.Permission::ManageMessages->value)->group(function (): void {
+            Route::get('messages', [Admin\ContactMessageController::class, 'index'])->name('messages.index');
+            Route::get('messages/{contactMessage}', [Admin\ContactMessageController::class, 'show'])->whereNumber('contactMessage')->name('messages.show');
+            Route::patch('messages/{contactMessage}/status', [Admin\ContactMessageController::class, 'updateStatus'])->whereNumber('contactMessage')->name('messages.status');
+            Route::delete('messages/{contactMessage}', [Admin\ContactMessageController::class, 'destroy'])->whereNumber('contactMessage')->name('messages.destroy');
         });
 
         Route::middleware('can:'.Permission::ManageSettings->value)->group(function (): void {
