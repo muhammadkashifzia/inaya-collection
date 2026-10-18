@@ -6,5 +6,6 @@ export { Heading } from "./Heading";
 export { Icon, type IconName } from "./Icon";
 export { IconButton } from "./IconButton";
 export { Price } from "./Price";
+export { ServiceWorkerRegister } from "./ServiceWorkerRegister";
 export { Stars } from "./Stars";
 export { FormAlert, TextAreaField, TextField } from "./FormField";

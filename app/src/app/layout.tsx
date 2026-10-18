@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import { Suspense } from "react";
+import { ServiceWorkerRegister } from "@/components/atoms";
 import { AnnouncementBar, CartDrawer, Footer, Header, MobileTabBar, ServiceHighlights } from "@/components/organisms";
 import { StoreProvider } from "@/context/StoreProvider";
 import { getSite } from "@/lib/data";
@@ -18,8 +19,25 @@ export async function generateMetadata(): Promise<Metadata> {
     description: site.seo.defaultDescription || site.about,
     openGraph: { siteName: site.name, type: "website", images: site.seo.ogImage ? [site.seo.ogImage] : undefined },
     alternates: { canonical: "/" },
+    applicationName: site.name,
+    appleWebApp: { capable: true, title: site.name, statusBarStyle: "default" },
+    icons: {
+      // Browser tab / address-bar icon uses the same artwork as the installed PWA.
+      icon: [
+        { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+        { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      ],
+      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    },
   };
 }
+
+export const viewport: Viewport = {
+  themeColor: "#0b1d36",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
@@ -43,6 +61,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </Suspense>
           <CartDrawer freeShippingThreshold={site.freeShippingThreshold} />
         </StoreProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

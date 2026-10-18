@@ -22,6 +22,19 @@ const nextConfig: NextConfig = {
     // Only needed when the API runs on localhost during development.
     dangerouslyAllowLocalIP: isLocalApi && process.env.NODE_ENV !== "production",
   },
+  async headers() {
+    return [
+      {
+        // Always fetch the latest service worker so updates roll out immediately.
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": {

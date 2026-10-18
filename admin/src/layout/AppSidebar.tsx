@@ -76,6 +76,8 @@ const EXACT_ONLY = ["/products/new", "/inventory/movements"];
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, setIsMobileOpen } =
     useSidebar();
+  // Collapsed rail (desktop only) is 50px wide: tighter padding, icon-only items.
+  const isCollapsed = !isExpanded && !isHovered && !isMobileOpen;
   const { t } = useTranslation();
   const { can } = useAuth();
   const location = useLocation();
@@ -176,9 +178,7 @@ const AppSidebar: React.FC = () => {
                   ? "menu-item-active"
                   : "menu-item-inactive"
               } cursor-pointer ${
-                !isExpanded && !isHovered
-                  ? "xl:justify-center"
-                  : "xl:justify-start"
+                isCollapsed ? "xl:justify-center xl:px-0" : "xl:justify-start"
               }`}
             >
               <span
@@ -226,7 +226,7 @@ const AppSidebar: React.FC = () => {
                 target={nav.target}
                 className={`group menu-item ${
                   isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}
+                } ${isCollapsed ? "xl:justify-center xl:px-0" : ""}`}
               >
                 <span
                   className={`menu-item-icon-size ${
@@ -311,8 +311,8 @@ const AppSidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        "fixed inset-s-0 top-0 z-50 flex h-screen flex-col border-e border-ink-800 bg-ink-900 px-5 text-white transition-all duration-300 ease-in-out xl:translate-x-0 xl:rtl:translate-x-0 dark:border-gray-800 dark:bg-ink-950",
-        isExpanded || isMobileOpen ? "w-72.5" : isHovered ? "w-72.5" : "w-22.5",
+        "fixed inset-s-0 top-0 z-50 flex h-screen flex-col border-e border-ink-800 bg-ink-900 text-white transition-all duration-300 ease-in-out xl:translate-x-0 xl:rtl:translate-x-0 dark:border-gray-800 dark:bg-ink-950",
+        isCollapsed ? "w-12.5 px-1.5" : "w-55.5 px-5",
         isMobileOpen
           ? "translate-x-0"
           : "-translate-x-full rtl:translate-x-full",
@@ -327,14 +327,25 @@ const AppSidebar: React.FC = () => {
         )}
       >
         <Link to="/" className="flex items-center gap-3" aria-label="Anaya Collection admin home">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-500 font-display text-xl font-bold text-white">G</span>
-          {(isExpanded || isHovered || isMobileOpen) && (
-            <span className="leading-tight">
-              <span className="block font-display text-xl font-semibold tracking-[0.18em] text-white uppercase">
-                Anaya<span className="text-brand-400">Collection</span>
-              </span>
-              <span className="block text-[11px] tracking-[0.3em] text-ink-300 uppercase">Admin</span>
+          {isExpanded || isHovered || isMobileOpen ? (
+            <span className="flex flex-col items-start gap-1">
+              <img
+                src="/images/logo/anaya-collection-logo.png"
+                alt="Anaya Collection"
+                width={600}
+                height={258}
+                className="h-16 w-auto"
+              />
+              <span className="block ps-1 text-[11px] tracking-[0.3em] text-ink-300 uppercase">Admin</span>
             </span>
+          ) : (
+            <img
+              src="/images/logo/anaya-collection-icon.png"
+              alt="Anaya Collection"
+              width={36}
+              height={36}
+              className="size-9 shrink-0 rounded-lg"
+            />
           )}
         </Link>
       </div>
