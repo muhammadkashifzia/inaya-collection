@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
 import { Notice, SelectInput, TextAreaInput, TextInput, Toggle } from "@/components/admin/Fields";
@@ -9,6 +10,7 @@ import { ActiveBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
+import { useToast } from "@/context/ToastContext";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http } from "@/lib/api";
 import { slugify } from "@/lib/format";
@@ -32,10 +34,11 @@ const blank: Draft = { name: "", short_name: "", slug: "", parent_id: "", descri
 
 export default function Categories() {
   const { data, error, loading, reload } = useApi(() => http.get<Category[]>("/admin/categories"), []);
+  const toast = useToast();
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<ApiError | null>(null);
-  const [notice, setNotice] = useState<{ tone: "error" | "success"; text: string } | null>(null);
+  const [confirmCat, setConfirmCat] = useState<Category | null>(null);
 
   const open = (c?: Category) => {
     setFormError(null);
@@ -79,7 +82,7 @@ export default function Categories() {
       if (draft.id) await http.put(`/admin/categories/${draft.id}`, body);
       else await http.post("/admin/categories", body);
       setDraft(null);
-      setNotice({ tone: "success", text: "Category saved." });
+      toast.success("Category saved.");
       reload();
     } catch (err) {
       setFormError(err instanceof ApiError ? err : new ApiError("Could not save.", 0));
@@ -88,14 +91,20 @@ export default function Categories() {
     }
   }
 
-  async function remove(c: Category) {
-    if (!window.confirm(`Delete “${c.name}”?`)) return;
+  function remove(c: Category) {
+    setConfirmCat(c);
+  }
+
+  async function onConfirmRemove() {
+    if (!confirmCat) return;
     try {
-      await http.delete(`/admin/categories/${c.id}`);
-      setNotice({ tone: "success", text: "Category deleted." });
+      await http.delete(`/admin/categories/${confirmCat.id}`);
+      toast.success("Category deleted.");
       reload();
     } catch (err) {
-      setNotice({ tone: "error", text: err instanceof ApiError ? err.firstMessage : "Could not delete." });
+      toast.error(err instanceof ApiError ? err.firstMessage : "Could not delete.");
+    } finally {
+      setConfirmCat(null);
     }
   }
 
@@ -105,9 +114,6 @@ export default function Categories() {
     <>
       <PageMeta title="Categories | Anaya Collection Admin" description="Manage collections and subcategories." />
       <PageHeader title="Categories" description="Collections shown in the storefront menu and homepage." actions={<Button onClick={() => open()}>+ Add category</Button>} />
-      <div className="mb-4">
-        <Notice tone={notice?.tone ?? "success"}>{notice?.text}</Notice>
-      </div>
       <Card bodyClassName="p-0">
         <DataState loading={loading} error={error} onRetry={reload} hasData={Boolean(data)} empty={data?.length === 0} emptyTitle="No categories yet.">
           {data && (
@@ -185,6 +191,14 @@ export default function Categories() {
           </form>
         )}
       </Modal>
+      <ConfirmDialog
+        open={confirmCat !== null}
+        title={`Delete "${confirmCat?.name}"?`}
+        message="This cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => void onConfirmRemove()}
+        onCancel={() => setConfirmCat(null)}
+      />
     </>
   );
 }

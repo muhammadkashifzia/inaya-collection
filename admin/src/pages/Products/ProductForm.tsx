@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
 import { Notice, SelectInput, TextAreaInput, TextInput, Toggle } from "@/components/admin/Fields";
 import PageHeader from "@/components/admin/PageHeader";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
+import { useToast } from "@/context/ToastContext";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http, STOREFRONT_URL } from "@/lib/api";
 import { slugify, toLocalInput } from "@/lib/format";
@@ -93,9 +95,10 @@ export default function ProductForm() {
   const [form, setForm] = useState<FormState>(empty);
   const [variants, setVariants] = useState<VariantDraft[]>([{ sku: "", name: "Default", options: [], price: "", sale_price: "", stock: "0", is_active: true }]);
   const [slugTouched, setSlugTouched] = useState(false);
+  const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
-  const [saved, setSaved] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Populate the form once the product loads.
   const [loadedId, setLoadedId] = useState<number | null>(null);
@@ -117,12 +120,6 @@ export default function ProductForm() {
       })),
     );
   }
-
-  useEffect(() => {
-    if (!saved) return;
-    const t = window.setTimeout(() => setSaved(false), 3000);
-    return () => window.clearTimeout(t);
-  }, [saved]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((f) => ({ ...f, [key]: value }));
   const fieldError = (name: string) => error?.field(name);
@@ -165,22 +162,33 @@ export default function ProductForm() {
     };
     try {
       const result = isNew ? await http.post<Product>("/admin/products", payload) : await http.put<Product>(`/admin/products/${id}`, payload);
-      setSaved(true);
+      toast.success("Product saved.");
       if (isNew) navigate(`/products/${result.id}`, { replace: true });
       else product.setData(result);
       setLoadedId(null);
     } catch (err) {
-      setError(err instanceof ApiError ? err : new ApiError("Could not save the product.", 0));
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const apiErr = err instanceof ApiError ? err : new ApiError("Could not save the product.", 0);
+      if (Object.keys(apiErr.errors).length) {
+        setError(apiErr);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        toast.error(apiErr.message);
+      }
     } finally {
       setBusy(false);
     }
   }
 
-  async function onDelete() {
-    if (!window.confirm("Delete this product? It will be hidden from the store; order history is kept.")) return;
-    await http.delete(`/admin/products/${id}`);
-    navigate("/products", { replace: true });
+  async function onConfirmDelete() {
+    try {
+      await http.delete(`/admin/products/${id}`);
+      toast.success("Product deleted.");
+      navigate("/products", { replace: true });
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.firstMessage : "Could not delete the product.");
+    } finally {
+      setConfirmDelete(false);
+    }
   }
 
   const p = product.data;
@@ -200,7 +208,7 @@ export default function ProductForm() {
                   View on store ↗
                 </a>
               )}
-              <Button variant="danger" size="sm" onClick={() => void onDelete()}>
+              <Button variant="danger" size="sm" onClick={() => setConfirmDelete(true)}>
                 Delete
               </Button>
             </>
@@ -210,8 +218,7 @@ export default function ProductForm() {
       <DataState loading={product.loading || categories.loading} error={product.error ?? categories.error} onRetry={product.reload} hasData={isNew || Boolean(p)}>
         <form onSubmit={onSubmit} noValidate className="grid grid-cols-12 gap-6">
           <div className="col-span-12 space-y-6 xl:col-span-8">
-            <Notice tone="error">{error && (Object.keys(error.errors).length ? "Please fix the highlighted fields." : error.message)}</Notice>
-            <Notice tone="success">{saved ? "Product saved." : null}</Notice>
+            <Notice tone="error">{error && Object.keys(error.errors).length ? "Please fix the highlighted fields." : null}</Notice>
 
             <Card title="Details">
               <div className="grid gap-5 md:grid-cols-2">
@@ -294,6 +301,14 @@ export default function ProductForm() {
             </div>
           </div>
         </form>
+        <ConfirmDialog
+          open={confirmDelete}
+          title="Delete product?"
+          message="It will be hidden from the store; order history is kept. This cannot be undone."
+          confirmLabel="Delete"
+          onConfirm={() => void onConfirmDelete()}
+          onCancel={() => setConfirmDelete(false)}
+        />
       </DataState>
     </>
   );

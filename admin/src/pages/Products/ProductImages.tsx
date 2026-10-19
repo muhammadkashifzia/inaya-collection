@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import Button from "@/components/ui/button/Button";
+import { useToast } from "@/context/ToastContext";
 import { ApiError, http } from "@/lib/api";
 import type { Product, ProductImage } from "@/types/api";
 
@@ -9,9 +11,11 @@ const ACCEPT = "image/jpeg,image/png,image/webp";
 /** Upload, reorder (first image = main) and delete product images. */
 export default function ProductImages({ product, onChange }: { product: Product; onChange: () => void }) {
   const input = useRef<HTMLInputElement>(null);
+  const toast = useToast();
   const [images, setImages] = useState<ProductImage[]>(product.images ?? []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmImage, setConfirmImage] = useState<ProductImage | null>(null);
   const [lastSynced, setLastSynced] = useState(product.images);
   if (product.images !== lastSynced) {
     setLastSynced(product.images);
@@ -53,10 +57,21 @@ export default function ProductImages({ product, onChange }: { product: Product;
   }
 
   async function remove(image: ProductImage) {
-    if (!window.confirm("Delete this image?")) return;
-    await http.delete(`/admin/products/${product.id}/images/${image.id}`);
-    setImages((list) => list.filter((i) => i.id !== image.id));
-    onChange();
+    setConfirmImage(image);
+  }
+
+  async function onConfirmRemove() {
+    if (!confirmImage) return;
+    try {
+      await http.delete(`/admin/products/${product.id}/images/${confirmImage.id}`);
+      setImages((list) => list.filter((i) => i.id !== confirmImage.id));
+      toast.success("Image deleted.");
+      onChange();
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.firstMessage : "Could not delete the image.");
+    } finally {
+      setConfirmImage(null);
+    }
   }
 
   return (
@@ -96,6 +111,14 @@ export default function ProductImages({ product, onChange }: { product: Product;
           ))}
         </ul>
       )}
+      <ConfirmDialog
+        open={confirmImage !== null}
+        title="Delete image?"
+        message="Are you sure you want to delete this image? This cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => void onConfirmRemove()}
+        onCancel={() => setConfirmImage(null)}
+      />
     </Card>
   );
 }
