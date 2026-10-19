@@ -55,7 +55,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
             )}
             aria-hidden={i !== current}
           >
-            <SlideContent banner={banner} />
+            <SlideContent banner={banner} active={i === current} />
           </div>
         ))}
       </div>
@@ -109,17 +109,38 @@ function Slide({ banner }: { banner: Banner }) {
 }
 
 /** Shared banner content: images, overlay, text, and CTA buttons. */
-function SlideContent({ banner }: { banner: Banner }) {
+function SlideContent({ banner, active = true }: { banner: Banner; active?: boolean }) {
   return (
     <>
       <AppImage src={banner.mobileImage ?? banner.image} alt="" fill preload sizes="100vw" className="object-cover md:hidden" />
       <AppImage src={banner.image} alt="" fill preload sizes="100vw" className="hidden object-cover md:block" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10 md:bg-gradient-to-r md:from-black/70 md:via-black/30 md:to-transparent" aria-hidden="true" />
       <Container className="absolute inset-0 flex flex-col items-start justify-end pb-14 text-left text-white md:justify-center md:pb-0">
-        <h1 className="max-w-xl font-heading text-4xl font-semibold leading-tight md:text-6xl">{banner.title}</h1>
-        {banner.subtitle && <p className="mt-4 max-w-md text-sm text-white/85 md:text-base">{banner.subtitle}</p>}
+        <h1
+          className={cn(
+            "max-w-xl font-heading text-4xl font-semibold leading-tight md:text-6xl transition-all duration-700 ease-out",
+            active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+          )}
+        >
+          {banner.title}
+        </h1>
+        {banner.subtitle && (
+          <p
+            className={cn(
+              "mt-4 max-w-md text-sm text-white/85 md:text-base transition-all duration-700 ease-out delay-150",
+              active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+            )}
+          >
+            {banner.subtitle}
+          </p>
+        )}
         {banner.buttons.length > 0 && (
-          <div className="mt-8 grid w-full max-w-xl grid-cols-2 gap-3 md:flex md:w-auto md:flex-wrap">
+          <div
+            className={cn(
+              "mt-8 grid w-full max-w-xl grid-cols-2 gap-3 md:flex md:w-auto md:flex-wrap transition-all duration-700 ease-out delay-300",
+              active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+            )}
+          >
             {banner.buttons.map((cta) => (
               <ButtonLink key={`${cta.href}-${cta.label}`} href={cta.href} variant="light" size="md">
                 {cta.label}
