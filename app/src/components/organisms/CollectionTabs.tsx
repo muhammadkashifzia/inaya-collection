@@ -31,7 +31,7 @@ export function CollectionTabs({ title, tabs }: CollectionTabsProps) {
   }
 
   return (
-    <section className="py-14 md:py-10">
+    <section className="py-14 md:py-15">
       <Container>
         <h2 className="mb-[18px] text-center text-[clamp(1.45rem,2.2vw,2rem)] font-medium leading-tight tracking-[-0.02em] text-[#111]">
           {title}
