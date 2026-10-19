@@ -141,6 +141,7 @@ export type HomeSection =
 export interface HomeData {
   banners: Banner[];
   promos: Banner[];
+  collectionStrip: Banner[];
   sections: HomeSection[];
 }
 

@@ -149,6 +149,7 @@ export function mapHome(json: Raw): HomeData {
   return {
     banners: (json.banners ?? []).map(mapBanner),
     promos: (json.promos ?? []).map(mapBanner),
+    collectionStrip: (json.collection_strip ?? []).map(mapBanner),
     sections,
   };
 }

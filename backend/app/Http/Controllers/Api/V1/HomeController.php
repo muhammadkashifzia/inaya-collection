@@ -30,6 +30,7 @@ class HomeController extends Controller
             'data' => [
                 'banners' => BannerResource::collection(Banner::query()->live()->where('placement', BannerPlacement::Hero)->get()),
                 'promos' => BannerResource::collection(Banner::query()->live()->where('placement', BannerPlacement::Promo)->get()),
+                'collection_strip' => BannerResource::collection(Banner::query()->live()->where('placement', BannerPlacement::CollectionStrip)->get()),
                 'sections' => $sections->map(fn (HomeSection $section): array => [
                     'id' => $section->id,
                     'type' => $section->type,

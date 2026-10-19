@@ -240,7 +240,7 @@ export interface Coupon {
 
 export interface Banner {
   id: number;
-  placement: "hero" | "promo";
+  placement: "hero" | "promo" | "collection_strip";
   title: string;
   subtitle: string | null;
   image: string;

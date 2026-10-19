@@ -16,7 +16,7 @@ export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData 
           return (
             <div key={section.id}>
               <Section section={section} />
-              <WinterCollections />
+              <WinterCollections banners={home.collectionStrip} />
             </div>
           );
         }

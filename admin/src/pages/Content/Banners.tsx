@@ -15,7 +15,7 @@ import type { Banner } from "@/types/api";
 
 interface Draft {
   id?: number;
-  placement: "hero" | "promo";
+  placement: "hero" | "promo" | "collection_strip";
   title: string;
   subtitle: string;
   image: { path: string | null; url: string | null };
@@ -130,7 +130,7 @@ export default function Banners() {
               <TextAreaInput className="md:col-span-2" label="Subheading" rows={2} value={draft.subtitle} onChange={(e) => setDraft({ ...draft, subtitle: e.target.value })} maxLength={500} />
               <ImageUpload label="Desktop image *" endpoint="/admin/banners/image" value={draft.image} onChange={(image) => setDraft({ ...draft, image })} error={fe("image")} hint="Recommended 1920×800" />
               <ImageUpload label="Mobile image" endpoint="/admin/banners/image" value={draft.mobile_image} onChange={(mobile_image) => setDraft({ ...draft, mobile_image })} hint="Optional, portrait" aspect="aspect-3/4 max-h-48" />
-              <SelectInput label="Placement" value={draft.placement} onChange={(e) => setDraft({ ...draft, placement: e.target.value as Draft["placement"] })} options={[{ value: "hero", label: "Homepage hero" }, { value: "promo", label: "Promo banner" }]} />
+              <SelectInput label="Placement" value={draft.placement} onChange={(e) => setDraft({ ...draft, placement: e.target.value as Draft["placement"] })} options={[{ value: "hero", label: "Homepage hero" }, { value: "promo", label: "Promo banner" }, { value: "collection_strip", label: "Collection strip" }]} />
               <TextInput label="Sort order" type="number" min={0} value={draft.sort_order} onChange={(e) => setDraft({ ...draft, sort_order: e.target.value })} />
               <TextInput label="Show from" type="datetime-local" value={draft.starts_at} onChange={(e) => setDraft({ ...draft, starts_at: e.target.value })} />
               <TextInput label="Show until" type="datetime-local" value={draft.ends_at} onChange={(e) => setDraft({ ...draft, ends_at: e.target.value })} error={fe("ends_at")} />
