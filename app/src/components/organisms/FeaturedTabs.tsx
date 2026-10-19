@@ -30,7 +30,7 @@ export function FeaturedTabs({ title, description, tabs }: FeaturedTabsProps) {
   }
 
   return (
-    <section className="py-14 md:py-20">
+    <section className="py-14 md:py-10">
       <Container>
         {/* Split header: title + desc left, tabs right */}
         <div className="mb-8 flex flex-col gap-5 md:mb-10 md:flex-row md:items-end md:justify-between md:gap-8">
