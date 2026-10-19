@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CachePublicApiResponse;
 use App\Http\Middleware\EnsureStaffMember;
 use App\Http\Middleware\EnsureUserIsActive;
 use Illuminate\Foundation\Application;
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'staff' => EnsureStaffMember::class,
             'active' => EnsureUserIsActive::class,
+            'cache.api' => CachePublicApiResponse::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

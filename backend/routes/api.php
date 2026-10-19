@@ -20,22 +20,26 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
-    // ---------------------------------------------------------------- Public
-    Route::get('home', HomeController::class)->name('home');
-    Route::get('settings', [StorefrontController::class, 'settings'])->name('settings');
-    Route::get('banners', [StorefrontController::class, 'banners'])->name('banners');
-    Route::get('pages', [StorefrontController::class, 'pages'])->name('pages.index');
-    Route::get('pages/{slug}', [StorefrontController::class, 'page'])->name('pages.show');
+    // ---------------------------------------------------------------- Public (cached)
+    Route::middleware('cache.api:300')->group(function (): void {
+        Route::get('home', HomeController::class)->name('home');
+        Route::get('settings', [StorefrontController::class, 'settings'])->name('settings');
+        Route::get('banners', [StorefrontController::class, 'banners'])->name('banners');
+        Route::get('pages', [StorefrontController::class, 'pages'])->name('pages.index');
+        Route::get('pages/{slug}', [StorefrontController::class, 'page'])->name('pages.show');
+
+        Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('categories/{slug}', [CategoryController::class, 'show'])->name('categories.show');
+
+        Route::get('products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('products/filters', [ProductController::class, 'facets'])->name('products.filters');
+        Route::get('products/{slug}', [ProductController::class, 'show'])->name('products.show');
+        Route::get('products/{slug}/reviews', [ProductReviewController::class, 'index'])->name('products.reviews.index');
+    });
+
+    // ---------------------------------------------------------------- Public (uncached)
     Route::post('newsletter', [StorefrontController::class, 'subscribe'])->middleware('throttle:newsletter')->name('newsletter');
     Route::post('contact', ContactController::class)->middleware('throttle:contact')->name('contact');
-
-    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('categories/{slug}', [CategoryController::class, 'show'])->name('categories.show');
-
-    Route::get('products', [ProductController::class, 'index'])->name('products.index');
-    Route::get('products/filters', [ProductController::class, 'facets'])->name('products.filters');
-    Route::get('products/{slug}', [ProductController::class, 'show'])->name('products.show');
-    Route::get('products/{slug}/reviews', [ProductReviewController::class, 'index'])->name('products.reviews.index');
     Route::post('products/{slug}/reviews', [ProductReviewController::class, 'store'])->middleware('throttle:reviews')->name('products.reviews.store');
 
     Route::post('orders/track', OrderTrackingController::class)->middleware('throttle:order-tracking')->name('orders.track');
