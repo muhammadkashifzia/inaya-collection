@@ -17,9 +17,9 @@ env:
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
   # Passenger app root (cPanel "Setup Node.js App", startup file app.js).
-  REMOTE_DIR: ${{ vars.STORE_REMOTE_DIR || '/home/eastlogic/galaxywear-store.eastlogic.com' }}
-  STORE_URL: ${{ vars.STORE_URL || 'https://inaya.eastlogic.com' }}
-  API_URL: ${{ vars.API_URL || 'https://inaya-api.eastlogic.com' }}
+  REMOTE_DIR: ${{ vars.STORE_REMOTE_DIR || '/home/eastlogic/anaya.eastlogic.com' }}
+  STORE_URL: ${{ vars.STORE_URL || 'https://anaya.eastlogic.com' }}
+  API_URL: ${{ vars.API_URL || 'https://anaya-api.eastlogic.com' }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
