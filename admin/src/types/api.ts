@@ -10,6 +10,7 @@ export type PermissionKey =
   | "view-dashboard"
   | "manage-products"
   | "manage-categories"
+  | "manage-design-categories"
   | "manage-orders"
   | "refund-orders"
   | "manage-inventory"
@@ -55,6 +56,22 @@ export interface Category {
   meta_description: string | null;
   products_count?: number;
   parent?: Category | null;
+}
+
+export interface DesignCategory {
+  id: number;
+  parent_id: number | null;
+  name: string;
+  slug: string;
+  description: string | null;
+  display_type: string;
+  image: string | null;
+  image_path?: string | null;
+  sort_order: number;
+  is_active: boolean;
+  meta_title: string | null;
+  meta_description: string | null;
+  parent?: DesignCategory | null;
 }
 
 export interface ProductImage {

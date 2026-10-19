@@ -10,6 +10,7 @@ enum Permission: string
     case ViewDashboard = 'view-dashboard';
     case ManageProducts = 'manage-products';
     case ManageCategories = 'manage-categories';
+    case ManageDesignCategories = 'manage-design-categories';
     case ManageOrders = 'manage-orders';
     case RefundOrders = 'refund-orders';
     case ManageInventory = 'manage-inventory';

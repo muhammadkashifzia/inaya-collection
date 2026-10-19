@@ -50,6 +50,7 @@ const navItems: NavItem[] = [
       { name: "All Products", path: "/products", permission: "manage-products" },
       { name: "Add new product", path: "/products/new", permission: "manage-products" },
       { name: "Categories", path: "/categories", permission: "manage-categories" },
+      { name: "Design Categories", path: "/design-categories", permission: "manage-design-categories" },
       { name: "Tags", path: "/products/tags", permission: "manage-products" },
       { name: "Attributes", path: "/products/attributes", permission: "manage-products" },
       { name: "Reviews", path: "/products/reviews", permission: "manage-products" },
@@ -76,7 +77,7 @@ const othersItems: NavItem[] = [
 ];
 
 /** Paths that must not also highlight their parent ("/products" vs "/products/new"). */
-const EXACT_ONLY = ["/products/new", "/products/tags", "/products/attributes", "/products/reviews", "/inventory/movements"];
+const EXACT_ONLY = ["/products/new", "/products/tags", "/products/attributes", "/products/reviews", "/inventory/movements", "/design-categories"];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered, setIsMobileOpen } =

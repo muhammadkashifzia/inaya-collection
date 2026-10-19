@@ -107,6 +107,11 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::apiResource('categories', Admin\CategoryController::class);
         });
 
+        Route::middleware('can:'.Permission::ManageDesignCategories->value)->group(function (): void {
+            Route::post('design-categories/image', [Admin\DesignCategoryController::class, 'uploadImage'])->name('design-categories.image');
+            Route::apiResource('design-categories', Admin\DesignCategoryController::class);
+        });
+
         Route::middleware('can:'.Permission::ManageOrders->value)->group(function (): void {
             Route::get('orders', [Admin\OrderController::class, 'index'])->name('orders.index');
             Route::get('orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');

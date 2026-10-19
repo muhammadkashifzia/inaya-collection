@@ -4,6 +4,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import AppLayout from "./layout/AppLayout";
 import SignIn from "./pages/AuthPages/SignIn";
 import Categories from "./pages/Categories/Categories";
+import DesignCategories from "./pages/DesignCategories/DesignCategories";
 import CmsPages from "./pages/Content/CmsPages";
 import Banners from "./pages/Content/Banners";
 import HomeSections from "./pages/Content/HomeSections";
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="/products/reviews" element={<RequirePermission permission="manage-products"><Reviews /></RequirePermission>} />
             <Route path="/products/:id" element={<RequirePermission permission="manage-products"><ProductForm /></RequirePermission>} />
             <Route path="/categories" element={<RequirePermission permission="manage-categories"><Categories /></RequirePermission>} />
+            <Route path="/design-categories" element={<RequirePermission permission="manage-design-categories"><DesignCategories /></RequirePermission>} />
 
             <Route path="/inventory" element={<RequirePermission permission="manage-inventory"><Inventory /></RequirePermission>} />
             <Route path="/inventory/movements" element={<RequirePermission permission="manage-inventory"><Movements /></RequirePermission>} />
