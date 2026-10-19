@@ -14,3 +14,4 @@ export { ProductReviews } from "./ProductReviews";
 export { ServiceHighlights } from "./ServiceHighlights";
 export { ShopByCollection } from "./ShopByCollection";
 export { TrustBar } from "./TrustBar";
+export { WinterCollections } from "./WinterCollections";

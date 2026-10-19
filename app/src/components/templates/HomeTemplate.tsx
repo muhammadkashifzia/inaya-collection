@@ -1,4 +1,4 @@
-import { CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection } from "@/components/organisms";
+import { CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection, WinterCollections } from "@/components/organisms";
 import type { HomeData, HomeSection, SiteConfig } from "@/types";
 
 /**
@@ -11,6 +11,7 @@ export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData 
   return (
     <>
       {home.banners.length > 0 && <HeroBanner banners={home.banners} />}
+      <WinterCollections />
       {home.sections.map((section) => (
         <Section key={section.id} section={section} />
       ))}
