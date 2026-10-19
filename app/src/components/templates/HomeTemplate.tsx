@@ -6,12 +6,11 @@ import type { HomeData, HomeSection, SiteConfig } from "@/types";
  * and visibility are managed in the admin dashboard (Home sections).
  */
 export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData }) {
-  const hero = home.banners[0];
   const tabsSection = home.sections.find((s) => s.type === "category_tabs");
 
   return (
     <>
-      {hero && <HeroBanner banner={hero} />}
+      {home.banners.length > 0 && <HeroBanner banners={home.banners} />}
       {home.sections.map((section) => (
         <Section key={section.id} section={section} />
       ))}
