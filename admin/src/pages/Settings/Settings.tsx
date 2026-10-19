@@ -152,7 +152,7 @@ export default function Settings() {
                       {s.trust.map((t, i) => (
                         <div key={i} className="grid gap-2 md:grid-cols-[120px_1fr_1fr_auto]">
                           <select aria-label="Icon" className="h-10 rounded-lg border border-gray-300 px-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" value={t.icon} onChange={(e) => update("trust", s.trust.map((x, xi) => (xi === i ? { ...x, icon: e.target.value as typeof t.icon } : x)))}>
-                            {["truck", "shield", "map", "lock"].map((ic) => <option key={ic} value={ic}>{ic}</option>)}
+                            {["truck", "shield", "map", "lock", "user"].map((ic) => <option key={ic} value={ic}>{ic}</option>)}
                           </select>
                           <input aria-label="Title" className="h-10 rounded-lg border border-gray-300 px-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" value={t.title} maxLength={60} onChange={(e) => update("trust", s.trust.map((x, xi) => (xi === i ? { ...x, title: e.target.value } : x)))} />
                           <input aria-label="Text" className="h-10 rounded-lg border border-gray-300 px-3 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" value={t.text} maxLength={120} onChange={(e) => update("trust", s.trust.map((x, xi) => (xi === i ? { ...x, text: e.target.value } : x)))} />

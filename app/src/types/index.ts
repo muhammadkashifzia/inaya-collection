@@ -75,7 +75,7 @@ export interface NavLink {
   href: string;
 }
 
-export type TrustIconName = "truck" | "shield" | "map" | "lock";
+export type TrustIconName = "truck" | "shield" | "map" | "lock" | "user";
 
 export interface TrustItem {
   icon: TrustIconName;

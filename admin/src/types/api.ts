@@ -315,7 +315,7 @@ export interface StoreSettings {
   seo: { default_title: string | null; default_description: string | null; og_image: string | null };
   announcements: string[];
   navigation: { label: string; href: string }[];
-  trust: { icon: "truck" | "shield" | "map" | "lock"; title: string; text: string }[];
+  trust: { icon: "truck" | "shield" | "map" | "lock" | "user"; title: string; text: string }[];
   footer: {
     copyright: string | null;
     columns: { heading: string; links: { label: string; href: string }[] }[];

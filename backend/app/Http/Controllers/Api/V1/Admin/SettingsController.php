@@ -77,7 +77,7 @@ class SettingsController extends Controller
             'navigation.*.href' => ['required', 'string', 'max:255', 'regex:#^(/[^\s]*|https://[^\s]+)$#'],
 
             'trust' => ['sometimes', 'array', 'max:6'],
-            'trust.*.icon' => ['required', 'in:truck,shield,map,lock'],
+            'trust.*.icon' => ['required', 'in:truck,shield,map,lock,user'],
             'trust.*.title' => ['required', 'string', 'max:60'],
             'trust.*.text' => ['required', 'string', 'max:120'],
 
