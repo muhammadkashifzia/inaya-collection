@@ -28,7 +28,7 @@ export function WinterCollections() {
                   alt={c.label}
                   fill
                   sizes="(min-width: 768px) 25vw, 300px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-cover object-left transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
             </Link>

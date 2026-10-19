@@ -11,10 +11,17 @@ export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData 
   return (
     <>
       {home.banners.length > 0 && <HeroBanner banners={home.banners} />}
-      <WinterCollections />
-      {home.sections.map((section) => (
-        <Section key={section.id} section={section} />
-      ))}
+      {home.sections.map((section) => {
+        if (section.type === "category_grid") {
+          return (
+            <div key={section.id}>
+              <Section section={section} />
+              <WinterCollections />
+            </div>
+          );
+        }
+        return <Section key={section.id} section={section} />;
+      })}
       {tabsSection?.type === "category_tabs" && (
         <FeaturedTabs
           title="Best Sellers"
