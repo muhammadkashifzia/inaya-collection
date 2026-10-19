@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { api, ApiError } from "@/lib/api";
+import { useToast } from "@/context/ToastContext";
 import type { Cart, Product, User } from "@/types";
 
 /**
@@ -59,6 +60,7 @@ function writeGuestWishlist(ids: number[]) {
 }
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const toast = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [cart, setCart] = useState<Cart | null>(null);
@@ -131,10 +133,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const addToCart = useCallback(
     async (variantId: number, quantity = 1) => {
       const error = await runCart(() => api.addToCart(variantId, quantity));
-      setCartOpen(true);
+      if (error === null) {
+        toast.success("Added to cart");
+        setCartOpen(true);
+      } else {
+        toast.error(error);
+      }
       return error === null;
     },
-    [runCart],
+    [runCart, toast],
   );
 
   const wishlistRef = useRef<number[]>([]);
@@ -150,6 +157,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     // Optimistic update.
     wishlistRef.current = next;
     setWishlist(next);
+    toast.success(wasSaved ? "Removed from wishlist" : "Added to wishlist");
 
     if (!signedIn) {
       writeGuestWishlist(next);
@@ -162,8 +170,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const reverted = wasSaved ? [...wishlistRef.current, product.id] : wishlistRef.current.filter((id) => id !== product.id);
       wishlistRef.current = reverted;
       setWishlist(reverted);
+      toast.error("Could not update wishlist. Please try again.");
     }
-  }, []);
+  }, [toast]);
 
   const signIn = useCallback(
     async (email: string, password: string, remember = false) => {
@@ -210,11 +219,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         await runCart(() => api.updateCartItem(itemId, quantity));
       },
       removeFromCart: async (itemId) => {
-        await runCart(() => api.removeCartItem(itemId));
+        const err = await runCart(() => api.removeCartItem(itemId));
+        if (err === null) toast.success("Item removed from cart");
+        else toast.error(err);
       },
       applyCoupon: (code) => runCart(() => api.applyCoupon(code)),
       removeCoupon: async () => {
-        await runCart(() => api.removeCoupon());
+        const err = await runCart(() => api.removeCoupon());
+        if (err === null) toast.success("Coupon removed");
       },
       setCart,
       wishlist,

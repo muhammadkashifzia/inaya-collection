@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { ServiceWorkerRegister } from "@/components/atoms";
 import { AnnouncementBar, CartDrawer, Footer, Header, MobileTabBar, ServiceHighlights } from "@/components/organisms";
 import { StoreProvider } from "@/context/StoreProvider";
+import { ToastProvider } from "@/context/ToastContext";
 import { getSite } from "@/lib/data";
 import { siteUrl } from "@/lib/seo";
 import "./globals.css";
@@ -44,7 +45,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${body.variable} ${display.variable}`}>
       <body className="min-h-screen" suppressHydrationWarning>
-        <StoreProvider>
+        <ToastProvider>
+          <StoreProvider>
           <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[60] focus:bg-white focus:p-3">
             Skip to content
           </a>
@@ -61,6 +63,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </Suspense>
           <CartDrawer freeShippingThreshold={site.freeShippingThreshold} />
         </StoreProvider>
+        </ToastProvider>
         <ServiceWorkerRegister />
       </body>
     </html>
