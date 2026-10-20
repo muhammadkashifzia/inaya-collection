@@ -31,7 +31,7 @@ function ProfileForm() {
     setError(null);
     try {
       setUser(await api.updateProfile({ name: form.name, email: form.email.trim(), phone: form.phone || null }));
-      toast.success("Your profile has been updated.");
+      toast.success("Profile Updated", "Your profile has been saved.");
     } catch (err) {
       setError(err instanceof ApiError ? err : new ApiError("Could not save.", 0));
     } finally {
@@ -65,7 +65,7 @@ function PasswordForm() {
     setError(null);
     try {
       await api.updatePassword(form);
-      toast.success("Password changed. Other devices were signed out.");
+      toast.success("Password Changed", "Other devices have been signed out.");
       setForm({ currentPassword: "", password: "", passwordConfirmation: "" });
     } catch (err) {
       setError(err instanceof ApiError ? err : new ApiError("Could not change password.", 0));

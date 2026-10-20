@@ -134,10 +134,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     async (variantId: number, quantity = 1) => {
       const error = await runCart(() => api.addToCart(variantId, quantity));
       if (error === null) {
-        toast.success("Added to cart");
+        toast.success("Added to Cart", "Item has been added to your bag.");
         setCartOpen(true);
       } else {
-        toast.error(error);
+        toast.error("Cart Error", error);
       }
       return error === null;
     },
@@ -157,7 +157,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     // Optimistic update.
     wishlistRef.current = next;
     setWishlist(next);
-    toast.success(wasSaved ? "Removed from wishlist" : "Added to wishlist");
+    toast.success(wasSaved ? "Removed from Wishlist" : "Added to Wishlist", wasSaved ? "Item has been removed." : "Item saved to your wishlist.");
 
     if (!signedIn) {
       writeGuestWishlist(next);
@@ -170,7 +170,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const reverted = wasSaved ? [...wishlistRef.current, product.id] : wishlistRef.current.filter((id) => id !== product.id);
       wishlistRef.current = reverted;
       setWishlist(reverted);
-      toast.error("Could not update wishlist. Please try again.");
+      toast.error("Wishlist Error", "Could not update wishlist. Please try again.");
     }
   }, [toast]);
 
@@ -216,17 +216,24 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       refreshCart,
       addToCart,
       updateQuantity: async (itemId, quantity) => {
-        await runCart(() => api.updateCartItem(itemId, quantity));
+        const err = await runCart(() => api.updateCartItem(itemId, quantity));
+        if (err !== null) toast.error("Update Failed", err);
       },
       removeFromCart: async (itemId) => {
         const err = await runCart(() => api.removeCartItem(itemId));
-        if (err === null) toast.success("Item removed from cart");
-        else toast.error(err);
+        if (err === null) toast.success("Item Removed", "Item has been removed from your cart.");
+        else toast.error("Cart Error", err);
       },
-      applyCoupon: (code) => runCart(() => api.applyCoupon(code)),
+      applyCoupon: async (code) => {
+        const err = await runCart(() => api.applyCoupon(code));
+        if (err === null) toast.success("Coupon Applied", "Discount has been applied to your order.");
+        else toast.error("Invalid Coupon", err);
+        return err;
+      },
       removeCoupon: async () => {
         const err = await runCart(() => api.removeCoupon());
-        if (err === null) toast.success("Coupon removed");
+        if (err === null) toast.success("Coupon Removed", "Discount code has been removed.");
+        else toast.error("Error", err);
       },
       setCart,
       wishlist,
