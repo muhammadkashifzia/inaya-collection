@@ -3,7 +3,7 @@ import { useSidebar } from "@/context/SidebarContext";
 import type { PermissionKey } from "@/types/api";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import {
   BoxCubeIcon,
   CartIcon,
@@ -14,6 +14,7 @@ import {
   HorizontaLDots,
   LayoutIcon,
   ListIcon,
+  LogoutIcon,
   MailIcon,
   PageIcon,
   SettingsAltIcon,
@@ -84,7 +85,8 @@ const AppSidebar: React.FC = () => {
   // Collapsed rail (desktop only) is 50px wide: tighter padding, icon-only items.
   const isCollapsed = !isExpanded && !isHovered && !isMobileOpen;
   const { t } = useTranslation();
-  const { can } = useAuth();
+  const { can, user, logout } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
   const allowed = (items: NavItem[]): NavItem[] =>
     items
@@ -331,28 +333,41 @@ const AppSidebar: React.FC = () => {
           !isExpanded && !isHovered ? "xl:justify-center" : "justify-start",
         )}
       >
-        <Link to="/" className="flex items-center gap-3" aria-label="Anaya Collection admin home">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <span className="flex flex-col items-start gap-1">
-              <img
-                src="/images/logo/anaya-collection-logo.png"
-                alt="Anaya Collection"
-                width={600}
-                height={258}
-                className="h-16 w-auto"
-              />
-              <span className="block ps-1 text-[11px] tracking-[0.3em] text-ink-300 uppercase">Admin</span>
+        {/* Mobile: user info | Desktop: logo */}
+        {isMobileOpen && user ? (
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-500 text-sm font-semibold text-white">
+              {user.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase()}
             </span>
-          ) : (
-            <img
-              src="/images/logo/anaya-collection-icon.png"
-              alt="Anaya Collection"
-              width={36}
-              height={36}
-              className="size-9 shrink-0 rounded-lg"
-            />
-          )}
-        </Link>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-white">{user.name}</p>
+              <p className="truncate text-[11px] text-ink-400 capitalize">{user.role}</p>
+            </div>
+          </div>
+        ) : (
+          <Link to="/" className="flex items-center gap-3" aria-label="Anaya Collection admin home">
+            {isExpanded || isHovered ? (
+              <span className="flex flex-col items-start gap-1">
+                <img
+                  src="/images/logo/anaya-collection-logo.png"
+                  alt="Anaya Collection"
+                  width={600}
+                  height={258}
+                  className="h-16 w-auto"
+                />
+                <span className="block ps-1 text-[11px] tracking-[0.3em] text-ink-300 uppercase">Admin</span>
+              </span>
+            ) : (
+              <img
+                src="/images/logo/anaya-collection-icon.png"
+                alt="Anaya Collection"
+                width={36}
+                height={36}
+                className="size-9 shrink-0 rounded-lg"
+              />
+            )}
+          </Link>
+        )}
       </div>
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
@@ -394,6 +409,25 @@ const AppSidebar: React.FC = () => {
           </div>
         </nav>
       </div>
+
+      {/* ── Logout (mobile sidebar only) ── */}
+      {isMobileOpen && (
+        <div className="border-t border-ink-800 px-1 py-4 dark:border-gray-800">
+          <button
+            type="button"
+            onClick={async () => {
+              await logout();
+              navigate("/signin", { replace: true });
+            }}
+            className="menu-item menu-item-inactive w-full"
+          >
+            <span className="menu-item-icon-size menu-item-icon-inactive">
+              <LogoutIcon fontSize={24} />
+            </span>
+            <span className="menu-item-text">Sign out</span>
+          </button>
+        </div>
+      )}
     </aside>
   );
 };
