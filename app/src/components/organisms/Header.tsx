@@ -49,7 +49,6 @@ export function Header({ siteName, logoType, logoUrl, navigation }: HeaderProps)
       <Container className="flex h-16 items-center justify-between gap-4 md:h-20">
         <div className="flex items-center gap-1 xl:hidden">
           <IconButton icon="menu" label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} />
-          <IconButton icon="search" label="Search" onClick={() => setSearchOpen((v) => !v)} />
         </div>
 
         {logoType === "text" ? (
