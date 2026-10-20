@@ -3,6 +3,7 @@ import Card from "@/components/admin/Card";
 import DataState from "@/components/admin/DataState";
 import { Notice, SelectInput, TextInput, Toggle } from "@/components/admin/Fields";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import { ActiveBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
@@ -109,9 +110,9 @@ export default function HomeSections() {
                   </p>
                 </div>
                 <ActiveBadge active={s.is_active} on="Shown" off="Hidden" />
-                <div className="flex gap-3 text-sm font-medium">
-                  <button type="button" className="text-brand-500 hover:underline" onClick={() => { setFormError(null); setDraft({ id: s.id, type: s.type, title: s.title, category_id: s.category_id ? String(s.category_id) : "", product_limit: String(s.product_limit), sort_order: String(s.sort_order), is_active: s.is_active }); }}>Edit</button>
-                  <button type="button" className="text-gray-500 hover:text-error-600" onClick={() => void remove(s)}>Remove</button>
+                <div className="flex gap-1">
+                  <EditAction onClick={() => { setFormError(null); setDraft({ id: s.id, type: s.type, title: s.title, category_id: s.category_id ? String(s.category_id) : "", product_limit: String(s.product_limit), sort_order: String(s.sort_order), is_active: s.is_active }); }} />
+                  <DeleteAction onClick={() => void remove(s)} />
                 </div>
               </li>
             ))}

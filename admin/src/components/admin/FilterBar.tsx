@@ -32,7 +32,7 @@ export default function FilterBar({ search, onSearch, placeholder = "Search…",
 }
 
 const selectClass =
-  "h-11 rounded-lg border border-gray-300 bg-transparent px-3 pe-8 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90";
+  "h-11 rounded-lg border border-gray-300 bg-transparent px-3 pe-10 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90";
 
 export function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
   return (

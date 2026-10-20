@@ -72,8 +72,12 @@ const AppHeader: React.FC = () => {
             {/* Cross Icon */}
           </button>
 
-          <Link to="/" className="font-display text-lg font-semibold tracking-[0.18em] text-ink-900 uppercase xl:hidden dark:text-white">
-            Anaya<span className="text-brand-500">Collection</span>
+          <Link to="/" className="xl:hidden" aria-label="Anaya Collection">
+            <img
+              src="/images/logo/anaya-collection-logo.png"
+              alt="Anaya Collection"
+              className="h-8 w-auto"
+            />
           </Link>
 
           <button

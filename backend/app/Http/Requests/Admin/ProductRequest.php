@@ -32,7 +32,9 @@ class ProductRequest extends FormRequest
         $variantIds = $product?->variants()->pluck('id')->all() ?? [];
 
         return [
-            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->whereNull('deleted_at')],
+            'category_id' => ['nullable', 'integer', Rule::exists('categories', 'id')->whereNull('deleted_at')],
+            'category_ids' => ['nullable', 'array', 'max:20'],
+            'category_ids.*' => ['integer', 'distinct', Rule::exists('categories', 'id')->whereNull('deleted_at')],
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', Rule::unique('products', 'slug')->ignore($product?->id)],
             'sku' => ['required', 'string', 'max:64', 'alpha_dash', Rule::unique('products', 'sku')->ignore($product?->id)],

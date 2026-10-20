@@ -5,6 +5,8 @@ import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
 import { Notice, SelectInput, TextAreaInput, TextInput, Toggle } from "@/components/admin/Fields";
 import PageHeader from "@/components/admin/PageHeader";
+import RichTextEditor from "@/components/admin/RichTextEditor";
+import SeoAccordion from "@/components/admin/SeoAccordion";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
 import { useToast } from "@/context/ToastContext";
@@ -13,11 +15,11 @@ import { ApiError, http, STOREFRONT_URL } from "@/lib/api";
 import { slugify, toLocalInput } from "@/lib/format";
 import type { Category, Product, ProductAttribute, ProductStatus, Tag } from "@/types/api";
 import ProductImages from "./ProductImages";
+import StagedProductImages, { type StagedImages } from "./StagedProductImages";
 import TagPicker from "./TagPicker";
 import VariantEditor, { type VariantDraft } from "./VariantEditor";
 
 interface FormState {
-  category_id: string;
   name: string;
   slug: string;
   sku: string;
@@ -38,7 +40,6 @@ interface FormState {
 }
 
 const empty: FormState = {
-  category_id: "",
   name: "",
   slug: "",
   sku: "",
@@ -60,7 +61,6 @@ const empty: FormState = {
 
 function fromProduct(p: Product): FormState {
   return {
-    category_id: p.category ? String(p.category.id) : "",
     name: p.name,
     slug: p.slug,
     sku: p.sku,
@@ -89,6 +89,7 @@ export default function ProductForm() {
   const categories = useApi(() => http.get<Category[]>("/admin/categories"), []);
   const tags = useApi(() => http.get<Tag[]>("/admin/tags"), []);
   const attributes = useApi(() => http.get<ProductAttribute[]>("/admin/attributes"), []);
+  const [categoryIds, setCategoryIds] = useState<number[]>([]);
   const [tagIds, setTagIds] = useState<number[]>([]);
   const product = useApi(() => (isNew ? Promise.resolve(null) : http.get<Product>(`/admin/products/${id}`)), [id]);
 
@@ -99,12 +100,14 @@ export default function ProductForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [stagedImages, setStagedImages] = useState<StagedImages>({ main: null, gallery: [] });
 
   // Populate the form once the product loads.
   const [loadedId, setLoadedId] = useState<number | null>(null);
   if (product.data && product.data.id !== loadedId) {
     setLoadedId(product.data.id);
     setForm(fromProduct(product.data));
+    setCategoryIds((product.data.categories ?? []).map((c) => c.id));
     setTagIds((product.data.tags ?? []).map((t) => t.id));
     setSlugTouched(true);
     setVariants(
@@ -129,7 +132,7 @@ export default function ProductForm() {
     setBusy(true);
     setError(null);
     const payload = {
-      category_id: Number(form.category_id) || null,
+      category_id: categoryIds[0] ?? null,
       name: form.name,
       slug: form.slug || null,
       sku: form.sku,
@@ -149,6 +152,7 @@ export default function ProductForm() {
       published_at: form.published_at ? new Date(form.published_at).toISOString() : null,
       // Only send tags once the list loaded, so a failed load never clears saved tags.
       ...(tags.data ? { tag_ids: tagIds } : {}),
+      ...(categories.data ? { category_ids: categoryIds } : {}),
       variants: variants.map((v) => ({
         id: v.id ?? null,
         sku: v.sku,
@@ -162,6 +166,21 @@ export default function ProductForm() {
     };
     try {
       const result = isNew ? await http.post<Product>("/admin/products", payload) : await http.put<Product>(`/admin/products/${id}`, payload);
+
+      // Upload staged images after creating a new product.
+      if (isNew && result.id) {
+        const filesToUpload = [
+          ...(stagedImages.main ? [stagedImages.main] : []),
+          ...stagedImages.gallery,
+        ];
+        for (const file of filesToUpload) {
+          const fd = new FormData();
+          fd.append("image", file);
+          fd.append("alt", form.name || "Product image");
+          await http.post(`/admin/products/${result.id}/images`, fd).catch(() => undefined);
+        }
+      }
+
       toast.success("Product saved.");
       if (isNew) navigate(`/products/${result.id}`, { replace: true });
       else product.setData(result);
@@ -234,22 +253,13 @@ export default function ProductForm() {
                     if (!slugTouched) set("slug", slugify(e.target.value));
                   }}
                 />
+                <RichTextEditor className="md:col-span-2" label="Description" value={form.description} onChange={(v) => set("description", v)} />
                 <TextInput label="URL slug" value={form.slug} onChange={(e) => { setSlugTouched(true); set("slug", slugify(e.target.value)); }} error={fieldError("slug")} hint={`/products/${form.slug || "…"}`} maxLength={255} />
                 <TextInput label="SKU" required value={form.sku} onChange={(e) => set("sku", e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, ""))} error={fieldError("sku")} maxLength={64} />
-                <SelectInput
-                  label="Category"
-                  required
-                  value={form.category_id}
-                  onChange={(e) => set("category_id", e.target.value)}
-                  placeholder="Choose a category"
-                  options={(categories.data ?? []).map((c) => ({ value: String(c.id), label: c.parent ? `${c.parent.name} › ${c.name}` : c.name }))}
-                  error={fieldError("category_id")}
-                />
                 <TextInput label="Brand" value={form.brand} onChange={(e) => set("brand", e.target.value)} maxLength={100} />
                 <TextInput label="Fabric" value={form.fabric} onChange={(e) => set("fabric", e.target.value)} placeholder="Khaddar, Karandi…" maxLength={60} />
                 <TextInput label="Pieces" type="number" min={1} max={10} value={form.pieces} onChange={(e) => set("pieces", e.target.value)} error={fieldError("pieces")} />
                 <TextAreaInput className="md:col-span-2" label="Short description" rows={2} value={form.short_description} onChange={(e) => set("short_description", e.target.value)} maxLength={1000} />
-                <TextAreaInput className="md:col-span-2" label="Description" rows={6} value={form.description} onChange={(e) => set("description", e.target.value)} maxLength={20000} />
                 <TextAreaInput className="md:col-span-2" label="What's included (one per line)" rows={3} value={form.details} onChange={(e) => set("details", e.target.value)} placeholder={"Printed shirt – 3 m\nDupatta – 2.5 m"} />
               </div>
             </Card>
@@ -264,17 +274,43 @@ export default function ProductForm() {
 
             <VariantEditor variants={variants} onChange={setVariants} error={error} attributes={attributes.data ?? []} />
 
-            {!isNew && p && <ProductImages product={p} onChange={product.reload} />}
-
-            <Card title="Search engine listing">
+            <SeoAccordion>
               <div className="grid gap-5">
                 <TextInput label="Meta title" value={form.meta_title} onChange={(e) => set("meta_title", e.target.value)} maxLength={255} hint="Defaults to the product name" />
                 <TextAreaInput label="Meta description" rows={2} value={form.meta_description} onChange={(e) => set("meta_description", e.target.value)} maxLength={500} />
               </div>
-            </Card>
+            </SeoAccordion>
           </div>
 
           <div className="col-span-12 space-y-6 xl:col-span-4">
+            {!isNew && p ? (
+              <ProductImages product={p} onChange={product.reload} />
+            ) : (
+              <StagedProductImages onChange={setStagedImages} />
+            )}
+
+            <Card title="Product categories">
+              <div className="max-h-52 space-y-2 overflow-y-auto pe-1 custom-scrollbar">
+                {(categories.data ?? []).map((c) => {
+                  const checked = categoryIds.includes(c.id);
+                  return (
+                    <label key={c.id} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <input
+                        type="checkbox"
+                        className="size-4 rounded border-gray-300 accent-brand-500 dark:border-gray-600"
+                        checked={checked}
+                        onChange={() => setCategoryIds(checked ? categoryIds.filter((id) => id !== c.id) : [...categoryIds, c.id])}
+                      />
+                      {c.parent ? <span><span className="text-gray-400">{c.parent.name} › </span>{c.name}</span> : c.name}
+                    </label>
+                  );
+                })}
+              </div>
+              {fieldError("category_ids") && <p className="mt-2 text-theme-xs font-medium text-error-600">{fieldError("category_ids")}</p>}
+            </Card>
+
+            <TagPicker tags={tags.data} loading={tags.loading} selected={tagIds} onChange={setTagIds} onCreated={tags.reload} error={fieldError("tag_ids")} />
+
             <Card title="Visibility">
               <div className="space-y-5">
                 <SelectInput
@@ -292,12 +328,11 @@ export default function ProductForm() {
                 <Toggle label="Featured product" description="Shown in featured sections" checked={form.is_featured} onChange={(v) => set("is_featured", v)} />
               </div>
             </Card>
-            <TagPicker tags={tags.data} loading={tags.loading} selected={tagIds} onChange={setTagIds} onCreated={tags.reload} error={fieldError("tag_ids")} />
+
             <div className="sticky top-24 space-y-3">
               <Button type="submit" className="w-full" loading={busy}>
                 {isNew ? "Create product" : "Save changes"}
               </Button>
-              {isNew && <p className="text-center text-theme-xs text-gray-500">You can add images after creating the product.</p>}
             </div>
           </div>
         </form>

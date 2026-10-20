@@ -5,6 +5,7 @@ import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
 import { Notice, TextInput } from "@/components/admin/Fields";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import PageMeta from "@/components/common/PageMeta";
 import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
@@ -149,9 +150,9 @@ export default function Attributes() {
                   header: <span className="sr-only">Actions</span>,
                   align: "end",
                   cell: (a) => (
-                    <div className="flex justify-end gap-3 text-sm font-medium">
-                      <button type="button" className="text-brand-500 hover:underline" onClick={() => open(a)}>Edit</button>
-                      <button type="button" className="text-gray-500 hover:text-error-600 dark:text-gray-400" onClick={() => void remove(a)}>Delete</button>
+                    <div className="flex justify-end gap-1">
+                      <EditAction onClick={() => open(a)} />
+                      <DeleteAction onClick={() => void remove(a)} />
                     </div>
                   ),
                 },

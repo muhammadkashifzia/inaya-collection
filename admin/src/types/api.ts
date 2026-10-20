@@ -28,6 +28,7 @@ export interface AdminUser {
   phone: string | null;
   role: Role;
   is_active: boolean;
+  two_factor_enabled?: boolean;
   permissions?: PermissionKey[];
   created_at: string;
   last_login_at?: string | null;
@@ -120,6 +121,7 @@ export interface Product {
   image: string | null;
   images?: ProductImage[];
   category?: Category | null;
+  categories?: Category[];
   variants?: Variant[];
   tags?: Tag[];
   meta_title: string | null;

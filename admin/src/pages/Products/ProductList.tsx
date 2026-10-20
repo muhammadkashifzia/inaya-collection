@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import Card from "@/components/admin/Card";
 import DataState from "@/components/admin/DataState";
@@ -37,6 +38,9 @@ export default function ProductList() {
     [values, page],
   );
 
+  const [showFilters, setShowFilters] = useState(false);
+  const hasActiveFilters = !!(values.status || values.category || values.trashed || values.low_stock);
+
   async function restore(id: number) {
     await http.post(`/admin/products/${id}/restore`);
     reload();
@@ -56,19 +60,55 @@ export default function ProductList() {
       />
       <Card bodyClassName="p-4 md:p-5">
         <FilterBar search={values.q} onSearch={(q) => set("q", q)} placeholder="Search name or SKU">
-          <FilterSelect label="Status" value={values.status} onChange={(v) => set("status", v)} options={STATUS} />
-          <FilterSelect
-            label="Category"
-            value={values.category}
-            onChange={(v) => set("category", v)}
-            options={(categories.data ?? []).map((c) => ({ value: c.slug, label: c.name }))}
-          />
-          <FilterSelect label="Show" value={values.trashed} onChange={(v) => set("trashed", v)} options={[{ value: "only", label: "Deleted only" }, { value: "with", label: "Include deleted" }]} />
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <input type="checkbox" className="size-4 accent-brand-500" checked={values.low_stock === "1"} onChange={(e) => set("low_stock", e.target.checked ? "1" : "")} />
-            Low stock
-          </label>
+          <button
+            type="button"
+            onClick={() => setShowFilters(!showFilters)}
+            className={`inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
+              showFilters || hasActiveFilters
+                ? "border-brand-300 bg-brand-50 text-brand-600 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-400"
+                : "border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-white/5"
+            }`}
+          >
+            <svg className="size-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+            </svg>
+            Filters
+            {hasActiveFilters && (
+              <span className="flex size-5 items-center justify-center rounded-full bg-brand-500 text-[10px] font-bold text-white">
+                {[values.status, values.category, values.trashed, values.low_stock].filter(Boolean).length}
+              </span>
+            )}
+          </button>
         </FilterBar>
+
+        {/* ── Collapsible filter panel ── */}
+        {showFilters && (
+          <div className="mb-4 rounded-xl border border-gray-200 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-white/2">
+            <div className="flex flex-wrap items-center gap-3">
+              <FilterSelect label="Status" value={values.status} onChange={(v) => set("status", v)} options={STATUS} />
+              <FilterSelect
+                label="Category"
+                value={values.category}
+                onChange={(v) => set("category", v)}
+                options={(categories.data ?? []).map((c) => ({ value: c.slug, label: c.name }))}
+              />
+              <FilterSelect label="Show" value={values.trashed} onChange={(v) => set("trashed", v)} options={[{ value: "only", label: "Deleted only" }, { value: "with", label: "Include deleted" }]} />
+              <label className="flex items-center gap-2 rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">
+                <input type="checkbox" className="size-4 accent-brand-500" checked={values.low_stock === "1"} onChange={(e) => set("low_stock", e.target.checked ? "1" : "")} />
+                Low stock
+              </label>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={() => { set("status", ""); set("category", ""); set("trashed", ""); set("low_stock", ""); }}
+                  className="text-sm font-medium text-brand-500 hover:underline"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         <DataState
           loading={loading}
@@ -132,7 +172,7 @@ export default function ProductList() {
                   { key: "status", header: "Status", cell: (p) => (p.deleted_at ? <span className="text-theme-xs text-error-600">Deleted</span> : <ProductStatusBadge status={p.status} />) },
                   {
                     key: "actions",
-                    header: <span className="sr-only">Actions</span>,
+                    header: "Action",
                     align: "end",
                     cell: (p) =>
                       p.deleted_at ? (
@@ -140,8 +180,10 @@ export default function ProductList() {
                           Restore
                         </Button>
                       ) : (
-                        <Link to={`/products/${p.id}`} className="text-sm font-medium text-brand-500 hover:underline">
-                          Edit
+                        <Link to={`/products/${p.id}`} title="Edit" className="inline-flex rounded-lg p-1.5 text-brand-500 transition-colors hover:bg-brand-50 dark:hover:bg-brand-500/10">
+                          <svg className="size-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                          </svg>
                         </Link>
                       ),
                   },

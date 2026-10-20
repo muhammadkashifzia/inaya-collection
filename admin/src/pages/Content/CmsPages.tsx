@@ -4,6 +4,7 @@ import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
 import { Notice, TextAreaInput, TextInput, Toggle } from "@/components/admin/Fields";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import { ActiveBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
@@ -94,9 +95,9 @@ export default function CmsPages() {
                   header: <span className="sr-only">Actions</span>,
                   align: "end",
                   cell: (p) => (
-                    <div className="flex justify-end gap-3 text-sm font-medium">
-                      <button type="button" className="text-brand-500 hover:underline" onClick={() => open(p)}>Edit</button>
-                      <button type="button" className="text-gray-500 hover:text-error-600" onClick={() => void remove(p)}>Delete</button>
+                    <div className="flex justify-end gap-1">
+                      <EditAction onClick={() => open(p)} />
+                      <DeleteAction onClick={() => void remove(p)} />
                     </div>
                   ),
                 },

@@ -59,6 +59,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::prefix('auth')->name('auth.')->group(function (): void {
         Route::post('register', [AuthController::class, 'register'])->middleware('throttle:login')->name('register');
         Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login');
+        Route::post('two-factor-challenge', [AuthController::class, 'twoFactorChallenge'])->middleware('throttle:login')->name('two-factor.challenge');
+        Route::post('two-factor-setup', [AuthController::class, 'twoFactorSetup'])->middleware('throttle:login')->name('two-factor.setup');
+        Route::post('two-factor-setup/confirm', [AuthController::class, 'twoFactorSetupConfirm'])->middleware('throttle:login')->name('two-factor.setup.confirm');
         Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:password-reset')->name('password.email');
         Route::post('reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:password-reset')->name('password.update');
         Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
@@ -86,6 +89,11 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', 'active', 'staff'])->group(function (): void {
         Route::get('dashboard', Admin\DashboardController::class)->middleware('can:'.Permission::ViewDashboard->value)->name('dashboard');
 
+        // Two-factor authentication management (any staff member)
+        Route::post('two-factor/enable', [Admin\TwoFactorController::class, 'enable'])->name('two-factor.enable');
+        Route::post('two-factor/confirm', [Admin\TwoFactorController::class, 'confirm'])->name('two-factor.confirm');
+        Route::post('two-factor/disable', [Admin\TwoFactorController::class, 'disable'])->name('two-factor.disable');
+
         Route::middleware('can:'.Permission::ManageProducts->value)->group(function (): void {
             Route::get('products', [Admin\ProductController::class, 'index'])->name('products.index');
             Route::post('products', [Admin\ProductController::class, 'store'])->name('products.store');
@@ -104,6 +112,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::middleware('can:'.Permission::ManageCategories->value)->group(function (): void {
             Route::post('categories/image', [Admin\CategoryController::class, 'uploadImage'])->name('categories.image');
+            Route::post('categories/reorder', [Admin\CategoryController::class, 'reorder'])->name('categories.reorder');
             Route::apiResource('categories', Admin\CategoryController::class);
         });
 

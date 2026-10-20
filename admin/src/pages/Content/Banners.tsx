@@ -4,6 +4,7 @@ import DataState from "@/components/admin/DataState";
 import { Notice, SelectInput, TextAreaInput, TextInput, Toggle } from "@/components/admin/Fields";
 import ImageUpload from "@/components/admin/ImageUpload";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import { ActiveBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
@@ -110,9 +111,9 @@ export default function Banners() {
               </div>
               <div className="flex items-center justify-between p-4">
                 <ActiveBadge active={b.is_active ?? true} on="Live" off="Hidden" />
-                <div className="flex gap-3 text-sm font-medium">
-                  <button type="button" className="text-brand-500 hover:underline" onClick={() => open(b)}>Edit</button>
-                  <button type="button" className="text-gray-500 hover:text-error-600" onClick={() => void remove(b)}>Delete</button>
+                <div className="flex gap-1">
+                  <EditAction onClick={() => open(b)} />
+                  <DeleteAction onClick={() => void remove(b)} />
                 </div>
               </div>
             </Card>

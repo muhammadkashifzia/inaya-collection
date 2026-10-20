@@ -49,7 +49,12 @@ class ProductWriter
                 $product->tags()->sync($data['tag_ids'] ?? []);
             }
 
-            return $product->refresh()->load(['images', 'primaryImage', 'category', 'variants', 'tags']);
+            // Omitting category_ids leaves categories untouched; an empty array clears them.
+            if (array_key_exists('category_ids', $data)) {
+                $product->categories()->sync($data['category_ids'] ?? []);
+            }
+
+            return $product->refresh()->load(['images', 'primaryImage', 'category', 'categories', 'variants', 'tags']);
         });
     }
 

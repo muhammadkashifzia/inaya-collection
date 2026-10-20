@@ -6,6 +6,7 @@ import DataTable from "@/components/admin/DataTable";
 import { Notice, TextInput } from "@/components/admin/Fields";
 import FilterBar from "@/components/admin/FilterBar";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
@@ -104,9 +105,9 @@ export default function Tags() {
                   header: <span className="sr-only">Actions</span>,
                   align: "end",
                   cell: (t) => (
-                    <div className="flex justify-end gap-3 text-sm font-medium">
-                      <button type="button" className="text-brand-500 hover:underline" onClick={() => open(t)}>Edit</button>
-                      <button type="button" className="text-gray-500 hover:text-error-600 dark:text-gray-400" onClick={() => void remove(t)}>Delete</button>
+                    <div className="flex justify-end gap-1">
+                      <EditAction onClick={() => open(t)} />
+                      <DeleteAction onClick={() => void remove(t)} />
                     </div>
                   ),
                 },

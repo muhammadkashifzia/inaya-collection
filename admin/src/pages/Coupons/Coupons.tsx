@@ -5,6 +5,7 @@ import DataTable from "@/components/admin/DataTable";
 import { Notice, SelectInput, TextInput, Toggle } from "@/components/admin/Fields";
 import FilterBar from "@/components/admin/FilterBar";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import Pagination from "@/components/admin/Pagination";
 import { ActiveBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
@@ -140,9 +141,9 @@ export default function Coupons() {
                     header: <span className="sr-only">Actions</span>,
                     align: "end",
                     cell: (c) => (
-                      <div className="flex justify-end gap-3 text-sm font-medium">
-                        <button type="button" className="text-brand-500 hover:underline" onClick={() => open(c)}>Edit</button>
-                        <button type="button" className="text-gray-500 hover:text-error-600" onClick={() => void remove(c)}>Delete</button>
+                      <div className="flex justify-end gap-1">
+                        <EditAction onClick={() => open(c)} />
+                        <DeleteAction onClick={() => void remove(c)} />
                       </div>
                     ),
                   },

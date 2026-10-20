@@ -50,7 +50,6 @@ const navItems: NavItem[] = [
       { name: "All Products", path: "/products", permission: "manage-products" },
       { name: "Add new product", path: "/products/new", permission: "manage-products" },
       { name: "Categories", path: "/categories", permission: "manage-categories" },
-      { name: "Design Categories", path: "/design-categories", permission: "manage-design-categories" },
       { name: "Tags", path: "/products/tags", permission: "manage-products" },
       { name: "Attributes", path: "/products/attributes", permission: "manage-products" },
       { name: "Reviews", path: "/products/reviews", permission: "manage-products" },
@@ -317,7 +316,7 @@ const AppSidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        "fixed inset-s-0 top-0 z-50 flex h-screen flex-col border-e border-ink-800 bg-ink-900 text-white transition-all duration-300 ease-in-out xl:translate-x-0 xl:rtl:translate-x-0 dark:border-gray-800 dark:bg-ink-950",
+        "fixed inset-s-0 top-0 z-99999 flex h-screen flex-col border-e border-ink-800 bg-ink-900 text-white transition-all duration-300 ease-in-out xl:translate-x-0 xl:rtl:translate-x-0 dark:border-gray-800 dark:bg-ink-950",
         isCollapsed ? "w-12.5 px-1.5" : "w-55.5 px-5",
         isMobileOpen
           ? "translate-x-0"
