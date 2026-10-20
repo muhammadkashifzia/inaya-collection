@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
 import FilterBar, { FilterSelect } from "@/components/admin/FilterBar";
@@ -13,6 +14,7 @@ import { useApi } from "@/hooks/useApi";
 import { useListQuery } from "@/hooks/useListQuery";
 import { http } from "@/lib/api";
 import { money } from "@/lib/format";
+import { EyeIcon, PencilIcon, TrashBinIcon } from "@/icons";
 import type { Category, Paginated, Product } from "@/types/api";
 
 const STATUS = [
@@ -39,11 +41,24 @@ export default function ProductList() {
   );
 
   const [showFilters, setShowFilters] = useState(false);
+  const [confirmProduct, setConfirmProduct] = useState<Product | null>(null);
   const hasActiveFilters = !!(values.status || values.category || values.trashed || values.low_stock);
 
   async function restore(id: number) {
     await http.post(`/admin/products/${id}/restore`);
     reload();
+  }
+
+  async function onConfirmDelete() {
+    if (!confirmProduct) return;
+    try {
+      await http.delete(`/admin/products/${confirmProduct.id}`);
+      reload();
+    } catch {
+      // handled silently
+    } finally {
+      setConfirmProduct(null);
+    }
   }
 
   return (
@@ -180,11 +195,17 @@ export default function ProductList() {
                           Restore
                         </Button>
                       ) : (
-                        <Link to={`/products/${p.id}`} title="Edit" className="inline-flex rounded-lg p-1.5 text-brand-500 transition-colors hover:bg-brand-50 dark:hover:bg-brand-500/10">
-                          <svg className="size-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
-                          </svg>
-                        </Link>
+                        <div className="flex items-center justify-end gap-1">
+                          <Link to={`/products/${p.id}`} title="View" className="inline-flex rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-brand-400">
+                            <EyeIcon className="size-[18px]" />
+                          </Link>
+                          <Link to={`/products/${p.id}`} title="Edit" className="inline-flex rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-brand-400">
+                            <PencilIcon className="size-[18px]" />
+                          </Link>
+                          <button type="button" onClick={() => setConfirmProduct(p)} title="Delete" className="inline-flex rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-error-50 hover:text-error-500 dark:text-gray-400 dark:hover:bg-error-500/10 dark:hover:text-error-400">
+                            <TrashBinIcon className="size-[18px]" />
+                          </button>
+                        </div>
                       ),
                   },
                 ]}
@@ -194,6 +215,15 @@ export default function ProductList() {
           )}
         </DataState>
       </Card>
+
+      <ConfirmDialog
+        open={confirmProduct !== null}
+        title={`Delete "${confirmProduct?.name}"?`}
+        message="It will be hidden from the store. Order history is kept. This cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => void onConfirmDelete()}
+        onCancel={() => setConfirmProduct(null)}
+      />
     </>
   );
 }
