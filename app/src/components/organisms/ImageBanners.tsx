@@ -50,7 +50,7 @@ function ImageBannerCard({ item }: { item: ImageBannerItem }) {
           >
             {item.subtitle && <span className="font-heading text-sm italic md:text-base">{item.subtitle}</span>}
             {item.title && <span className="font-heading text-3xl font-bold leading-none tracking-wide md:text-4xl">{item.title}</span>}
-          </span>
+          </span> 
         </>
       )}
     </>
