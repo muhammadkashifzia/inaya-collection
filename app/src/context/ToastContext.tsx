@@ -60,25 +60,25 @@ const toneConfig: Record<ToastTone, { card: string; icon: string; iconBg: string
 
 const icons: Record<ToastTone, ReactNode> = {
   success: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 6L9 17l-5-5" />
     </svg>
   ),
   error: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   ),
   info: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10" />
       <line x1="12" y1="16" x2="12" y2="12" />
       <line x1="12" y1="8" x2="12.01" y2="8" />
     </svg>
   ),
   warning: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
       <line x1="12" y1="9" x2="12" y2="13" />
       <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -132,20 +132,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={t.id}
               role={t.tone === "error" ? "alert" : "status"}
               className={cn(
-                "pointer-events-auto flex w-full max-w-sm items-center gap-3.5 rounded-md border bg-white p-4 shadow-lg transition-all duration-300",
+                "pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-md border bg-white px-3.5 py-2.5 shadow-lg transition-all duration-300",
                 cfg.card,
                 t.exiting ? "translate-y-2 opacity-0 md:-translate-y-0 md:translate-x-full" : "animate-[toast-in_0.3s_ease-out]",
               )}
             >
               {/* Circular icon */}
-              <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-full", cfg.iconBg, cfg.icon)}>
+              <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full", cfg.iconBg, cfg.icon)}>
                 {icons[t.tone]}
               </span>
 
               {/* Title + message */}
               <div className="min-w-0 flex-1">
-                <p className="text-[15px] font-bold leading-tight text-gray-900">{t.title}</p>
-                {t.message && <p className="mt-0.5 text-sm leading-snug text-gray-500">{t.message}</p>}
+                <p className="text-sm font-bold leading-tight text-gray-900">{t.title}</p>
+                {t.message && <p className="mt-0.5 text-xs leading-snug text-gray-500">{t.message}</p>}
               </div>
 
               {/* Close ⊗ button */}
@@ -155,7 +155,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 className="shrink-0 text-gray-400 hover:text-gray-600"
                 aria-label="Dismiss"
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="15" y1="9" x2="9" y2="15" />
                   <line x1="9" y1="9" x2="15" y2="15" />
