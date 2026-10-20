@@ -1,4 +1,4 @@
-import { CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection } from "@/components/organisms";
+import { CollectionTabs, FeaturedTabs, HeroBanner, ImageBanners, ProductRail, ShopByCollection } from "@/components/organisms";
 import type { HomeData, HomeSection, SiteConfig } from "@/types";
 
 /**
@@ -51,6 +51,8 @@ function Section({ section }: { section: HomeSection }) {
           href={`/collections/all?sort=${section.type === "best_sellers" ? "popularity" : section.type === "latest" ? "latest" : "featured"}${section.type === "discounted" ? "&on_sale=1" : ""}`}
         />
       );
+    case "image_banners":
+      return section.items.length ? <ImageBanners title={section.title} items={section.items} /> : null;
     case "reviews":
       // Customer reviews are not stored in the backend yet, so nothing is rendered.
       return null;

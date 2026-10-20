@@ -245,7 +245,18 @@ export type HomeSectionType =
   | "category"
   | "category_tabs"
   | "category_grid"
-  | "reviews";
+  | "reviews"
+  | "image_banners";
+
+/** One card of an "image_banners" section: background image with overlay text. */
+export interface HomeSectionItem {
+  image_path: string;
+  image: string;
+  title: string | null;
+  subtitle: string | null;
+  href: string | null;
+  align: "left" | "center";
+}
 
 export interface HomeSection {
   id: number;
@@ -254,6 +265,7 @@ export interface HomeSection {
   category_id: number | null;
   category?: Category | null;
   product_limit: number;
+  items: HomeSectionItem[];
   sort_order: number;
   is_active: boolean;
 }

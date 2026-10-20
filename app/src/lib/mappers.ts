@@ -141,6 +141,19 @@ export function mapHome(json: Raw): HomeData {
         };
       case "reviews":
         return { id: s.id, type: s.type, title: s.title };
+      case "image_banners":
+        return {
+          id: s.id,
+          type: s.type,
+          title: s.title ?? "",
+          items: (s.items ?? []).map((i: Raw) => ({
+            image: i.image,
+            title: i.title ?? null,
+            subtitle: i.subtitle ?? null,
+            href: i.href ?? null,
+            align: i.align === "left" ? "left" : "center",
+          })),
+        };
       default:
         return { id: s.id, type: s.type, title: s.title, products: (s.products ?? []).map(mapProduct) };
     }

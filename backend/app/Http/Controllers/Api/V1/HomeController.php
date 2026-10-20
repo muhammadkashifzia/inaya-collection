@@ -15,6 +15,7 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * GET /api/v1/home — every homepage block, in the order configured by admins.
@@ -72,6 +73,15 @@ class HomeController extends Controller
                     : collect()),
             ],
             HomeSectionType::Reviews => [],
+            HomeSectionType::ImageBanners => [
+                'items' => collect($section->items ?? [])->map(fn (array $item): array => [
+                    'image' => Storage::disk('public')->url($item['image']),
+                    'title' => $item['title'] ?? null,
+                    'subtitle' => $item['subtitle'] ?? null,
+                    'href' => $item['href'] ?? null,
+                    'align' => $item['align'] ?? 'center',
+                ])->values(),
+            ],
         };
     }
 

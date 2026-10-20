@@ -6,6 +6,7 @@ export { FeaturedTabs } from "./FeaturedTabs";
 export { Footer } from "./Footer";
 export { Header } from "./Header";
 export { HeroBanner } from "./HeroBanner";
+export { ImageBanners } from "./ImageBanners";
 export { MobileTabBar } from "./MobileTabBar";
 export { ProductDetail } from "./ProductDetail";
 export { ProductGrid, ProductGridSkeleton } from "./ProductGrid";

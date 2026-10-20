@@ -136,7 +136,18 @@ export type HomeSection =
   | { id: number; type: "category_tabs"; title: string; tabs: { category: Collection; total: number; products: Product[] }[] }
   | { id: number; type: "featured" | "best_sellers" | "latest" | "discounted"; title: string; products: Product[] }
   | { id: number; type: "category"; title: string; category: Collection | null; products: Product[] }
-  | { id: number; type: "reviews"; title: string };
+  | { id: number; type: "reviews"; title: string }
+  | { id: number; type: "image_banners"; title: string; items: ImageBannerItem[] };
+
+/** A card with a background image and admin-entered text drawn on top of it. */
+export interface ImageBannerItem {
+  image: string;
+  title: string | null;
+  subtitle: string | null;
+  href: string | null;
+  /** Where the overlay text sits on the image. */
+  align: "left" | "center";
+}
 
 export interface HomeData {
   banners: Banner[];
