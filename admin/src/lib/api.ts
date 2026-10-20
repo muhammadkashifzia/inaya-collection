@@ -105,7 +105,37 @@ async function request<T>(method: string, path: string, body?: unknown, retried 
   return json as T;
 }
 
+/** GET a file (e.g. CSV export) and trigger a browser download. */
+async function download(path: string, query?: Query, fallbackName = "download"): Promise<void> {
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}/api/v1${path}${toQuery(query)}`, { credentials: "include", headers: { Accept: "application/json, text/csv" } });
+  } catch {
+    throw new ApiError("Cannot reach the API. Check that the backend is running.", 0);
+  }
+  if (!res.ok) {
+    if (res.status === 401) onUnauthorized?.();
+    const json = await res.json().catch(() => ({}));
+    throw new ApiError(res.status === 403 ? "You don't have permission to do that." : (json.message as string) || `Download failed (${res.status}).`, res.status, json.errors ?? {});
+  }
+  const name = /filename="?([^";]+)"?/i.exec(res.headers.get("Content-Disposition") ?? "")?.[1] ?? fallbackName;
+  saveBlob(await res.blob(), name);
+}
+
+/** Save a Blob to disk via a temporary object URL. */
+export function saveBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export const http = {
+  download,
   get: <T>(path: string, query?: Query) => request<T>("GET", `${path}${toQuery(query)}`),
   post: <T>(path: string, body?: unknown) => request<T>("POST", path, body ?? {}),
   put: <T>(path: string, body?: unknown) => request<T>("PUT", path, body ?? {}),

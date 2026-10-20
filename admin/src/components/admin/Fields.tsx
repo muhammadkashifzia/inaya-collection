@@ -1,4 +1,5 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { useId, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { EyeCloseIcon, EyeIcon } from "@/icons";
 import { cn } from "@/utils";
 
 const control =
@@ -47,6 +48,41 @@ export function TextInput({ label, error, hint, className, id, ...props }: BaseP
         className={cn(control, "h-11", error ? "border-error-500" : "border-gray-300 dark:border-gray-700")}
         {...props}
       />
+    </FieldShell>
+  );
+}
+
+/** Password field with a show/hide toggle. */
+export function PasswordInput({ label, error, hint, className, id, ...props }: BaseProps & Omit<InputHTMLAttributes<HTMLInputElement>, "type">) {
+  const auto = useId();
+  const inputId = id ?? auto;
+  const [visible, setVisible] = useState(false);
+  return (
+    <FieldShell id={inputId} label={label} error={error} hint={hint} required={props.required} className={className}>
+      <div className="relative">
+        <input
+          id={inputId}
+          type={visible ? "text" : "password"}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${inputId}-error` : undefined}
+          className={cn(control, "h-11 pe-12", error ? "border-error-500" : "border-gray-300 dark:border-gray-700")}
+          {...props}
+        />
+        <button
+          type="button"
+          onClick={() => setVisible((v) => !v)}
+          aria-label={visible ? "Hide password" : "Show password"}
+          aria-pressed={visible}
+          aria-controls={inputId}
+          className="absolute end-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md focus-visible:ring-3 focus-visible:ring-brand-500/30 focus-visible:outline-hidden"
+        >
+          {visible ? (
+            <EyeIcon className="size-5 fill-gray-500 dark:fill-gray-400" />
+          ) : (
+            <EyeCloseIcon className="size-5 fill-gray-500 dark:fill-gray-400" />
+          )}
+        </button>
+      </div>
     </FieldShell>
   );
 }

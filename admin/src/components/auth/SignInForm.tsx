@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
-import { Notice, TextInput } from "@/components/admin/Fields";
+import { Notice, PasswordInput, TextInput } from "@/components/admin/Fields";
 import Button from "@/components/ui/button/Button";
 import { useAuth } from "@/context/AuthContext";
 import { ApiError } from "@/lib/api";
@@ -43,7 +43,7 @@ export default function SignInForm() {
         <form onSubmit={onSubmit} className="space-y-5" noValidate>
           <Notice tone="error">{error && !error.field("email") ? error.message : null}</Notice>
           <TextInput label="Email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} error={error?.field("email")} maxLength={255} />
-          <TextInput label="Password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} error={error?.field("password")} maxLength={255} />
+          <PasswordInput label="Password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} error={error?.field("password")} maxLength={255} />
           <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-400">
             <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="size-4 accent-brand-500" />
             Keep me signed in

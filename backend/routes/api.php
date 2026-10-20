@@ -83,6 +83,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('dashboard', Admin\DashboardController::class)->middleware('can:'.Permission::ViewDashboard->value)->name('dashboard');
 
         Route::middleware('can:'.Permission::ManageProducts->value)->group(function (): void {
+            Route::get('products/export', [Admin\ProductTransferController::class, 'export'])->name('products.export');
+            Route::post('products/import', [Admin\ProductTransferController::class, 'import'])->middleware('throttle:10,1')->name('products.import');
             Route::get('products', [Admin\ProductController::class, 'index'])->name('products.index');
             Route::post('products', [Admin\ProductController::class, 'store'])->name('products.store');
             Route::get('products/{product}', [Admin\ProductController::class, 'show'])->whereNumber('product')->name('products.show');

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import Card from "@/components/admin/Card";
 import DataState from "@/components/admin/DataState";
@@ -10,9 +11,11 @@ import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
 import { useApi } from "@/hooks/useApi";
 import { useListQuery } from "@/hooks/useListQuery";
+import { useModal } from "@/hooks/useModal";
 import { http } from "@/lib/api";
-import { money } from "@/lib/format";
 import type { Category, Paginated, Product } from "@/types/api";
+import ProductExportModal from "./ProductExportModal";
+import ProductImportModal from "./ProductImportModal";
 
 const STATUS = [
   { value: "active", label: "Active" },
@@ -20,26 +23,78 @@ const STATUS = [
   { value: "archived", label: "Archived" },
 ];
 
+/** Product type shown in the list, derived from pieces + fabric (e.g. "3 Piece · Khaddar"). */
+function productType(p: Product): string {
+  const parts = [p.pieces ? `${p.pieces} Piece` : null, p.fabric].filter(Boolean);
+  return parts.length ? parts.join(" · ") : "—";
+}
+
+function inventory(p: Product) {
+  const stock = p.total_stock;
+  if (stock === undefined) return "—";
+  const variants = p.variants?.length ?? 0;
+  const tone = stock === 0 ? "text-error-600" : stock <= p.low_stock_threshold ? "text-warning-600" : "text-gray-700 dark:text-gray-300";
+  return (
+    <span className={tone}>
+      {stock} in stock
+      {variants > 1 && <span className="text-gray-500 dark:text-gray-400"> for {variants} variants</span>}
+    </span>
+  );
+}
+
 export default function ProductList() {
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [deleting, setDeleting] = useState(false);
+  const importModal = useModal();
+  const exportModal = useModal();
   const { values, page, set } = useListQuery(["q", "status", "category", "trashed", "low_stock"] as const);
   const categories = useApi(() => http.get<Category[]>("/admin/categories"), []);
+  const filters = {
+    q: values.q,
+    status: values.status,
+    category: values.category,
+    trashed: values.trashed,
+    low_stock: values.low_stock === "1" ? true : undefined,
+  };
   const { data, error, loading, reload } = useApi(
-    () =>
-      http.get<Paginated<Product>>("/admin/products", {
-        q: values.q,
-        status: values.status,
-        category: values.category,
-        trashed: values.trashed,
-        low_stock: values.low_stock === "1" ? true : undefined,
-        page,
-        per_page: 20,
-      }),
+    () => http.get<Paginated<Product>>("/admin/products", { ...filters, page, per_page: 20 }),
     [values, page],
   );
 
   async function restore(id: number) {
     await http.post(`/admin/products/${id}/restore`);
     reload();
+  }
+
+  const rows = data?.data ?? [];
+  const selectable = rows.filter((p) => !p.deleted_at);
+  // Only count ids that are on the current page, so stale picks from other pages/filters are ignored.
+  const selectedIds = selectable.filter((p) => selected.has(p.id)).map((p) => p.id);
+  const allSelected = selectable.length > 0 && selectedIds.length === selectable.length;
+
+  function toggle(id: number) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleAll() {
+    setSelected(allSelected ? new Set() : new Set(selectable.map((p) => p.id)));
+  }
+
+  async function deleteSelected() {
+    if (!window.confirm(`Delete ${selectedIds.length} product(s)? They can be restored later from "Deleted only".`)) return;
+    setDeleting(true);
+    try {
+      await Promise.all(selectedIds.map((id) => http.delete(`/admin/products/${id}`)));
+    } finally {
+      setDeleting(false);
+      setSelected(new Set());
+      reload();
+    }
   }
 
   return (
@@ -49,11 +104,30 @@ export default function ProductList() {
         title="Products"
         description="Everything listed on the storefront."
         actions={
-          <Link to="/products/new" className="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600">
-            + Add product
-          </Link>
+          <>
+            <Button size="sm" variant="outline" onClick={importModal.openModal}>
+              Import
+            </Button>
+            <Button size="sm" variant="outline" onClick={exportModal.openModal}>
+              Export
+            </Button>
+            <Link to="/products/new" className="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600">
+              + Add product
+            </Link>
+          </>
         }
       />
+      <ProductImportModal isOpen={importModal.isOpen} onClose={importModal.closeModal} onImported={reload} />
+      {exportModal.isOpen && (
+        <ProductExportModal
+          isOpen
+          onClose={exportModal.closeModal}
+          pageIds={rows.map((p) => p.id)}
+          selectedIds={selectedIds}
+          filters={filters}
+          hasFilters={Object.values(filters).some((v) => v !== undefined && v !== "")}
+        />
+      )}
       <Card bodyClassName="p-4 md:p-5">
         <FilterBar search={values.q} onSearch={(q) => set("q", q)} placeholder="Search name or SKU">
           <FilterSelect label="Status" value={values.status} onChange={(v) => set("status", v)} options={STATUS} />
@@ -81,11 +155,37 @@ export default function ProductList() {
         >
           {data && (
             <>
+              {selectedIds.length > 0 && (
+                <div className="mb-3 flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm dark:border-gray-800 dark:bg-white/3">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">{selectedIds.length} selected</span>
+                  <Button size="sm" variant="outline" disabled={deleting} onClick={() => void deleteSelected()}>
+                    {deleting ? "Deleting…" : "Delete"}
+                  </Button>
+                  <button type="button" className="ms-auto text-gray-500 hover:text-gray-700 dark:text-gray-400" onClick={() => setSelected(new Set())}>
+                    Clear
+                  </button>
+                </div>
+              )}
               <DataTable
                 caption="Products"
                 rows={data.data}
                 rowKey={(p) => p.id}
                 columns={[
+                  {
+                    key: "select",
+                    className: "w-10",
+                    header: <input type="checkbox" aria-label="Select all products" className="size-4 accent-brand-500" checked={allSelected} onChange={toggleAll} disabled={selectable.length === 0} />,
+                    cell: (p) => (
+                      <input
+                        type="checkbox"
+                        aria-label={`Select ${p.name}`}
+                        className="size-4 accent-brand-500"
+                        checked={selected.has(p.id)}
+                        onChange={() => toggle(p.id)}
+                        disabled={Boolean(p.deleted_at)}
+                      />
+                    ),
+                  },
                   {
                     key: "product",
                     header: "Product",
@@ -105,31 +205,10 @@ export default function ProductList() {
                       </div>
                     ),
                   },
-                  { key: "category", header: "Category", cell: (p) => p.category?.name ?? "—" },
-                  {
-                    key: "price",
-                    header: "Price",
-                    cell: (p) =>
-                      p.sale_price ? (
-                        <span>
-                          <span className="font-semibold text-brand-600">{money(p.sale_price)}</span> <s className="text-theme-xs text-gray-400">{money(p.price)}</s>
-                        </span>
-                      ) : (
-                        money(p.price)
-                      ),
-                  },
-                  {
-                    key: "stock",
-                    header: "Stock",
-                    cell: (p) => (
-                      <span className={p.total_stock === 0 ? "font-semibold text-error-600" : (p.total_stock ?? 0) <= p.low_stock_threshold ? "font-semibold text-warning-600" : undefined}>
-                        {p.total_stock ?? "—"}
-                        {(p.variants?.length ?? 0) > 1 && <span className="ms-1 text-theme-xs text-gray-400">({p.variants?.length} variants)</span>}
-                      </span>
-                    ),
-                  },
-                  { key: "sold", header: "Sold", cell: (p) => p.sales_count ?? 0 },
                   { key: "status", header: "Status", cell: (p) => (p.deleted_at ? <span className="text-theme-xs text-error-600">Deleted</span> : <ProductStatusBadge status={p.status} />) },
+                  { key: "inventory", header: "Inventory", className: "whitespace-nowrap", cell: inventory },
+                  { key: "category", header: "Category", cell: (p) => p.category?.name ?? "—" },
+                  { key: "type", header: "Product type", className: "whitespace-nowrap", cell: productType },
                   {
                     key: "actions",
                     header: <span className="sr-only">Actions</span>,

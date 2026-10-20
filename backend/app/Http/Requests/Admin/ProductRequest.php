@@ -29,6 +29,22 @@ class ProductRequest extends FormRequest
     {
         /** @var Product|null $product */
         $product = $this->route('product');
+
+        return self::rulesFor($product);
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(fn (Validator $v) => self::checkVariants($v, $this->all()));
+    }
+
+    /**
+     * Rules shared by the product form and the CSV import.
+     *
+     * @return array<string, mixed>
+     */
+    public static function rulesFor(?Product $product): array
+    {
         $variantIds = $product?->variants()->pluck('id')->all() ?? [];
 
         return [
@@ -67,23 +83,26 @@ class ProductRequest extends FormRequest
         ];
     }
 
-    public function withValidator(Validator $validator): void
+    /**
+     * Variant SKU uniqueness (including soft-deleted rows) and sale price checks.
+     *
+     * @param  array<string, mixed>  $input
+     */
+    public static function checkVariants(Validator $v, array $input): void
     {
-        $validator->after(function (Validator $v): void {
-            foreach ((array) $this->input('variants', []) as $i => $variant) {
-                $query = ProductVariant::withTrashed()->where('sku', $variant['sku'] ?? '');
-                if (! empty($variant['id'])) {
-                    $query->whereKeyNot($variant['id']);
-                }
-                if ($query->exists()) {
-                    $v->errors()->add("variants.{$i}.sku", 'This variant SKU is already in use.');
-                }
-
-                $price = $variant['price'] ?? $this->input('price');
-                if (isset($variant['sale_price']) && $price !== null && (float) $variant['sale_price'] >= (float) $price) {
-                    $v->errors()->add("variants.{$i}.sale_price", 'Sale price must be lower than the price.');
-                }
+        foreach ((array) ($input['variants'] ?? []) as $i => $variant) {
+            $query = ProductVariant::withTrashed()->where('sku', $variant['sku'] ?? '');
+            if (! empty($variant['id'])) {
+                $query->whereKeyNot($variant['id']);
             }
-        });
+            if ($query->exists()) {
+                $v->errors()->add("variants.{$i}.sku", 'This variant SKU is already in use.');
+            }
+
+            $price = $variant['price'] ?? ($input['price'] ?? null);
+            if (isset($variant['sale_price']) && $price !== null && (float) $variant['sale_price'] >= (float) $price) {
+                $v->errors()->add("variants.{$i}.sale_price", 'Sale price must be lower than the price.');
+            }
+        }
     }
 }
