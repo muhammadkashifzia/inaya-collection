@@ -123,7 +123,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {/* Toast container */}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-20 z-[60] flex flex-col items-center gap-3 px-4 md:bottom-auto md:inset-x-auto md:right-0 md:top-0 md:items-end md:p-6"
+        className="pointer-events-none fixed inset-x-auto right-0 top-0 z-[60] flex flex-col items-end gap-3 p-4 md:p-6"
       >
         {toasts.map((t) => {
           const cfg = toneConfig[t.tone];
