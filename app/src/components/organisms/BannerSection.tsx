@@ -34,7 +34,7 @@ export function BannerSection({ title, slides }: BannerSectionProps) {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 {slide.text && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/15">
+                  <div className="absolute inset-0 flex items-center justify-start bg-black/15 pl-5">
                     <span className="font-heading text-2xl font-semibold tracking-wide text-white drop-shadow-lg md:text-3xl">
                       {slide.text}
                     </span>
