@@ -89,6 +89,7 @@ export default function ProductList() {
   const importModal = useModal();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importFile, setImportFile] = useState<File | null>(null);
+  const [skipImages, setSkipImages] = useState(true);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<{
     message: string;
@@ -144,6 +145,7 @@ export default function ProductList() {
     try {
       const form = new FormData();
       form.append("file", importFile);
+      if (skipImages) form.append("skip_images", "1");
       const result = await http.post<{
         message: string;
         created: number;
@@ -171,6 +173,7 @@ export default function ProductList() {
   function closeImportModal() {
     importModal.closeModal();
     setImportFile(null);
+    setSkipImages(true);
     setImportResult(null);
   }
 
@@ -458,6 +461,16 @@ export default function ProductList() {
                 Use the <button type="button" onClick={() => void handleExport()} className="font-medium text-brand-500 hover:underline">Export</button> to get a template with the correct columns. Required column: <strong>Title</strong>.
               </p>
             </div>
+
+            <label className="mt-4 flex items-center gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={skipImages}
+                onChange={(e) => setSkipImages(e.target.checked)}
+                className="size-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500 dark:border-gray-600 dark:bg-white/5"
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300">Skip image downloads <span className="text-theme-xs text-gray-400">(faster, avoids timeout)</span></span>
+            </label>
 
             <div className="mt-5 flex items-center justify-end gap-3">
               <Button variant="outline" size="sm" onClick={closeImportModal}>Cancel</Button>

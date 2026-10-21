@@ -214,7 +214,10 @@ class ProductController extends Controller
     {
         $request->validate([
             'file' => ['required', 'file', 'mimes:csv,txt', 'max:10240'],
+            'skip_images' => ['sometimes', 'boolean'],
         ]);
+
+        $skipImages = $request->boolean('skip_images');
 
         // Large CSVs with image downloads can take a while.
         set_time_limit(300);
@@ -316,7 +319,7 @@ class ProductController extends Controller
                     // for the previous product identified by Handle (slug).
                     if (! empty($data['slug']) && ! empty($data['image_url'])) {
                         $parent = Product::withTrashed()->where('slug', $data['slug'])->first();
-                        if ($parent) {
+                        if ($parent && ! $skipImages) {
                             $nextSort = ($parent->images()->max('sort_order') ?? -1) + 1;
                             $this->importImage($parent, $data['image_url'], $errors, $rowNum, $nextSort);
                         }
@@ -404,7 +407,9 @@ class ProductController extends Controller
 
                 if ($existing) {
                     $existing->update($attrs);
-                    $this->importImage($existing, $data['image_url'] ?? '', $errors, $rowNum);
+                    if (! $skipImages) {
+                        $this->importImage($existing, $data['image_url'] ?? '', $errors, $rowNum);
+                    }
                     $updated++;
                 } else {
                     // New product — ensure required fields have defaults.
@@ -417,7 +422,9 @@ class ProductController extends Controller
                     }
 
                     $product = Product::create($attrs);
-                    $this->importImage($product, $data['image_url'] ?? '', $errors, $rowNum);
+                    if (! $skipImages) {
+                        $this->importImage($product, $data['image_url'] ?? '', $errors, $rowNum);
+                    }
                     $created++;
                 }
             }
