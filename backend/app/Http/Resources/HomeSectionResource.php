@@ -44,11 +44,11 @@ class HomeSectionResource extends JsonResource
             return null;
         }
 
-        return array_map(fn (array $slide): array => [
+        return array_values(array_map(fn (array $slide): array => [
             'image' => $slide['image'] ?? '',
             'image_url' => ! empty($slide['image']) ? Storage::disk('public')->url($slide['image']) : null,
             'text' => $slide['text'] ?? null,
             'link' => $slide['link'] ?? null,
-        ], $this->slides);
+        ], array_filter($this->slides, 'is_array')));
     }
 }

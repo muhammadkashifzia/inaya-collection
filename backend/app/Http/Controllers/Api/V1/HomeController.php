@@ -15,6 +15,7 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -32,12 +33,25 @@ class HomeController extends Controller
                 'banners' => BannerResource::collection(Banner::query()->live()->where('placement', BannerPlacement::Hero)->get()),
                 'promos' => BannerResource::collection(Banner::query()->live()->where('placement', BannerPlacement::Promo)->get()),
                 'collection_strip' => BannerResource::collection(Banner::query()->live()->where('placement', BannerPlacement::CollectionStrip)->get()),
-                'sections' => $sections->map(fn (HomeSection $section): array => [
-                    'id' => $section->id,
-                    'type' => $section->type,
-                    'title' => $section->title,
-                    ...$this->sectionPayload($section, $topCategories),
-                ])->values(),
+                'sections' => $sections->map(function (HomeSection $section) use ($topCategories): ?array {
+                    try {
+                        return [
+                            'id' => $section->id,
+                            'type' => $section->type,
+                            'title' => $section->title,
+                            ...$this->sectionPayload($section, $topCategories),
+                        ];
+                    } catch (\Throwable $e) {
+                        Log::error('Home section failed', [
+                            'section_id' => $section->id,
+                            'section_type' => $section->getRawOriginal('type'),
+                            'error' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString(),
+                        ]);
+
+                        return null;
+                    }
+                })->filter()->values(),
             ],
         ]);
     }
