@@ -67,7 +67,7 @@ class StoreContentSeeder extends Seeder
             $sections = $site['sections'];
             $homeSections = [
                 [HomeSectionType::CategoryGrid, $sections['collections'], 4],
-                [HomeSectionType::CategoryTabs, $sections['collectionTabs'], 3],
+                [HomeSectionType::CategoryTabs, $sections['collectionTabs'], 4],
                 [HomeSectionType::Reviews, $sections['reviews'], 12],
             ];
             foreach ($homeSections as $order => [$type, $title, $limit]) {

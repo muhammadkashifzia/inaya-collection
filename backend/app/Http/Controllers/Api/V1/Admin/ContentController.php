@@ -118,9 +118,19 @@ class ContentController extends Controller
      */
     private function sectionData(Request $request): array
     {
+        $isBanner = $request->input('type') === HomeSectionType::BannerImage->value;
+
         $data = $request->validate([
             'type' => ['required', Rule::enum(HomeSectionType::class)],
             'title' => ['required', 'string', 'max:255'],
+            'subtitle' => ['nullable', 'string', 'max:500'],
+            'button_text' => ['nullable', 'string', 'max:100'],
+            'button_link' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'string', 'max:255'],
+            'slides' => [Rule::requiredIf($isBanner), 'nullable', 'array', 'min:1', 'max:20'],
+            'slides.*.image' => ['required', 'string', 'max:255'],
+            'slides.*.text' => ['nullable', 'string', 'max:255'],
+            'slides.*.link' => ['nullable', 'string', 'max:255'],
             'category_id' => [Rule::requiredIf($request->input('type') === HomeSectionType::Category->value), 'nullable', 'integer', 'exists:categories,id'],
             'product_limit' => ['nullable', 'integer', 'min:1', 'max:24'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
@@ -129,6 +139,15 @@ class ContentController extends Controller
         $data['is_active'] = $request->boolean('is_active', true);
         $data['product_limit'] ??= 8;
         $data['sort_order'] ??= 0;
+
+        // Null out banner-specific fields for non-banner types.
+        if (! $isBanner) {
+            $data['subtitle'] = null;
+            $data['button_text'] = null;
+            $data['button_link'] = null;
+            $data['image'] = null;
+            $data['slides'] = null;
+        }
 
         return $data;
     }

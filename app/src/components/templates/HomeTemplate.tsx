@@ -1,4 +1,4 @@
-import { CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection, WinterCollections } from "@/components/organisms";
+import { BannerSection, CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection, WinterCollections } from "@/components/organisms";
 import type { HomeData, HomeSection, SiteConfig } from "@/types";
 
 /**
@@ -61,5 +61,12 @@ function Section({ section }: { section: HomeSection }) {
     case "reviews":
       // Customer reviews are not stored in the backend yet, so nothing is rendered.
       return null;
+    case "banner_image":
+      return (
+        <BannerSection
+          title={section.title}
+          slides={section.slides}
+        />
+      );
   }
 }

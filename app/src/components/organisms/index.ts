@@ -1,4 +1,5 @@
 export { AnnouncementBar } from "./AnnouncementBar";
+export { BannerSection } from "./BannerSection";
 export { CartDrawer } from "./CartDrawer";
 export { CatalogToolbar } from "./CatalogToolbar";
 export { CollectionTabs } from "./CollectionTabs";
