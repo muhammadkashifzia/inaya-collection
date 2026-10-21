@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, FormAlert, TextField } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
+import { useToast } from "@/context/ToastContext";
 import { ApiError } from "@/lib/api";
 import { AuthCard, safeNext } from "../AuthCard";
 
@@ -13,6 +14,7 @@ export function LoginForm() {
   const params = useSearchParams();
   const next = safeNext(params.get("next"));
   const { signIn, user, authReady } = useStore();
+  const toast = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -29,6 +31,7 @@ export function LoginForm() {
     setError(null);
     try {
       await signIn(email.trim(), password, remember);
+      toast.success("Welcome Back!", "You have been signed in.");
       router.replace(next);
     } catch (err) {
       setError(err instanceof ApiError ? err : new ApiError("Could not sign in. Please try again.", 0));

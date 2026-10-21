@@ -6,6 +6,7 @@ import ImageUpload from "@/components/admin/ImageUpload";
 import PageHeader from "@/components/admin/PageHeader";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
+import { useToast } from "@/context/ToastContext";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http } from "@/lib/api";
 import type { StoreSettings } from "@/types/api";
@@ -25,7 +26,7 @@ export default function Settings() {
   const [tab, setTab] = useState<Tab>("Store");
   const [busy, setBusy] = useState(false);
   const [saveError, setSaveError] = useState<ApiError | null>(null);
-  const [saved, setSaved] = useState(false);
+  const toast = useToast();
 
   const s = draft ?? data;
   const update = <K extends keyof StoreSettings>(key: K, value: StoreSettings[K]) => s && setDraft({ ...s, [key]: value });
@@ -34,11 +35,10 @@ export default function Settings() {
     if (!draft) return;
     setBusy(true);
     setSaveError(null);
-    setSaved(false);
     try {
       await http.put("/admin/settings", draft);
       setDraft(null);
-      setSaved(true);
+      toast.success("Settings saved.");
       reload();
     } catch (err) {
       setSaveError(err instanceof ApiError ? err : new ApiError("Could not save settings.", 0));
@@ -65,7 +65,6 @@ export default function Settings() {
         }
       />
       <div className="mb-4 space-y-3">
-        <Notice tone="success">{saved ? "Settings saved." : null}</Notice>
         <Notice tone="error">{saveError && (Object.keys(saveError.errors).length ? `Please check: ${saveError.firstMessage}` : saveError.message)}</Notice>
       </div>
       <DataState loading={loading} error={error} onRetry={reload} hasData={Boolean(s)}>

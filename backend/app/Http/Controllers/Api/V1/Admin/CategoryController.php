@@ -46,14 +46,30 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category): JsonResponse
     {
-        if ($category->products()->withTrashed()->exists()) {
-            throw ValidationException::withMessages(['category' => 'Move or delete this category\'s products first.']);
-        }
         if ($category->children()->exists()) {
             throw ValidationException::withMessages(['category' => 'Delete or move the subcategories first.']);
         }
 
+        $category->products()->withTrashed()->update(['category_id' => null]);
         $category->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Bulk-update sort order for categories.
+     */
+    public function reorder(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'order' => ['required', 'array', 'min:1'],
+            'order.*.id' => ['required', 'integer', Rule::exists('categories', 'id')->whereNull('deleted_at')],
+            'order.*.sort_order' => ['required', 'integer', 'min:0'],
+        ]);
+
+        foreach ($data['order'] as $item) {
+            Category::where('id', $item['id'])->update(['sort_order' => $item['sort_order']]);
+        }
 
         return response()->json(null, 204);
     }

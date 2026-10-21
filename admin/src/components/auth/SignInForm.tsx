@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
-import { Notice, PasswordInput, TextInput } from "@/components/admin/Fields";
+import { Notice, TextInput } from "@/components/admin/Fields";
 import Button from "@/components/ui/button/Button";
 import { useAuth } from "@/context/AuthContext";
+import { EyeCloseIcon, EyeIcon } from "@/icons";
 import { ApiError } from "@/lib/api";
 
 /** Staff sign-in against POST /api/v1/auth/login (Sanctum session). */
 export default function SignInForm() {
-  const { login, user, ready } = useAuth();
+  const { login, user, ready, twoFactorState } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from ?? "/";
@@ -16,6 +17,16 @@ export default function SignInForm() {
   const [remember, setRemember] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Redirect to the appropriate 2FA page after password auth succeeds.
+  useEffect(() => {
+    if (twoFactorState === "setup") {
+      navigate("/signin/two-factor-setup", { replace: true, state: { from } });
+    } else if (twoFactorState === "challenge") {
+      navigate("/signin/two-factor", { replace: true, state: { from } });
+    }
+  }, [twoFactorState, navigate, from]);
 
   if (ready && user) return <Navigate to={from} replace />;
 
@@ -25,7 +36,10 @@ export default function SignInForm() {
     setError(null);
     try {
       await login(email.trim(), password, remember);
-      navigate(from.startsWith("/") && !from.startsWith("//") ? from : "/", { replace: true });
+      // If no 2FA redirect happened, the user state is set and we redirect.
+      if (twoFactorState === "none") {
+        navigate(from.startsWith("/") && !from.startsWith("//") ? from : "/", { replace: true });
+      }
     } catch (err) {
       setError(err instanceof ApiError ? err : new ApiError("Sign-in failed. Please try again.", 0));
     } finally {
@@ -43,7 +57,17 @@ export default function SignInForm() {
         <form onSubmit={onSubmit} className="space-y-5" noValidate>
           <Notice tone="error">{error && !error.field("email") ? error.message : null}</Notice>
           <TextInput label="Email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} error={error?.field("email")} maxLength={255} />
-          <PasswordInput label="Password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} error={error?.field("password")} maxLength={255} />
+          <div className="relative">
+            <TextInput label="Password" type={showPassword ? "text" : "password"} autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} error={error?.field("password")} maxLength={255} />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute end-3.5 top-[34px] flex size-7 items-center justify-center rounded text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeIcon className="size-5" /> : <EyeCloseIcon className="size-5" />}
+            </button>
+          </div>
           <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-400">
             <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="size-4 accent-brand-500" />
             Keep me signed in

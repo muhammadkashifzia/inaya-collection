@@ -60,6 +60,7 @@ class ProductResource extends JsonResource
             'image' => $this->relationLoaded('primaryImage') && $this->primaryImage ? $this->primaryImage->url() : null,
             'images' => ProductImageResource::collection($this->whenLoaded('images')),
             'category' => new CategoryResource($this->whenLoaded('category')),
+            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'variants' => ProductVariantResource::collection($variants),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'meta_title' => $this->meta_title,

@@ -22,7 +22,7 @@ export default function DataTable<T>({ columns, rows, rowKey, caption }: { colum
               <TableCell
                 key={c.key}
                 isHeader
-                className={cn("px-4 py-3 text-theme-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase dark:text-gray-400", c.align === "end" ? "text-end" : "text-start", c.className)}
+                className={cn("px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400", c.align === "end" ? "text-end" : "text-start", c.className)}
               >
                 {c.header}
               </TableCell>
@@ -31,7 +31,7 @@ export default function DataTable<T>({ columns, rows, rowKey, caption }: { colum
         </TableHeader>
         <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
           {rows.map((row) => (
-            <TableRow key={rowKey(row)} className="hover:bg-gray-50/60 dark:hover:bg-white/2">
+            <TableRow key={rowKey(row)} className="group hover:bg-gray-50/60 dark:hover:bg-white/2">
               {columns.map((c) => (
                 <TableCell key={c.key} className={cn("px-4 py-3 text-gray-700 dark:text-gray-300", c.align === "end" ? "text-end" : "text-start", c.className)}>
                   {c.cell(row)}

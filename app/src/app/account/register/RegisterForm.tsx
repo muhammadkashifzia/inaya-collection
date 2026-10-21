@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button, FormAlert, TextField } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
+import { useToast } from "@/context/ToastContext";
 import { ApiError } from "@/lib/api";
 import { AuthCard, safeNext } from "../AuthCard";
 
@@ -12,6 +13,7 @@ export function RegisterForm() {
   const router = useRouter();
   const next = safeNext(useSearchParams().get("next"));
   const { signUp } = useStore();
+  const toast = useToast();
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "", passwordConfirmation: "" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
@@ -24,6 +26,7 @@ export function RegisterForm() {
     setError(null);
     try {
       await signUp({ ...form, email: form.email.trim() });
+      toast.success("Account Created", "Welcome to Anaya Collection!");
       router.replace(next);
     } catch (err) {
       setError(err instanceof ApiError ? err : new ApiError("Could not create your account.", 0));

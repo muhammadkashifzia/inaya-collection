@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
-import { Notice } from "@/components/admin/Fields";
 import PageHeader from "@/components/admin/PageHeader";
 import { ActiveBadge, OrderStatusBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http } from "@/lib/api";
 import { date, money } from "@/lib/format";
@@ -17,25 +18,38 @@ import type { AdminUser, Order } from "@/types/api";
 export default function CustomerDetail() {
   const { id = "" } = useParams();
   const { can } = useAuth();
+  const toast = useToast();
   const { data, error, loading, reload, setData } = useApi(() => http.get<{ data: AdminUser; recent_orders: Order[] }>(`/admin/customers/${id}`), [id]);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<{ tone: "error" | "success"; text: string } | null>(null);
+  const [confirmDeactivate, setConfirmDeactivate] = useState(false);
   const customer = data?.data;
 
   async function toggleActive() {
     if (!customer) return;
     const next = !customer.is_active;
-    if (!next && !window.confirm(`Deactivate ${customer.name}? They will be signed out and unable to log in.`)) return;
+    if (!next) {
+      setConfirmDeactivate(true);
+      return;
+    }
+    await doToggle(true);
+  }
+
+  async function doToggle(next: boolean) {
     setBusy(true);
     try {
       const updated = await http.patch<AdminUser>(`/admin/customers/${id}/status`, { is_active: next });
       setData((prev) => (prev ? { ...prev, data: { ...prev.data, is_active: updated.is_active } } : prev));
-      setMessage({ tone: "success", text: next ? "Account reactivated." : "Account deactivated." });
+      toast.success(next ? "Account reactivated." : "Account deactivated.");
     } catch (e) {
-      setMessage({ tone: "error", text: e instanceof ApiError ? e.message : "Could not update the account." });
+      toast.error(e instanceof ApiError ? e.message : "Could not update the account.");
     } finally {
       setBusy(false);
     }
+  }
+
+  async function onConfirmDeactivate() {
+    setConfirmDeactivate(false);
+    await doToggle(false);
   }
 
   return (
@@ -58,7 +72,6 @@ export default function CustomerDetail() {
         {customer && data && (
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 space-y-6 xl:col-span-4">
-              <Notice tone={message?.tone ?? "success"}>{message?.text}</Notice>
               <Card title="Profile">
                 <dl className="space-y-3 text-sm">
                   <div><dt className="text-theme-xs text-gray-500">Email</dt><dd><a href={`mailto:${customer.email}`} className="hover:text-brand-500">{customer.email}</a></dd></div>
@@ -107,6 +120,14 @@ export default function CustomerDetail() {
           </div>
         )}
       </DataState>
+      <ConfirmDialog
+        open={confirmDeactivate}
+        title={`Deactivate ${customer?.name}?`}
+        message="They will be signed out and unable to log in."
+        confirmLabel="Deactivate"
+        onConfirm={() => void onConfirmDeactivate()}
+        onCancel={() => setConfirmDeactivate(false)}
+      />
     </>
   );
 }

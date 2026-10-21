@@ -1,13 +1,16 @@
 import { useState } from "react";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
 import { Notice, TextInput } from "@/components/admin/Fields";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import PageMeta from "@/components/common/PageMeta";
 import Badge from "@/components/ui/badge/Badge";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
+import { useToast } from "@/context/ToastContext";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http } from "@/lib/api";
 import type { ProductAttribute } from "@/types/api";
@@ -23,10 +26,11 @@ interface Draft {
 /** Variant attributes (Color, Size…) and their values, suggested in the product variant editor. */
 export default function Attributes() {
   const { data, error, loading, reload } = useApi(() => http.get<ProductAttribute[]>("/admin/attributes"), []);
+  const toast = useToast();
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<ApiError | null>(null);
-  const [notice, setNotice] = useState<{ tone: "error" | "success"; text: string } | null>(null);
+  const [confirmAttr, setConfirmAttr] = useState<ProductAttribute | null>(null);
 
   const open = (a?: ProductAttribute) => {
     setFormError(null);
@@ -70,7 +74,7 @@ export default function Attributes() {
       if (final.id) await http.put(`/admin/attributes/${final.id}`, body);
       else await http.post("/admin/attributes", body);
       setDraft(null);
-      setNotice({ tone: "success", text: "Attribute saved." });
+      toast.success("Attribute saved.");
       reload();
     } catch (err) {
       setFormError(err instanceof ApiError ? err : new ApiError("Could not save.", 0));
@@ -79,14 +83,20 @@ export default function Attributes() {
     }
   }
 
-  async function remove(a: ProductAttribute) {
-    if (!window.confirm(`Delete attribute “${a.name}”? Existing product variants keep their ${a.name.toLowerCase()} values.`)) return;
+  function remove(a: ProductAttribute) {
+    setConfirmAttr(a);
+  }
+
+  async function onConfirmRemove() {
+    if (!confirmAttr) return;
     try {
-      await http.delete(`/admin/attributes/${a.id}`);
-      setNotice({ tone: "success", text: "Attribute deleted." });
+      await http.delete(`/admin/attributes/${confirmAttr.id}`);
+      toast.success("Attribute deleted.");
       reload();
     } catch (err) {
-      setNotice({ tone: "error", text: err instanceof ApiError ? err.firstMessage : "Could not delete." });
+      toast.error(err instanceof ApiError ? err.firstMessage : "Could not delete.");
+    } finally {
+      setConfirmAttr(null);
     }
   }
 
@@ -101,9 +111,6 @@ export default function Attributes() {
         description="Options such as Color or Size. Their values are suggested when you add product variants."
         actions={<Button onClick={() => open()}>+ Add attribute</Button>}
       />
-      <div className="mb-4">
-        <Notice tone={notice?.tone ?? "success"}>{notice?.text}</Notice>
-      </div>
       <Card bodyClassName="p-0">
         <DataState loading={loading} error={error} onRetry={reload} hasData={Boolean(data)} empty={data?.length === 0} emptyTitle="No attributes yet.">
           {data && (
@@ -143,9 +150,9 @@ export default function Attributes() {
                   header: <span className="sr-only">Actions</span>,
                   align: "end",
                   cell: (a) => (
-                    <div className="flex justify-end gap-3 text-sm font-medium">
-                      <button type="button" className="text-brand-500 hover:underline" onClick={() => open(a)}>Edit</button>
-                      <button type="button" className="text-gray-500 hover:text-error-600 dark:text-gray-400" onClick={() => void remove(a)}>Delete</button>
+                    <div className="flex justify-end gap-1">
+                      <EditAction onClick={() => open(a)} />
+                      <DeleteAction onClick={() => void remove(a)} />
                     </div>
                   ),
                 },
@@ -221,6 +228,14 @@ export default function Attributes() {
           </form>
         )}
       </Modal>
+      <ConfirmDialog
+        open={confirmAttr !== null}
+        title={`Delete attribute "${confirmAttr?.name}"?`}
+        message={confirmAttr ? `Existing product variants keep their ${confirmAttr.name.toLowerCase()} values. This cannot be undone.` : ""}
+        confirmLabel="Delete"
+        onConfirm={() => void onConfirmRemove()}
+        onCancel={() => setConfirmAttr(null)}
+      />
     </>
   );
 }

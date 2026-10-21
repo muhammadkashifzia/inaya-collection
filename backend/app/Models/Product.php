@@ -55,6 +55,12 @@ class Product extends Model
         return $this->belongsTo(Category::class)->withTrashed();
     }
 
+    /** @return BelongsToMany<Category, $this> */
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class)->orderBy('name');
+    }
+
     /** @return HasMany<ProductImage, $this> */
     public function images(): HasMany
     {

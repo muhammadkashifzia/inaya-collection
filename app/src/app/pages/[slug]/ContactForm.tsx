@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button, FormAlert, TextAreaField, TextField } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
+import { useToast } from "@/context/ToastContext";
 import { api, ApiError } from "@/lib/api";
 import type { ContactInput } from "@/types";
 
@@ -14,6 +15,7 @@ const VISIBLE_FIELDS = ["name", "email", "phone", "subject", "message"] as const
 /** Storefront contact form. Submissions land in the admin "Messages" inbox. */
 export function ContactForm() {
   const { user } = useStore();
+  const toast = useToast();
   // Only what the visitor typed; untouched name/email/phone fall back to the signed-in account.
   const [edits, setEdits] = useState<Partial<Values>>({});
   const [busy, setBusy] = useState(false);
@@ -41,6 +43,7 @@ export function ContactForm() {
         website: values.website,
       });
       setSuccess(res.message);
+      toast.success("Message Sent", res.message ?? "We'll get back to you soon.");
       setEdits({});
     } catch (err) {
       setError(err instanceof ApiError ? err : new ApiError("Could not send your message. Please try again.", 0));

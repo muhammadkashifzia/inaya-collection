@@ -12,5 +12,4 @@ enum HomeSectionType: string
     case CategoryTabs = 'category_tabs';
     case CategoryGrid = 'category_grid';
     case Reviews = 'reviews';
-    case ImageBanners = 'image_banners';
 }

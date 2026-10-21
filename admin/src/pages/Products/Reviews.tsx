@@ -6,6 +6,7 @@ import DataTable from "@/components/admin/DataTable";
 import { Notice } from "@/components/admin/Fields";
 import FilterBar, { FilterSelect } from "@/components/admin/FilterBar";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import Pagination from "@/components/admin/Pagination";
 import PageMeta from "@/components/common/PageMeta";
 import Badge from "@/components/ui/badge/Badge";
@@ -147,15 +148,15 @@ export default function Reviews() {
                     header: <span className="sr-only">Actions</span>,
                     align: "end",
                     cell: (r) => (
-                      <div className="flex flex-wrap justify-end gap-x-3 gap-y-1 text-sm font-medium">
+                      <div className="flex flex-wrap justify-end gap-x-1 gap-y-1 text-sm font-medium">
                         {r.status !== "approved" && (
-                          <button type="button" disabled={busyId === r.id} className="text-success-600 hover:underline disabled:opacity-50 dark:text-success-500" onClick={() => void setStatus(r, "approved")}>Approve</button>
+                          <button type="button" disabled={busyId === r.id} className="rounded-lg px-2 py-1.5 text-success-600 hover:bg-success-50 disabled:opacity-50 dark:text-success-500 dark:hover:bg-success-500/10" onClick={() => void setStatus(r, "approved")}>Approve</button>
                         )}
                         {r.status !== "rejected" && (
-                          <button type="button" disabled={busyId === r.id} className="text-warning-600 hover:underline disabled:opacity-50 dark:text-warning-500" onClick={() => void setStatus(r, "rejected")}>Reject</button>
+                          <button type="button" disabled={busyId === r.id} className="rounded-lg px-2 py-1.5 text-warning-600 hover:bg-warning-50 disabled:opacity-50 dark:text-warning-500 dark:hover:bg-warning-500/10" onClick={() => void setStatus(r, "rejected")}>Reject</button>
                         )}
-                        <button type="button" className="text-brand-500 hover:underline" onClick={() => setEditing(r)}>Edit</button>
-                        <button type="button" disabled={busyId === r.id} className="text-gray-500 hover:text-error-600 disabled:opacity-50 dark:text-gray-400" onClick={() => void remove(r)}>Delete</button>
+                        <EditAction onClick={() => setEditing(r)} />
+                        <DeleteAction onClick={() => void remove(r)} disabled={busyId === r.id} />
                       </div>
                     ),
                   },

@@ -4,6 +4,7 @@ import DataState from "@/components/admin/DataState";
 import { Notice, SelectInput, TextAreaInput, TextInput, Toggle } from "@/components/admin/Fields";
 import ImageUpload from "@/components/admin/ImageUpload";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import { ActiveBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
@@ -15,7 +16,7 @@ import type { Banner } from "@/types/api";
 
 interface Draft {
   id?: number;
-  placement: "hero" | "promo";
+  placement: "hero" | "promo" | "collection_strip";
   title: string;
   subtitle: string;
   image: { path: string | null; url: string | null };
@@ -110,9 +111,9 @@ export default function Banners() {
               </div>
               <div className="flex items-center justify-between p-4">
                 <ActiveBadge active={b.is_active ?? true} on="Live" off="Hidden" />
-                <div className="flex gap-3 text-sm font-medium">
-                  <button type="button" className="text-brand-500 hover:underline" onClick={() => open(b)}>Edit</button>
-                  <button type="button" className="text-gray-500 hover:text-error-600" onClick={() => void remove(b)}>Delete</button>
+                <div className="flex gap-1">
+                  <EditAction onClick={() => open(b)} />
+                  <DeleteAction onClick={() => void remove(b)} />
                 </div>
               </div>
             </Card>
@@ -130,7 +131,7 @@ export default function Banners() {
               <TextAreaInput className="md:col-span-2" label="Subheading" rows={2} value={draft.subtitle} onChange={(e) => setDraft({ ...draft, subtitle: e.target.value })} maxLength={500} />
               <ImageUpload label="Desktop image *" endpoint="/admin/banners/image" value={draft.image} onChange={(image) => setDraft({ ...draft, image })} error={fe("image")} hint="Recommended 1920×800" />
               <ImageUpload label="Mobile image" endpoint="/admin/banners/image" value={draft.mobile_image} onChange={(mobile_image) => setDraft({ ...draft, mobile_image })} hint="Optional, portrait" aspect="aspect-3/4 max-h-48" />
-              <SelectInput label="Placement" value={draft.placement} onChange={(e) => setDraft({ ...draft, placement: e.target.value as Draft["placement"] })} options={[{ value: "hero", label: "Homepage hero" }, { value: "promo", label: "Promo banner" }]} />
+              <SelectInput label="Placement" value={draft.placement} onChange={(e) => setDraft({ ...draft, placement: e.target.value as Draft["placement"] })} options={[{ value: "hero", label: "Homepage hero" }, { value: "promo", label: "Promo banner" }, { value: "collection_strip", label: "Collection strip" }]} />
               <TextInput label="Sort order" type="number" min={0} value={draft.sort_order} onChange={(e) => setDraft({ ...draft, sort_order: e.target.value })} />
               <TextInput label="Show from" type="datetime-local" value={draft.starts_at} onChange={(e) => setDraft({ ...draft, starts_at: e.target.value })} />
               <TextInput label="Show until" type="datetime-local" value={draft.ends_at} onChange={(e) => setDraft({ ...draft, ends_at: e.target.value })} error={fe("ends_at")} />

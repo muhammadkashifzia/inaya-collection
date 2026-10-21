@@ -10,6 +10,7 @@ export type PermissionKey =
   | "view-dashboard"
   | "manage-products"
   | "manage-categories"
+  | "manage-design-categories"
   | "manage-orders"
   | "refund-orders"
   | "manage-inventory"
@@ -27,6 +28,7 @@ export interface AdminUser {
   phone: string | null;
   role: Role;
   is_active: boolean;
+  two_factor_enabled?: boolean;
   permissions?: PermissionKey[];
   created_at: string;
   last_login_at?: string | null;
@@ -55,6 +57,22 @@ export interface Category {
   meta_description: string | null;
   products_count?: number;
   parent?: Category | null;
+}
+
+export interface DesignCategory {
+  id: number;
+  parent_id: number | null;
+  name: string;
+  slug: string;
+  description: string | null;
+  display_type: string;
+  image: string | null;
+  image_path?: string | null;
+  sort_order: number;
+  is_active: boolean;
+  meta_title: string | null;
+  meta_description: string | null;
+  parent?: DesignCategory | null;
 }
 
 export interface ProductImage {
@@ -103,6 +121,7 @@ export interface Product {
   image: string | null;
   images?: ProductImage[];
   category?: Category | null;
+  categories?: Category[];
   variants?: Variant[];
   tags?: Tag[];
   meta_title: string | null;
@@ -223,7 +242,7 @@ export interface Coupon {
 
 export interface Banner {
   id: number;
-  placement: "hero" | "promo";
+  placement: "hero" | "promo" | "collection_strip";
   title: string;
   subtitle: string | null;
   image: string;
@@ -245,18 +264,7 @@ export type HomeSectionType =
   | "category"
   | "category_tabs"
   | "category_grid"
-  | "reviews"
-  | "image_banners";
-
-/** One card of an "image_banners" section: background image with overlay text. */
-export interface HomeSectionItem {
-  image_path: string;
-  image: string;
-  title: string | null;
-  subtitle: string | null;
-  href: string | null;
-  align: "left" | "center";
-}
+  | "reviews";
 
 export interface HomeSection {
   id: number;
@@ -265,7 +273,6 @@ export interface HomeSection {
   category_id: number | null;
   category?: Category | null;
   product_limit: number;
-  items: HomeSectionItem[];
   sort_order: number;
   is_active: boolean;
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AppImage, Button, ButtonLink, Container, FormAlert, Heading, TextAreaField, TextField } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
+import { useToast } from "@/context/ToastContext";
 import { api, ApiError } from "@/lib/api";
 import { cn, formatPrice } from "@/lib/format";
 import type { Address, Cart, ShippingMethod } from "@/types";
@@ -29,6 +30,7 @@ type AddressForm = typeof emptyAddress;
  */
 export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThreshold, allowGuestCheckout }: CheckoutViewProps) {
   const router = useRouter();
+  const toast = useToast();
   const { user, authReady, cart, setCart } = useStore();
   const [summary, setSummary] = useState<Cart | null>(null);
   const [contact, setContact] = useState({ name: "", email: "", phone: "" });
@@ -126,10 +128,12 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
       );
       sessionStorage.setItem(`gw-order-${order.number}`, JSON.stringify(order));
       setCart({ ...cart!, items: [], itemCount: 0, subtotal: 0, discountTotal: 0, shippingTotal: 0, taxTotal: 0, grandTotal: 0, couponCode: null });
+      toast.success("Order Placed", "Your order has been placed successfully!");
       router.replace(`/checkout/success?order=${encodeURIComponent(order.number)}`);
     } catch (err) {
       const apiError = err instanceof ApiError ? err : new ApiError("Something went wrong. Please try again.", 0);
       setError(apiError);
+      toast.error("Checkout Failed", apiError.status === 422 ? "Please check the highlighted fields." : apiError.message);
       // Validation problems can be fixed and resubmitted with a fresh key.
       if (apiError.status === 422) idempotencyKey.current = null;
       window.scrollTo({ top: 0, behavior: "smooth" });

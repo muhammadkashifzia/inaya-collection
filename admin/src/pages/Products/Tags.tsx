@@ -1,13 +1,16 @@
 import { useState } from "react";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
 import { Notice, TextInput } from "@/components/admin/Fields";
 import FilterBar from "@/components/admin/FilterBar";
 import PageHeader from "@/components/admin/PageHeader";
+import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
+import { useToast } from "@/context/ToastContext";
 import { useApi } from "@/hooks/useApi";
 import { useListQuery } from "@/hooks/useListQuery";
 import { ApiError, http } from "@/lib/api";
@@ -24,10 +27,11 @@ interface Draft {
 export default function Tags() {
   const { values, set } = useListQuery(["q"] as const);
   const { data, error, loading, reload } = useApi(() => http.get<Tag[]>("/admin/tags", { q: values.q }), [values.q]);
+  const toast = useToast();
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<ApiError | null>(null);
-  const [notice, setNotice] = useState<{ tone: "error" | "success"; text: string } | null>(null);
+  const [confirmTag, setConfirmTag] = useState<Tag | null>(null);
 
   const open = (t?: Tag) => {
     setFormError(null);
@@ -44,7 +48,7 @@ export default function Tags() {
       if (draft.id) await http.put(`/admin/tags/${draft.id}`, body);
       else await http.post("/admin/tags", body);
       setDraft(null);
-      setNotice({ tone: "success", text: "Tag saved." });
+      toast.success("Tag saved.");
       reload();
     } catch (err) {
       setFormError(err instanceof ApiError ? err : new ApiError("Could not save.", 0));
@@ -53,15 +57,20 @@ export default function Tags() {
     }
   }
 
-  async function remove(t: Tag) {
-    const used = t.products_count ? ` It will be removed from ${t.products_count} product${t.products_count === 1 ? "" : "s"}.` : "";
-    if (!window.confirm(`Delete tag “${t.name}”?${used}`)) return;
+  function remove(t: Tag) {
+    setConfirmTag(t);
+  }
+
+  async function onConfirmRemove() {
+    if (!confirmTag) return;
     try {
-      await http.delete(`/admin/tags/${t.id}`);
-      setNotice({ tone: "success", text: "Tag deleted." });
+      await http.delete(`/admin/tags/${confirmTag.id}`);
+      toast.success("Tag deleted.");
       reload();
     } catch (err) {
-      setNotice({ tone: "error", text: err instanceof ApiError ? err.firstMessage : "Could not delete." });
+      toast.error(err instanceof ApiError ? err.firstMessage : "Could not delete.");
+    } finally {
+      setConfirmTag(null);
     }
   }
 
@@ -71,9 +80,6 @@ export default function Tags() {
     <>
       <PageMeta title="Tags | Anaya Collection Admin" description="Labels used to group and filter products." />
       <PageHeader title="Tags" description="Labels such as New Arrival or Winter 2026. Assign them from the product form." actions={<Button onClick={() => open()}>+ Add tag</Button>} />
-      <div className="mb-4">
-        <Notice tone={notice?.tone ?? "success"}>{notice?.text}</Notice>
-      </div>
       <Card bodyClassName="p-4 md:p-5">
         <FilterBar search={values.q} onSearch={(q) => set("q", q)} placeholder="Search tags" />
         <DataState loading={loading} error={error} onRetry={reload} hasData={Boolean(data)} empty={data?.length === 0} emptyTitle={values.q ? "No tags match your search." : "No tags yet."}>
@@ -99,9 +105,9 @@ export default function Tags() {
                   header: <span className="sr-only">Actions</span>,
                   align: "end",
                   cell: (t) => (
-                    <div className="flex justify-end gap-3 text-sm font-medium">
-                      <button type="button" className="text-brand-500 hover:underline" onClick={() => open(t)}>Edit</button>
-                      <button type="button" className="text-gray-500 hover:text-error-600 dark:text-gray-400" onClick={() => void remove(t)}>Delete</button>
+                    <div className="flex justify-end gap-1">
+                      <EditAction onClick={() => open(t)} />
+                      <DeleteAction onClick={() => void remove(t)} />
                     </div>
                   ),
                 },
@@ -133,6 +139,14 @@ export default function Tags() {
           </form>
         )}
       </Modal>
+      <ConfirmDialog
+        open={confirmTag !== null}
+        title={`Delete tag "${confirmTag?.name}"?`}
+        message={confirmTag?.products_count ? `It will be removed from ${confirmTag.products_count} product${confirmTag.products_count === 1 ? "" : "s"}. This cannot be undone.` : "This cannot be undone."}
+        confirmLabel="Delete"
+        onConfirm={() => void onConfirmRemove()}
+        onCancel={() => setConfirmTag(null)}
+      />
     </>
   );
 }

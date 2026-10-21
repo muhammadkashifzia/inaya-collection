@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/context/ToastContext";
 import { api, ApiError } from "@/lib/api";
 
 export function NewsletterForm() {
+  const toast = useToast();
   const [email, setEmail] = useState("");
   const [state, setState] = useState<{ tone: "idle" | "busy" | "ok" | "error"; message?: string }>({ tone: "idle" });
 
@@ -13,9 +15,12 @@ export function NewsletterForm() {
     try {
       const res = await api.subscribe(email.trim());
       setState({ tone: "ok", message: res.message });
+      toast.success("Subscribed", res.message ?? "You're on the list!");
       setEmail("");
     } catch (error) {
-      setState({ tone: "error", message: error instanceof ApiError ? (error.field("email") ?? error.message) : "Please try again." });
+      const message = error instanceof ApiError ? (error.field("email") ?? error.message) : "Please try again.";
+      setState({ tone: "error", message });
+      toast.error("Subscription Failed", message);
     }
   }
 

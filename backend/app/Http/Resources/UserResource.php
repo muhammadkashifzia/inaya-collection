@@ -30,6 +30,7 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'role' => $this->role,
             'is_active' => $this->is_active,
+            'two_factor_enabled' => $this->when($isSelf && $this->isStaffMember(), fn () => $this->resource->hasTwoFactorEnabled()),
             'permissions' => $this->when($isSelf && $this->isStaffMember(), fn () => array_map(
                 fn ($p) => $p->value,
                 $this->role->permissions(),

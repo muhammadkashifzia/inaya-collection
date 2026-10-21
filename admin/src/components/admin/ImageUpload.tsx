@@ -19,7 +19,7 @@ const ACCEPT = "image/jpeg,image/png,image/webp";
 const MAX_BYTES = 8 * 1024 * 1024;
 
 /** Uploads one image immediately and stores the returned storage path. */
-export default function ImageUpload({ label, endpoint, value, onChange, error, hint, aspect = "aspect-video", fit = "cover" }: ImageUploadProps) {
+export default function ImageUpload({ label, endpoint, value, onChange, error, hint, fit = "cover" }: ImageUploadProps) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -52,23 +52,31 @@ export default function ImageUpload({ label, endpoint, value, onChange, error, h
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
-      <div className={cn("relative overflow-hidden rounded-xl border border-dashed bg-gray-50 dark:bg-white/3", aspect, message ? "border-error-400" : "border-gray-300 dark:border-gray-700")}>
-        {value.url ? (
-          <img src={value.url} alt="" className={cn("h-full w-full", fit === "contain" ? "object-contain p-3" : "object-cover")} />
-        ) : (
-          <div className="flex h-full items-center justify-center text-theme-xs text-gray-400">No image</div>
-        )}
-        {busy && <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-sm dark:bg-gray-900/70">Uploading…</div>}
-      </div>
-      <div className="flex gap-2">
-        <button type="button" onClick={() => input.current?.click()} disabled={busy} className="rounded-lg px-3 py-1.5 text-theme-xs font-medium text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-white/5">
-          {value.url ? "Replace" : "Upload"}
-        </button>
-        {value.url && (
-          <button type="button" onClick={() => onChange({ path: null, url: null })} className="rounded-lg px-3 py-1.5 text-theme-xs font-medium text-error-600 hover:bg-error-50 dark:hover:bg-error-500/10">
-            Remove
+      <div className="flex items-center gap-4">
+        {/* Thumbnail preview */}
+        <div className={cn("relative size-16 shrink-0 overflow-hidden rounded-lg border bg-gray-50 dark:bg-white/3", message ? "border-error-400" : "border-gray-200 dark:border-gray-700")}>
+          {value.url ? (
+            <img src={value.url} alt="" className={cn("h-full w-full", fit === "contain" ? "object-contain p-1" : "object-cover")} />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-gray-300 dark:text-gray-600">
+              <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+              </svg>
+            </div>
+          )}
+          {busy && <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-theme-xs dark:bg-gray-900/70">…</div>}
+        </div>
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={() => input.current?.click()} disabled={busy} className="rounded-lg border border-brand-500 px-4 py-2 text-sm font-medium text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10">
+            {value.url ? "Replace image" : "Upload/Add image"}
           </button>
-        )}
+          {value.url && (
+            <button type="button" onClick={() => onChange({ path: null, url: null })} className="rounded-lg px-3 py-2 text-sm font-medium text-error-600 hover:bg-error-50 dark:hover:bg-error-500/10">
+              Remove
+            </button>
+          )}
+        </div>
       </div>
       <input
         ref={input}

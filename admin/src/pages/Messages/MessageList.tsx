@@ -4,6 +4,7 @@ import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
 import FilterBar, { FilterSelect } from "@/components/admin/FilterBar";
 import PageHeader from "@/components/admin/PageHeader";
+import { ViewAction } from "@/components/admin/TableActions";
 import Pagination from "@/components/admin/Pagination";
 import PageMeta from "@/components/common/PageMeta";
 import Badge from "@/components/ui/badge/Badge";
@@ -95,9 +96,7 @@ export default function MessageList() {
                     header: <span className="sr-only">Actions</span>,
                     align: "end",
                     cell: (m) => (
-                      <button type="button" className="text-sm font-medium text-brand-500 hover:underline" onClick={() => setOpenId(m.id)}>
-                        View
-                      </button>
+                      <ViewAction onClick={() => setOpenId(m.id)} />
                     ),
                   },
                 ]}

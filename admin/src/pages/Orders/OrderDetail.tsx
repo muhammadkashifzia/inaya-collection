@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
-import { Notice, TextAreaInput, TextInput } from "@/components/admin/Fields";
+import { TextAreaInput, TextInput } from "@/components/admin/Fields";
 import PageHeader from "@/components/admin/PageHeader";
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http } from "@/lib/api";
 import { date, money, ORDER_STATUS_LABEL } from "@/lib/format";
@@ -45,13 +47,14 @@ function AddressBlock({ title, address }: { title: string; address: Address }) {
 export default function OrderDetail() {
   const { number = "" } = useParams();
   const { can } = useAuth();
+  const toast = useToast();
   const { data: order, error, loading, reload, setData } = useApi(() => http.get<Order>(`/admin/orders/${encodeURIComponent(number)}`), [number]);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState<OrderStatus | "shipment" | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [shipment, setShipment] = useState<{ carrier: string; tracking_number: string; tracking_url: string } | null>(null);
   const [shipmentError, setShipmentError] = useState<ApiError | null>(null);
-  const [saved, setSaved] = useState<string | null>(null);
+  const [confirmTransition, setConfirmTransition] = useState<OrderStatus | null>(null);
 
   const ship = shipment ?? {
     carrier: order?.shipment?.carrier ?? "",
@@ -61,18 +64,32 @@ export default function OrderDetail() {
 
   async function transition(to: OrderStatus) {
     const destructive = to === "cancelled" || to === "refunded";
-    if (destructive && !window.confirm(`${ACTION_LABEL[to]}? Stock will be returned to inventory.`)) return;
+    if (destructive) {
+      setConfirmTransition(to);
+      return;
+    }
+    await doTransition(to);
+  }
+
+  async function doTransition(to: OrderStatus) {
     setBusy(to);
     setActionError(null);
     try {
       setData(await http.patch<Order>(`/admin/orders/${encodeURIComponent(number)}/status`, { status: to, note: note || null }));
       setNote("");
-      setSaved(`Order marked as ${ORDER_STATUS_LABEL[to].toLowerCase()}.`);
+      toast.success(`Order marked as ${ORDER_STATUS_LABEL[to].toLowerCase()}.`);
     } catch (e) {
       setActionError(e instanceof ApiError ? e.firstMessage : "Could not update the order.");
     } finally {
       setBusy(null);
     }
+  }
+
+  async function onConfirmTransition() {
+    if (!confirmTransition) return;
+    const to = confirmTransition;
+    setConfirmTransition(null);
+    await doTransition(to);
   }
 
   async function saveShipment(e: React.FormEvent) {
@@ -88,7 +105,7 @@ export default function OrderDetail() {
         }),
       );
       setShipment(null);
-      setSaved("Shipping details saved.");
+      toast.success("Shipping details saved.");
     } catch (err) {
       setShipmentError(err instanceof ApiError ? err : new ApiError("Could not save.", 0));
     } finally {
@@ -118,7 +135,6 @@ export default function OrderDetail() {
         {order && (
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 space-y-6 xl:col-span-8">
-              <Notice tone="success">{saved}</Notice>
               <Card title={`Items (${order.items?.length ?? 0})`} bodyClassName="p-0">
                 <ul className="divide-y divide-gray-100 dark:divide-gray-800">
                   {order.items?.map((item) => (
@@ -197,7 +213,7 @@ export default function OrderDetail() {
                 <p className="mt-2 text-theme-xs text-gray-500">
                   {order.user ? <Link to={`/customers/${order.user.id}`} className="text-brand-500 hover:underline">View customer account</Link> : "Guest checkout"}
                 </p>
-                {order.customer_note && <p className="mt-3 rounded-lg bg-cream p-3 text-sm text-ink-900 dark:bg-white/5 dark:text-gray-300">“{order.customer_note}”</p>}
+                {order.customer_note && <p className="mt-3 rounded-lg bg-cream p-3 text-sm text-ink-900 dark:bg-white/5 dark:text-gray-300">"{order.customer_note}"</p>}
                 <div className="mt-5 space-y-5 border-t border-gray-100 pt-5 dark:border-gray-800">
                   <AddressBlock title="Delivery address" address={order.shipping_address} />
                   {JSON.stringify(order.billing_address) !== JSON.stringify(order.shipping_address) && <AddressBlock title="Billing address" address={order.billing_address} />}
@@ -233,6 +249,14 @@ export default function OrderDetail() {
           </div>
         )}
       </DataState>
+      <ConfirmDialog
+        open={confirmTransition !== null}
+        title={confirmTransition ? `${ACTION_LABEL[confirmTransition]}?` : ""}
+        message="Stock will be returned to inventory. This cannot be undone."
+        confirmLabel={confirmTransition ? (ACTION_LABEL[confirmTransition] ?? "Confirm") : "Confirm"}
+        onConfirm={() => void onConfirmTransition()}
+        onCancel={() => setConfirmTransition(null)}
+      />
     </>
   );
 }

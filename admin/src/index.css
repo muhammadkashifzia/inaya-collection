@@ -1140,3 +1140,47 @@ pre[class*="language-"].line-numbers {
     min-width: 580px;
   }
 }
+
+/* Toast slide-in animation */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ── Quill Editor Overrides ──────────────────────────────────── */
+.quill-wrapper .ql-toolbar {
+  @apply rounded-t-xl border-0 border-b border-gray-200 bg-gray-50/50 dark:border-gray-700 dark:bg-white/3;
+}
+.quill-wrapper .ql-container {
+  @apply rounded-b-xl border-0 text-sm font-outfit;
+}
+.quill-wrapper .ql-editor {
+  @apply min-h-[334px] text-gray-700 dark:text-gray-300;
+}
+.quill-wrapper .ql-editor.ql-blank::before {
+  @apply text-gray-400 not-italic dark:text-gray-500;
+}
+.quill-wrapper .ql-snow .ql-stroke {
+  @apply stroke-gray-500 dark:stroke-gray-400;
+}
+.quill-wrapper .ql-snow .ql-fill {
+  @apply fill-gray-500 dark:fill-gray-400;
+}
+.quill-wrapper .ql-snow .ql-picker-label {
+  @apply text-gray-600 dark:text-gray-400;
+}
+.quill-wrapper .ql-snow .ql-active .ql-stroke {
+  @apply stroke-brand-500;
+}
+.quill-wrapper .ql-snow .ql-active .ql-fill {
+  @apply fill-brand-500;
+}
+.quill-wrapper .ql-snow .ql-active {
+  @apply text-brand-500;
+}

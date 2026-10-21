@@ -118,36 +118,17 @@ class ContentController extends Controller
      */
     private function sectionData(Request $request): array
     {
-        $isImageBanners = $request->input('type') === HomeSectionType::ImageBanners->value;
-
         $data = $request->validate([
             'type' => ['required', Rule::enum(HomeSectionType::class)],
-            // Image banner rows may have no heading, like the fabric cards strip.
-            'title' => [Rule::requiredIf(! $isImageBanners), 'nullable', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
             'category_id' => [Rule::requiredIf($request->input('type') === HomeSectionType::Category->value), 'nullable', 'integer', 'exists:categories,id'],
             'product_limit' => ['nullable', 'integer', 'min:1', 'max:24'],
-            'items' => [Rule::requiredIf($isImageBanners), 'nullable', 'array', 'max:12'],
-            'items.*.image' => ['required', 'string', 'max:255', 'regex:#^(banners|seed)/[A-Za-z0-9/_\-.]+$#'],
-            'items.*.title' => ['nullable', 'string', 'max:60'],
-            'items.*.subtitle' => ['nullable', 'string', 'max:60'],
-            'items.*.href' => ['nullable', 'string', 'max:255', 'regex:#^(/[^\s]*|https://[^\s]+)$#'],
-            'items.*.align' => ['nullable', Rule::in(['left', 'center'])],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
         ]);
-        $data['title'] ??= '';
         $data['is_active'] = $request->boolean('is_active', true);
         $data['product_limit'] ??= 8;
         $data['sort_order'] ??= 0;
-        $data['items'] = $isImageBanners
-            ? array_map(fn (array $item): array => [
-                'image' => $item['image'],
-                'title' => $item['title'] ?? null,
-                'subtitle' => $item['subtitle'] ?? null,
-                'href' => $item['href'] ?? null,
-                'align' => $item['align'] ?? 'center',
-            ], array_values($data['items'] ?? []))
-            : null;
 
         return $data;
     }

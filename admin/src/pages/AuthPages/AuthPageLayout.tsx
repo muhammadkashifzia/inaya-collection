@@ -12,10 +12,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div className="relative z-1 flex items-center justify-center">
             <GridShape />
             <div className="flex max-w-sm flex-col items-center text-center">
-              <span className="mb-6 flex size-16 items-center justify-center rounded-2xl bg-brand-500 font-display text-3xl font-bold text-white">G</span>
-              <p className="font-display text-4xl font-semibold tracking-[0.2em] text-white uppercase">
-                Anaya<span className="text-brand-400">Collection</span>
-              </p>
+              <span className="mb-6">
+                <img src="/images/logo/anaya-collection-logo.png" alt="Anaya Collection" className="h-20 w-auto" />
+              </span>
               <p className="mt-2 text-xs tracking-[0.4em] text-ink-300 uppercase">Store admin</p>
               <p className="mt-8 text-sm text-ink-200">Manage products, orders, customers and your storefront in one place.</p>
             </div>

@@ -10,6 +10,7 @@ use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\CartService;
+use App\Support\Totp;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -60,17 +61,140 @@ class AuthController extends Controller
             throw ValidationException::withMessages(['email' => 'These credentials do not match our records.']);
         }
 
-        $request->session()->regenerate();
-
         /** @var User $user */
         $user = Auth::guard('web')->user();
+
+        // Staff members must always go through 2FA.
+        if ($user->isStaffMember()) {
+            $request->session()->put('two_factor:user_id', $user->id);
+            $request->session()->put('two_factor:remember', (bool) ($data['remember'] ?? false));
+
+            Auth::guard('web')->logout();
+            $request->session()->regenerate();
+
+            // Not yet configured → force setup; already configured → ask for code.
+            return response()->json([
+                'two_factor' => true,
+                'two_factor_setup' => ! $user->hasTwoFactorEnabled(),
+            ]);
+        }
+
+        $request->session()->regenerate();
+        $user->forceFill(['last_login_at' => now()])->save();
+        $this->carts->resolve($user, $data['cart_token'] ?? null, create: false);
+
+        return response()->json(['data' => new UserResource($user)]);
+    }
+
+    /**
+     * Generate a TOTP secret during the login flow (2FA not yet configured).
+     * The user must be in a pending two-factor session.
+     */
+    public function twoFactorSetup(Request $request): JsonResponse
+    {
+        $userId = $request->session()->get('two_factor:user_id');
+
+        if (! $userId) {
+            throw ValidationException::withMessages(['code' => 'No two-factor setup in progress. Please sign in again.']);
+        }
+
+        /** @var User|null $user */
+        $user = User::query()->where('is_active', true)->find($userId);
+
+        if (! $user || $user->hasTwoFactorEnabled()) {
+            throw ValidationException::withMessages(['code' => 'Two-factor setup is not available.']);
+        }
+
+        $secret = Totp::generateSecret();
+
+        // Store the pending secret (unconfirmed).
+        $user->forceFill([
+            'two_factor_secret' => $secret,
+            'two_factor_confirmed_at' => null,
+        ])->save();
+
+        return response()->json([
+            'secret' => $secret,
+            'uri' => Totp::uri($secret, $user->email),
+        ]);
+    }
+
+    /**
+     * Confirm setup + complete login (first-time 2FA enrollment).
+     */
+    public function twoFactorSetupConfirm(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'code' => ['required', 'string', 'size:6'],
+        ]);
+
+        $userId = $request->session()->get('two_factor:user_id');
+        $remember = (bool) $request->session()->get('two_factor:remember', false);
+
+        if (! $userId) {
+            throw ValidationException::withMessages(['code' => 'No two-factor setup in progress. Please sign in again.']);
+        }
+
+        /** @var User|null $user */
+        $user = User::query()->where('is_active', true)->find($userId);
+
+        if (! $user || ! $user->two_factor_secret || $user->two_factor_confirmed_at) {
+            throw ValidationException::withMessages(['code' => 'Two-factor setup is not pending.']);
+        }
+
+        if (! Totp::verify($user->two_factor_secret, $data['code'])) {
+            throw ValidationException::withMessages(['code' => 'Invalid code. Please try again.']);
+        }
+
+        // Activate 2FA and complete login.
+        $user->forceFill(['two_factor_confirmed_at' => now(), 'last_login_at' => now()])->save();
+
+        $request->session()->forget(['two_factor:user_id', 'two_factor:remember']);
+        Auth::guard('web')->login($user, $remember);
+        $request->session()->regenerate();
+
+        Log::info('Staff login (2FA setup)', ['user_id' => $user->id, 'ip' => $request->ip()]);
+
+        return response()->json(['data' => new UserResource($user)]);
+    }
+
+    /**
+     * Verify a 2FA code after credentials have been accepted (already enrolled).
+     */
+    public function twoFactorChallenge(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'code' => ['required', 'string', 'size:6'],
+        ]);
+
+        $userId = $request->session()->pull('two_factor:user_id');
+        $remember = (bool) $request->session()->pull('two_factor:remember', false);
+
+        if (! $userId) {
+            throw ValidationException::withMessages(['code' => 'No two-factor challenge in progress. Please sign in again.']);
+        }
+
+        /** @var User|null $user */
+        $user = User::query()->where('is_active', true)->find($userId);
+
+        if (! $user || ! $user->hasTwoFactorEnabled()) {
+            throw ValidationException::withMessages(['code' => 'Two-factor authentication is not configured for this account.']);
+        }
+
+        if (! Totp::verify($user->two_factor_secret, $data['code'])) {
+            // Put the challenge back so the user can retry.
+            $request->session()->put('two_factor:user_id', $userId);
+            $request->session()->put('two_factor:remember', $remember);
+
+            throw ValidationException::withMessages(['code' => 'Invalid code. Please try again.']);
+        }
+
+        Auth::guard('web')->login($user, $remember);
+        $request->session()->regenerate();
+
         $user->forceFill(['last_login_at' => now()])->save();
 
-        if ($user->isStaffMember()) {
-            Log::info('Staff login', ['user_id' => $user->id, 'ip' => $request->ip()]);
-        } else {
-            $this->carts->resolve($user, $data['cart_token'] ?? null, create: false);
-        }
+        Log::info('Staff login (2FA)', ['user_id' => $user->id, 'ip' => $request->ip()]);
 
         return response()->json(['data' => new UserResource($user)]);
     }

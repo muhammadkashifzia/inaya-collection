@@ -12,18 +12,14 @@ on:
 concurrency:
   group: deploy-store
   cancel-in-progress: false
-# actions: read lets the job see whether Deploy Backend is still running for this commit.
-permissions:
-  contents: read
-  actions: read
 env:
   CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
   # Passenger app root (cPanel "Setup Node.js App", startup file app.js).
-  REMOTE_DIR: /home/eastlogic/anaya.eastlogic.com
-  STORE_URL: https://anaya.eastlogic.com
-  API_URL: https://anaya-api.eastlogic.com
+  REMOTE_DIR: ${{ vars.STORE_REMOTE_DIR || '/home/eastlogic/anaya.eastlogic.com' }}
+  STORE_URL: ${{ vars.STORE_URL || 'https://anaya.eastlogic.com' }}
+  API_URL: ${{ vars.API_URL || 'https://anaya-api.eastlogic.com' }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -40,21 +36,7 @@ jobs:
           cache-dependency-path: app/package-lock.json
       - name: Install dependencies
         run: npm ci
-      # A push touching backend/ and app/ starts both deploys at once. While the backend is being
-      # extracted and migrated the API returns errors, which breaks prerendering, so wait for it.
-      - name: Wait for backend deploy of this commit
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          for i in $(seq 1 40); do
-            running=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy-backend.yml --commit "$GITHUB_SHA" \
-              --json status --jq '[.[] | select(.status != "completed")] | length')
-            echo "[$i] Deploy Backend runs still in progress for ${GITHUB_SHA::7}: $running"
-            [ "$running" = "0" ] && exit 0
-            sleep 15
-          done
-          echo "::warning::Deploy Backend is still running after 10 minutes; building anyway."
-      # Pages are prerendered from the live API, so the build needs it up.
+      # Pages are prerendered from the live API, so the build needs it up (Deploy Backend may still be running).
       - name: Wait for API
         run: |
           for i in $(seq 1 40); do

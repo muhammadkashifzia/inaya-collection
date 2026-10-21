@@ -1,4 +1,4 @@
-import { CollectionTabs, FeaturedTabs, HeroBanner, ImageBanners, ProductRail, ShopByCollection } from "@/components/organisms";
+import { CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection, WinterCollections } from "@/components/organisms";
 import type { HomeData, HomeSection, SiteConfig } from "@/types";
 
 /**
@@ -6,15 +6,22 @@ import type { HomeData, HomeSection, SiteConfig } from "@/types";
  * and visibility are managed in the admin dashboard (Home sections).
  */
 export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData }) {
-  const hero = home.banners[0];
   const tabsSection = home.sections.find((s) => s.type === "category_tabs");
 
   return (
     <>
-      {hero && <HeroBanner banner={hero} />}
-      {home.sections.map((section) => (
-        <Section key={section.id} section={section} />
-      ))}
+      {home.banners.length > 0 && <HeroBanner banners={home.banners} />}
+      {home.sections.map((section) => {
+        if (section.type === "category_grid") {
+          return (
+            <div key={section.id}>
+              <Section section={section} />
+              <WinterCollections banners={home.collectionStrip} />
+            </div>
+          );
+        }
+        return <Section key={section.id} section={section} />;
+      })}
       {tabsSection?.type === "category_tabs" && (
         <FeaturedTabs
           title="Best Sellers"
@@ -51,8 +58,6 @@ function Section({ section }: { section: HomeSection }) {
           href={`/collections/all?sort=${section.type === "best_sellers" ? "popularity" : section.type === "latest" ? "latest" : "featured"}${section.type === "discounted" ? "&on_sale=1" : ""}`}
         />
       );
-    case "image_banners":
-      return section.items.length ? <ImageBanners title={section.title} items={section.items} /> : null;
     case "reviews":
       // Customer reviews are not stored in the backend yet, so nothing is rendered.
       return null;

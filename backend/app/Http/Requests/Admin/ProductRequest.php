@@ -29,26 +29,12 @@ class ProductRequest extends FormRequest
     {
         /** @var Product|null $product */
         $product = $this->route('product');
-
-        return self::rulesFor($product);
-    }
-
-    public function withValidator(Validator $validator): void
-    {
-        $validator->after(fn (Validator $v) => self::checkVariants($v, $this->all()));
-    }
-
-    /**
-     * Rules shared by the product form and the CSV import.
-     *
-     * @return array<string, mixed>
-     */
-    public static function rulesFor(?Product $product): array
-    {
         $variantIds = $product?->variants()->pluck('id')->all() ?? [];
 
         return [
-            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->whereNull('deleted_at')],
+            'category_id' => ['nullable', 'integer', Rule::exists('categories', 'id')->whereNull('deleted_at')],
+            'category_ids' => ['nullable', 'array', 'max:20'],
+            'category_ids.*' => ['integer', 'distinct', Rule::exists('categories', 'id')->whereNull('deleted_at')],
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', Rule::unique('products', 'slug')->ignore($product?->id)],
             'sku' => ['required', 'string', 'max:64', 'alpha_dash', Rule::unique('products', 'sku')->ignore($product?->id)],
@@ -83,26 +69,23 @@ class ProductRequest extends FormRequest
         ];
     }
 
-    /**
-     * Variant SKU uniqueness (including soft-deleted rows) and sale price checks.
-     *
-     * @param  array<string, mixed>  $input
-     */
-    public static function checkVariants(Validator $v, array $input): void
+    public function withValidator(Validator $validator): void
     {
-        foreach ((array) ($input['variants'] ?? []) as $i => $variant) {
-            $query = ProductVariant::withTrashed()->where('sku', $variant['sku'] ?? '');
-            if (! empty($variant['id'])) {
-                $query->whereKeyNot($variant['id']);
-            }
-            if ($query->exists()) {
-                $v->errors()->add("variants.{$i}.sku", 'This variant SKU is already in use.');
-            }
+        $validator->after(function (Validator $v): void {
+            foreach ((array) $this->input('variants', []) as $i => $variant) {
+                $query = ProductVariant::withTrashed()->where('sku', $variant['sku'] ?? '');
+                if (! empty($variant['id'])) {
+                    $query->whereKeyNot($variant['id']);
+                }
+                if ($query->exists()) {
+                    $v->errors()->add("variants.{$i}.sku", 'This variant SKU is already in use.');
+                }
 
-            $price = $variant['price'] ?? ($input['price'] ?? null);
-            if (isset($variant['sale_price']) && $price !== null && (float) $variant['sale_price'] >= (float) $price) {
-                $v->errors()->add("variants.{$i}.sale_price", 'Sale price must be lower than the price.');
+                $price = $variant['price'] ?? $this->input('price');
+                if (isset($variant['sale_price']) && $price !== null && (float) $variant['sale_price'] >= (float) $price) {
+                    $v->errors()->add("variants.{$i}.sale_price", 'Sale price must be lower than the price.');
+                }
             }
-        }
+        });
     }
 }

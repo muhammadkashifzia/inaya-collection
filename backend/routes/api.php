@@ -20,22 +20,26 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
-    // ---------------------------------------------------------------- Public
-    Route::get('home', HomeController::class)->name('home');
-    Route::get('settings', [StorefrontController::class, 'settings'])->name('settings');
-    Route::get('banners', [StorefrontController::class, 'banners'])->name('banners');
-    Route::get('pages', [StorefrontController::class, 'pages'])->name('pages.index');
-    Route::get('pages/{slug}', [StorefrontController::class, 'page'])->name('pages.show');
+    // ---------------------------------------------------------------- Public (cached)
+    Route::middleware('cache.api:300')->group(function (): void {
+        Route::get('home', HomeController::class)->name('home');
+        Route::get('settings', [StorefrontController::class, 'settings'])->name('settings');
+        Route::get('banners', [StorefrontController::class, 'banners'])->name('banners');
+        Route::get('pages', [StorefrontController::class, 'pages'])->name('pages.index');
+        Route::get('pages/{slug}', [StorefrontController::class, 'page'])->name('pages.show');
+
+        Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('categories/{slug}', [CategoryController::class, 'show'])->name('categories.show');
+
+        Route::get('products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('products/filters', [ProductController::class, 'facets'])->name('products.filters');
+        Route::get('products/{slug}', [ProductController::class, 'show'])->name('products.show');
+        Route::get('products/{slug}/reviews', [ProductReviewController::class, 'index'])->name('products.reviews.index');
+    });
+
+    // ---------------------------------------------------------------- Public (uncached)
     Route::post('newsletter', [StorefrontController::class, 'subscribe'])->middleware('throttle:newsletter')->name('newsletter');
     Route::post('contact', ContactController::class)->middleware('throttle:contact')->name('contact');
-
-    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('categories/{slug}', [CategoryController::class, 'show'])->name('categories.show');
-
-    Route::get('products', [ProductController::class, 'index'])->name('products.index');
-    Route::get('products/filters', [ProductController::class, 'facets'])->name('products.filters');
-    Route::get('products/{slug}', [ProductController::class, 'show'])->name('products.show');
-    Route::get('products/{slug}/reviews', [ProductReviewController::class, 'index'])->name('products.reviews.index');
     Route::post('products/{slug}/reviews', [ProductReviewController::class, 'store'])->middleware('throttle:reviews')->name('products.reviews.store');
 
     Route::post('orders/track', OrderTrackingController::class)->middleware('throttle:order-tracking')->name('orders.track');
@@ -55,6 +59,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::prefix('auth')->name('auth.')->group(function (): void {
         Route::post('register', [AuthController::class, 'register'])->middleware('throttle:login')->name('register');
         Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login');
+        Route::post('two-factor-challenge', [AuthController::class, 'twoFactorChallenge'])->middleware('throttle:login')->name('two-factor.challenge');
+        Route::post('two-factor-setup', [AuthController::class, 'twoFactorSetup'])->middleware('throttle:login')->name('two-factor.setup');
+        Route::post('two-factor-setup/confirm', [AuthController::class, 'twoFactorSetupConfirm'])->middleware('throttle:login')->name('two-factor.setup.confirm');
         Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:password-reset')->name('password.email');
         Route::post('reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:password-reset')->name('password.update');
         Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
@@ -82,9 +89,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', 'active', 'staff'])->group(function (): void {
         Route::get('dashboard', Admin\DashboardController::class)->middleware('can:'.Permission::ViewDashboard->value)->name('dashboard');
 
+        // Two-factor authentication management (any staff member)
+        Route::post('two-factor/enable', [Admin\TwoFactorController::class, 'enable'])->name('two-factor.enable');
+        Route::post('two-factor/confirm', [Admin\TwoFactorController::class, 'confirm'])->name('two-factor.confirm');
+        Route::post('two-factor/disable', [Admin\TwoFactorController::class, 'disable'])->name('two-factor.disable');
+
         Route::middleware('can:'.Permission::ManageProducts->value)->group(function (): void {
-            Route::get('products/export', [Admin\ProductTransferController::class, 'export'])->name('products.export');
-            Route::post('products/import', [Admin\ProductTransferController::class, 'import'])->middleware('throttle:10,1')->name('products.import');
             Route::get('products', [Admin\ProductController::class, 'index'])->name('products.index');
             Route::post('products', [Admin\ProductController::class, 'store'])->name('products.store');
             Route::get('products/{product}', [Admin\ProductController::class, 'show'])->whereNumber('product')->name('products.show');
@@ -102,7 +112,13 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::middleware('can:'.Permission::ManageCategories->value)->group(function (): void {
             Route::post('categories/image', [Admin\CategoryController::class, 'uploadImage'])->name('categories.image');
+            Route::post('categories/reorder', [Admin\CategoryController::class, 'reorder'])->name('categories.reorder');
             Route::apiResource('categories', Admin\CategoryController::class);
+        });
+
+        Route::middleware('can:'.Permission::ManageDesignCategories->value)->group(function (): void {
+            Route::post('design-categories/image', [Admin\DesignCategoryController::class, 'uploadImage'])->name('design-categories.image');
+            Route::apiResource('design-categories', Admin\DesignCategoryController::class);
         });
 
         Route::middleware('can:'.Permission::ManageOrders->value)->group(function (): void {

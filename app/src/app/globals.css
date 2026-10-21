@@ -33,3 +33,15 @@ body {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Toast animation */
+@keyframes toast-in {
+  from { transform: translateY(1rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@media (min-width: 768px) {
+  @keyframes toast-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+}

@@ -21,6 +21,7 @@ enum UserRole: string
                 Permission::ViewDashboard,
                 Permission::ManageProducts,
                 Permission::ManageCategories,
+                Permission::ManageDesignCategories,
                 Permission::ManageOrders,
                 Permission::ManageInventory,
                 Permission::ViewCustomers,

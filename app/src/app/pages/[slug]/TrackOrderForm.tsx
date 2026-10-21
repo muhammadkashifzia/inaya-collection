@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { Button, FormAlert, TextField } from "@/components/atoms";
 import { OrderSummaryCard } from "@/components/organisms/OrderSummaryCard";
+import { useToast } from "@/context/ToastContext";
 import { api, ApiError } from "@/lib/api";
 import type { Order } from "@/types";
 
 /** Guest order lookup: order number + the email or phone used at checkout. */
 export function TrackOrderForm() {
+  const toast = useToast();
   const [number, setNumber] = useState("");
   const [contact, setContact] = useState("");
   const [busy, setBusy] = useState(false);
@@ -21,8 +23,11 @@ export function TrackOrderForm() {
     setOrder(null);
     try {
       setOrder(await api.trackOrder(number.trim(), contact.trim()));
+      toast.success("Order Found", "Here are your order details.");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not look up the order.");
+      const message = err instanceof ApiError ? err.message : "Could not look up the order.";
+      setError(message);
+      toast.error("Tracking Failed", message);
     } finally {
       setBusy(false);
     }

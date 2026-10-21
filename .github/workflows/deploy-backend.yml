@@ -25,8 +25,8 @@ env:
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
   # Laravel project root on the server. The subdomain document root is moved to
   # $REMOTE_DIR/public; the root .htaccess (managed below) is a fallback for when it isn't.
-  REMOTE_DIR: /home/eastlogic/anaya-api.eastlogic.com
-  API_URL: https://anaya-api.eastlogic.com
+  REMOTE_DIR: ${{ vars.API_REMOTE_DIR || '/home/eastlogic/anaya-api.eastlogic.com' }}
+  API_URL: ${{ vars.API_URL || 'https://anaya-api.eastlogic.com' }}
   ADMIN_ORIGIN: https://anaya-admin.eastlogic.com
   PHP_HANDLER: ${{ vars.API_PHP_HANDLER || 'ea-php84' }}
   ADMIN_EMAIL: ${{ inputs.admin_email || '' }}

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { Container, Icon, IconButton } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
 import { cn } from "@/lib/format";
@@ -11,17 +11,6 @@ import type { NavLink, SiteConfig } from "@/types";
 
 /** Bundled logo used when "image" mode is selected but nothing has been uploaded. */
 const DEFAULT_LOGO = "/anaya-collection-logo.svg";
-
-const noopSubscribe = () => () => {};
-
-/**
- * False on the server and during hydration, true afterwards. The header hydrates inside a
- * Suspense boundary, often after StoreProvider has already loaded the user, wishlist and cart,
- * so those values must not be used until hydration has finished.
- */
-function useHydrated(): boolean {
-  return useSyncExternalStore(noopSubscribe, () => true, () => false);
-}
 
 interface HeaderProps {
   siteName: string;
@@ -33,13 +22,7 @@ interface HeaderProps {
 export function Header({ siteName, logoType, logoUrl, navigation }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const store = useStore();
-  const hydrated = useHydrated();
-  // Match the server-rendered (guest, empty) markup until hydration is done.
-  const user = hydrated ? store.user : null;
-  const count = hydrated ? store.count : 0;
-  const wishlist = hydrated ? store.wishlist : [];
-  const { openCart } = store;
+  const { count, openCart, wishlist, user } = useStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -66,7 +49,6 @@ export function Header({ siteName, logoType, logoUrl, navigation }: HeaderProps)
       <Container className="flex h-16 items-center justify-between gap-4 md:h-20">
         <div className="flex items-center gap-1 xl:hidden">
           <IconButton icon="menu" label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)} />
-          <IconButton icon="search" label="Search" onClick={() => setSearchOpen((v) => !v)} />
         </div>
 
         {logoType === "text" ? (
