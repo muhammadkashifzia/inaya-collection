@@ -406,6 +406,9 @@ class ProductController extends Controller
                 }
 
                 if ($existing) {
+                    if ($existing->trashed()) {
+                        $existing->restore();
+                    }
                     $existing->update($attrs);
                     if (! $skipImages) {
                         $this->importImage($existing, $data['image_url'] ?? '', $errors, $rowNum);
