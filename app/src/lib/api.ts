@@ -221,6 +221,7 @@ export const api = {
   // ----- Catalog (client-side search)
   async products(query: ProductQuery, signal?: AbortSignal): Promise<Paginated<Product>> {
     const params = new URLSearchParams();
+    if (query.category) params.set("category", query.category);
     if (query.q) params.set("q", query.q);
     if (query.perPage) params.set("per_page", String(query.perPage));
     if (query.page) params.set("page", String(query.page));
