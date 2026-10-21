@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -141,7 +142,7 @@ class ProductController extends Controller
             'Handle', 'Title', 'SKU', 'Category', 'Brand', 'Status',
             'Price', 'Sale Price', 'Fabric', 'Pieces', 'Featured',
             'Short Description', 'Description', 'Meta Title', 'Meta Description',
-            'Published At', 'Total Stock', 'Sold',
+            'Published At', 'Total Stock', 'Sold', 'Image URL',
         ];
 
         $filename = 'products-'.now()->format('Y-m-d').'.csv';
@@ -150,7 +151,7 @@ class ProductController extends Controller
             $out = fopen('php://output', 'w');
             fputcsv($out, $headers);
 
-            $query->with(['category', 'variants'])->chunk(200, function ($products) use ($out): void {
+            $query->with(['category', 'variants', 'primaryImage'])->chunk(200, function ($products) use ($out): void {
                 foreach ($products as $product) {
                     fputcsv($out, [
                         $product->slug,
@@ -171,6 +172,7 @@ class ProductController extends Controller
                         $product->published_at?->toIso8601String(),
                         $product->variants->sum('stock'),
                         $product->sales_count,
+                        $product->primaryImage?->url(),
                     ]);
                 }
             });
@@ -227,6 +229,7 @@ class ProductController extends Controller
             'meta title' => 'meta_title',
             'meta description' => 'meta_description',
             'published at' => 'published_at',
+            'image url' => 'image_url',
         ];
 
         $created = 0;
@@ -319,12 +322,14 @@ class ProductController extends Controller
 
                 if ($existing) {
                     $existing->update($attrs);
+                    $this->importImage($existing, $data['image_url'] ?? '', $errors, $rowNum);
                     $updated++;
                 } else {
                     // New product — ensure required fields have defaults.
                     $attrs['status'] ??= ProductStatus::Draft->value;
                     $attrs['price'] ??= 0;
-                    Product::create($attrs);
+                    $product = Product::create($attrs);
+                    $this->importImage($product, $data['image_url'] ?? '', $errors, $rowNum);
                     $created++;
                 }
             }
@@ -354,5 +359,50 @@ class ProductController extends Controller
             'skipped' => $skipped,
             'errors' => array_slice($errors, 0, 20),
         ]);
+    }
+
+    /**
+     * Download an image from a URL and attach it to a product (only if it has no images yet).
+     *
+     * @param  list<string>  $errors
+     */
+    private function importImage(Product $product, string $imageUrl, array &$errors, int $rowNum): void
+    {
+        if ($imageUrl === '' || $product->images()->exists()) {
+            return;
+        }
+
+        try {
+            $contents = @file_get_contents($imageUrl, false, stream_context_create([
+                'http' => ['timeout' => 15, 'ignore_errors' => true],
+                'ssl' => ['verify_peer' => false],
+            ]));
+
+            if ($contents === false || strlen($contents) < 100) {
+                $errors[] = "Row {$rowNum}: could not download image from URL.";
+
+                return;
+            }
+
+            // Detect extension from content type or URL.
+            $ext = 'jpg';
+            if (str_contains($imageUrl, '.png') || str_starts_with($contents, "\x89PNG")) {
+                $ext = 'png';
+            } elseif (str_contains($imageUrl, '.webp') || str_starts_with($contents, 'RIFF')) {
+                $ext = 'webp';
+            }
+
+            $filename = Str::random(40).'.'.$ext;
+            $path = "products/{$product->id}/{$filename}";
+            Storage::disk('public')->put($path, $contents);
+
+            $product->images()->create([
+                'path' => $path,
+                'alt' => $product->name,
+                'sort_order' => 0,
+            ]);
+        } catch (\Throwable $e) {
+            $errors[] = "Row {$rowNum}: image download failed — {$e->getMessage()}";
+        }
     }
 }
