@@ -15,52 +15,52 @@ class HomeSectionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $slides = null;
+        $imageUrl = null;
+
+        try {
+            $rawSlides = $this->resource->getAttributes()['slides'] ?? null;
+            $decoded = is_string($rawSlides) ? json_decode($rawSlides, true) : (is_array($rawSlides) ? $rawSlides : null);
+
+            if (is_array($decoded) && $decoded !== []) {
+                $slides = [];
+                foreach ($decoded as $slide) {
+                    if (! is_array($slide)) {
+                        continue;
+                    }
+                    $slides[] = [
+                        'image' => $slide['image'] ?? '',
+                        'image_url' => ! empty($slide['image']) ? Storage::disk('public')->url($slide['image']) : null,
+                        'text' => $slide['text'] ?? null,
+                        'link' => $slide['link'] ?? null,
+                    ];
+                }
+                if ($slides === []) {
+                    $slides = null;
+                }
+            }
+
+            $rawImage = $this->resource->getAttributes()['image'] ?? null;
+            $imageUrl = $rawImage ? Storage::disk('public')->url($rawImage) : null;
+        } catch (\Throwable) {
+            // Silently handle any Storage or decode errors.
+        }
+
         return [
             'id' => $this->id,
-            'type' => $this->type,
+            'type' => $this->resource->getRawOriginal('type') ?? $this->type,
             'title' => $this->title,
-            'subtitle' => $this->subtitle,
-            'button_text' => $this->button_text,
-            'button_link' => $this->button_link,
-            'image' => $this->image,
-            'image_url' => $this->image ? Storage::disk('public')->url($this->image) : null,
-            'slides' => $this->resolveSlides(),
+            'subtitle' => $this->resource->getAttributes()['subtitle'] ?? null,
+            'button_text' => $this->resource->getAttributes()['button_text'] ?? null,
+            'button_link' => $this->resource->getAttributes()['button_link'] ?? null,
+            'image' => $this->resource->getAttributes()['image'] ?? null,
+            'image_url' => $imageUrl,
+            'slides' => $slides,
             'category_id' => $this->category_id,
             'category' => new CategoryResource($this->whenLoaded('category')),
             'product_limit' => $this->product_limit,
             'sort_order' => $this->sort_order,
             'is_active' => $this->is_active,
         ];
-    }
-
-    /**
-     * Resolve slide image paths to full URLs.
-     *
-     * @return list<array{image: string, image_url: string|null, text: string|null, link: string|null}>|null
-     */
-    private function resolveSlides(): ?array
-    {
-        $slides = $this->slides;
-
-        if (! is_array($slides) || $slides === []) {
-            return null;
-        }
-
-        $resolved = [];
-
-        foreach ($slides as $slide) {
-            if (! is_array($slide)) {
-                continue;
-            }
-
-            $resolved[] = [
-                'image' => $slide['image'] ?? '',
-                'image_url' => ! empty($slide['image']) ? Storage::disk('public')->url($slide['image']) : null,
-                'text' => $slide['text'] ?? null,
-                'link' => $slide['link'] ?? null,
-            ];
-        }
-
-        return $resolved === [] ? null : $resolved;
     }
 }
