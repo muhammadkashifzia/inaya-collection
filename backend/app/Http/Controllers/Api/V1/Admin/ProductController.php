@@ -291,11 +291,15 @@ class ProductController extends Controller
             while (($row = fgetcsv($handle)) !== false) {
                 $rowNum++;
 
-                if (count($row) !== count($headerRow)) {
-                    $errors[] = "Row {$rowNum}: column count mismatch, skipped.";
-                    $skipped++;
-
-                    continue;
+                // Pad or trim the row to match the header length so minor
+                // CSV irregularities (trailing commas, missing columns) don't
+                // cause the entire row to be skipped.
+                $headerCount = count($headerRow);
+                $rowCount = count($row);
+                if ($rowCount < $headerCount) {
+                    $row = array_pad($row, $headerCount, '');
+                } elseif ($rowCount > $headerCount) {
+                    $row = array_slice($row, 0, $headerCount);
                 }
 
                 $data = [];
@@ -321,6 +325,7 @@ class ProductController extends Controller
                         $errors[] = "Row {$rowNum}: missing Title, skipped.";
                         $skipped++;
                     }
+
                     continue;
                 }
 
@@ -477,28 +482,41 @@ class ProductController extends Controller
         }
 
         try {
-            // Retry up to 3 times with increasing timeout.
+            // Use cURL instead of file_get_contents — many cPanel hosts
+            // disable allow_url_fopen, which silently breaks file_get_contents
+            // on remote URLs. cURL is virtually always available.
             $contents = false;
             $timeouts = [10, 15, 20];
             foreach ($timeouts as $attempt => $timeout) {
-                $contents = @file_get_contents($imageUrl, false, stream_context_create([
-                    'http' => [
-                        'timeout' => $timeout,
-                        'ignore_errors' => true,
-                        'header' => "User-Agent: Mozilla/5.0\r\n",
-                    ],
-                    'ssl' => ['verify_peer' => false, 'verify_peer_name' => false],
-                ]));
-                if ($contents !== false && strlen($contents) >= 100) {
+                $ch = curl_init($imageUrl);
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_MAXREDIRS => 5,
+                    CURLOPT_TIMEOUT => $timeout,
+                    CURLOPT_CONNECTTIMEOUT => $timeout,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_SSL_VERIFYHOST => 0,
+                    CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; InayaImport/1.0)',
+                    CURLOPT_HTTPHEADER => ['Accept: image/*,*/*'],
+                ]);
+                $contents = curl_exec($ch);
+                $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $curlError = curl_error($ch);
+                curl_close($ch);
+
+                if ($contents !== false && strlen($contents) >= 100 && $httpCode >= 200 && $httpCode < 400) {
                     break;
                 }
+                $contents = false;
                 if ($attempt < count($timeouts) - 1) {
                     usleep(500_000);
                 }
             }
 
             if ($contents === false || strlen($contents) < 100) {
-                $errors[] = "Row {$rowNum}: could not download image from URL.";
+                $reason = $curlError ?: "HTTP {$httpCode}";
+                $errors[] = "Row {$rowNum}: could not download image from URL ({$reason}).";
 
                 return;
             }
