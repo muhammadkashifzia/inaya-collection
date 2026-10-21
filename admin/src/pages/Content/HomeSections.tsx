@@ -87,7 +87,7 @@ export default function HomeSections() {
     type: s.type,
     title: s.title,
     slides: s.type === "banner_image" && "slides" in s && Array.isArray(s.slides)
-      ? s.slides.filter((sl: SlideDraft) => sl.image).map((sl: SlideDraft) => ({ image: sl.image, text: sl.text || null, link: sl.link || null }))
+      ? s.slides.filter((sl) => sl.image).map((sl) => ({ image: sl.image, text: sl.text || null, link: sl.link || null }))
       : null,
     category_id: s.type === "category" ? Number(s.category_id) || null : null,
     product_limit: Number(s.product_limit || 8),
@@ -258,7 +258,7 @@ export default function HomeSections() {
                           <img src={slide.image_url} alt="" className="aspect-[5/2] w-full object-cover" />
                           <button
                             type="button"
-                            onClick={() => updateSlide(idx, "image", "") || updateSlide(idx, "image_url", "")}
+                            onClick={() => { updateSlide(idx, "image", ""); updateSlide(idx, "image_url", ""); }}
                             className="absolute end-2 top-2 rounded-lg bg-black/50 px-2.5 py-1 text-theme-xs font-medium text-white backdrop-blur-sm hover:bg-black/70"
                           >
                             Remove
