@@ -1,0 +1,174 @@
+name: "Maintenance: Fix Backend .env & Redeploy"
+
+on:
+  workflow_dispatch:
+    inputs:
+      db_host:
+        description: "DB_HOST value (cPanel shared hosting usually needs 'localhost' for Unix socket)"
+        type: string
+        required: false
+        default: "localhost"
+
+concurrency:
+  group: deploy-backend
+  cancel-in-progress: false
+
+env:
+  CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
+  CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
+  CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+  REMOTE_DIR: ${{ vars.API_REMOTE_DIR || '/home/eastlogic/anaya-api.eastlogic.com' }}
+  API_URL: ${{ vars.API_URL || 'https://anaya-api.eastlogic.com' }}
+  PHP_HANDLER: ${{ vars.API_PHP_HANDLER || 'ea-php84' }}
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read & fix .env on server
+        env:
+          NEW_DB_HOST: ${{ inputs.db_host }}
+        run: |
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+
+          content=$(curl -sS -G -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.env" \
+            "$CPANEL_HOST/execute/Fileman/get_file_content" | jq -r '.data.content // empty')
+
+          if [ -z "$content" ]; then
+            echo "::error::.env not found at $REMOTE_DIR"
+            exit 1
+          fi
+
+          echo "=== Current DB config ==="
+          echo "$content" | grep -E '^DB_' || true
+          echo "========================="
+
+          old_host=$(echo "$content" | grep -E '^DB_HOST=' | tail -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
+          echo "Current DB_HOST: $old_host"
+          echo "Desired DB_HOST: $NEW_DB_HOST"
+
+          if [ "$old_host" = "$NEW_DB_HOST" ]; then
+            echo "DB_HOST is already correct. Will still clear cache."
+          else
+            echo "Updating DB_HOST from '$old_host' to '$NEW_DB_HOST'..."
+            content=$(echo "$content" | sed "s|^DB_HOST=.*|DB_HOST=$NEW_DB_HOST|")
+
+            resp=$(curl -sS -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.env" \
+              --data-urlencode "content=$content" "$CPANEL_HOST/execute/Fileman/save_file_content")
+            echo "$resp" | jq -e '.status == 1' >/dev/null || { echo "::error::Failed to update .env: $resp"; exit 1; }
+            echo ".env updated successfully"
+          fi
+
+      - name: Clear cache & run migrations
+        run: |
+          DEPLOY_KEY=$(openssl rand -hex 24)
+          DEPLOY_FILE="_fix_$(openssl rand -hex 8).php"
+          echo "::add-mask::$DEPLOY_KEY"
+          echo "DEPLOY_KEY=$DEPLOY_KEY" >> "$GITHUB_ENV"
+          echo "DEPLOY_FILE=$DEPLOY_FILE" >> "$GITHUB_ENV"
+
+          cat > "$DEPLOY_FILE" <<'EOF'
+          <?php
+          if (!hash_equals('__KEY__', (string) ($_GET['key'] ?? ''))) { http_response_code(404); exit; }
+          ini_set('max_execution_time', 120);
+          header('Content-Type: text/plain');
+          register_shutdown_function(function () {
+              $error = error_get_last();
+              if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+                  echo "FATAL: {$error['message']} in {$error['file']}:{$error['line']}\nFIX_FAILED\n";
+              }
+          });
+
+          $base = dirname(__DIR__);
+
+          // 1. Nuke all cached config/routes/views so fresh .env is read.
+          foreach (glob($base . '/bootstrap/cache/*.php') ?: [] as $f) { @unlink($f); }
+          echo "Cleared bootstrap cache\n";
+
+          require $base . '/vendor/autoload.php';
+          $app = require $base . '/bootstrap/app.php';
+          $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+
+          try {
+              $kernel->bootstrap();
+          } catch (Throwable $e) {
+              echo "BOOT ERROR: " . $e->getMessage() . "\nFIX_FAILED\n";
+              exit;
+          }
+
+          // 2. Test DB connectivity.
+          try {
+              $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
+              echo "DB OK: " . config('database.connections.mysql.host') . " / " . config('database.connections.mysql.database') . "\n";
+          } catch (Throwable $e) {
+              echo "DB ERROR: " . $e->getMessage() . "\nFIX_FAILED\n";
+              exit;
+          }
+
+          // 3. Run migrations + rebuild caches.
+          $failed = false;
+          $commands = [
+              ['migrate', ['--force' => true]],
+              ['config:cache', []],
+              ['route:cache', []],
+              ['view:cache', []],
+          ];
+
+          foreach ($commands as [$cmd, $args]) {
+              echo "> artisan $cmd\n";
+              try {
+                  $status = Illuminate\Support\Facades\Artisan::call($cmd, $args);
+                  echo Illuminate\Support\Facades\Artisan::output() . "Exit: $status\n\n";
+                  if ($status !== 0) $failed = true;
+              } catch (Throwable $e) {
+                  echo "ERROR: " . $e->getMessage() . "\n\n";
+                  $failed = true;
+              }
+          }
+
+          echo $failed ? "FIX_FAILED\n" : "FIX_OK\n";
+          EOF
+
+          sed -i "s/__KEY__/$DEPLOY_KEY/" "$DEPLOY_FILE"
+
+          auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
+
+          # Upload the fix script to public/
+          resp=$(curl -sS --fail-with-body --max-time 60 \
+            -H "$auth" \
+            -F "dir=$REMOTE_DIR/public" \
+            -F "overwrite=1" \
+            -F "file-1=@$DEPLOY_FILE" \
+            "$CPANEL_HOST/execute/Fileman/upload_files")
+          echo "$resp" | jq -e '.status == 1' >/dev/null || { echo "::error::Upload failed: $resp"; exit 1; }
+          echo "Fix script uploaded"
+
+          # Execute
+          out=$(curl -sS --max-time 120 -w "\nHTTP %{http_code}\n" "$API_URL/$DEPLOY_FILE?key=$DEPLOY_KEY" || true)
+          echo "$out"
+          echo "$out" | grep -q "FIX_OK"
+
+      - name: Remove fix script
+        if: always() && env.DEPLOY_FILE != ''
+        continue-on-error: true
+        run: |
+          source .github/scripts/cpanel.sh
+          cp_unlink "$REMOTE_DIR/public/$DEPLOY_FILE" || true
+
+      - name: Health check
+        run: |
+          ok=true
+          for url in "$API_URL/up" "$API_URL/sanctum/csrf-cookie"; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 \
+              -H "Origin: https://anaya-admin.eastlogic.com" -H "Referer: https://anaya-admin.eastlogic.com/" "$url")
+            echo "$url -> $code"
+            case "$url" in
+              */up) [ "$code" = "200" ] || ok=false ;;
+              */csrf-cookie) [ "$code" = "204" ] || ok=false ;;
+            esac
+          done
+          $ok || { echo "::error::Health check failed"; exit 1; }
+          echo "All endpoints healthy"

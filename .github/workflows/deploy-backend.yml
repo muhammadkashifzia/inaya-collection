@@ -74,6 +74,12 @@ jobs:
           [ "$(value APP_DEBUG)" = "false" ] || problems+=("APP_DEBUG must be false")
           value SANCTUM_STATEFUL_DOMAINS | grep -q "anaya-admin.eastlogic.com" || problems+=("SANCTUM_STATEFUL_DOMAINS must include anaya-admin.eastlogic.com")
           [ -n "$(value DB_DATABASE)" ] || problems+=("DB_DATABASE is empty")
+          [ -n "$(value DB_PASSWORD)" ] || problems+=("DB_PASSWORD is empty")
+          # cPanel shared hosting requires 'localhost' (Unix socket); 127.0.0.1 uses TCP which may be blocked.
+          db_host=$(value DB_HOST)
+          if [ "$db_host" = "127.0.0.1" ]; then
+            problems+=("DB_HOST is 127.0.0.1 — must be localhost for cPanel shared hosting (Unix socket)")
+          fi
           if printf '%s\n' "$content" | grep -qE '(galaxywear[a-z-]*|inaya(-api|-admin)?)\.eastlogic\.com'; then
             problems+=("old galaxywear/inaya domains are still referenced")
           fi
