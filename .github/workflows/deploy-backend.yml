@@ -67,6 +67,22 @@ jobs:
           # Non-secret keys only.
           printf '%s\n' "$content" | grep -E '^(APP_ENV|APP_DEBUG|APP_URL|FRONTEND_URL|ADMIN_URL|SANCTUM_STATEFUL_DOMAINS|SESSION_DOMAIN|SESSION_SECURE_COOKIE)=' || true
 
+          # --- Auto-fix: cPanel shared hosting needs 'localhost' (Unix socket), not 127.0.0.1 (TCP) ---
+          dirty=false
+          db_host=$(value DB_HOST)
+          if [ "$db_host" = "127.0.0.1" ]; then
+            echo "::warning::DB_HOST is 127.0.0.1 — auto-fixing to localhost (Unix socket for cPanel)"
+            content=$(printf '%s\n' "$content" | sed 's/^DB_HOST=127\.0\.0\.1$/DB_HOST=localhost/')
+            dirty=true
+          fi
+
+          if [ "$dirty" = true ]; then
+            resp=$(curl -sS -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.env" \
+              --data-urlencode "content=$content" "$CPANEL_HOST/execute/Fileman/save_file_content")
+            echo "$resp" | jq -e '.status == 1' >/dev/null || { echo "::error::Failed to save auto-fixed .env"; exit 1; }
+            echo ".env auto-fix applied and saved"
+          fi
+
           problems=()
           [ -n "$(value APP_KEY)" ] || problems+=("APP_KEY is empty")
           [ "$(value APP_URL)" = "$API_URL" ] || problems+=("APP_URL must be $API_URL")
@@ -74,6 +90,7 @@ jobs:
           [ "$(value APP_DEBUG)" = "false" ] || problems+=("APP_DEBUG must be false")
           value SANCTUM_STATEFUL_DOMAINS | grep -q "anaya-admin.eastlogic.com" || problems+=("SANCTUM_STATEFUL_DOMAINS must include anaya-admin.eastlogic.com")
           [ -n "$(value DB_DATABASE)" ] || problems+=("DB_DATABASE is empty")
+          [ -n "$(value DB_PASSWORD)" ] || problems+=("DB_PASSWORD is empty")
           if printf '%s\n' "$content" | grep -qE '(galaxywear[a-z-]*|inaya(-api|-admin)?)\.eastlogic\.com'; then
             problems+=("old galaxywear/inaya domains are still referenced")
           fi

@@ -264,12 +264,26 @@ export type HomeSectionType =
   | "category"
   | "category_tabs"
   | "category_grid"
+  | "banner_image"
   | "reviews";
+
+export interface HomeSectionSlide {
+  image: string;
+  image_url: string | null;
+  text: string | null;
+  link: string | null;
+}
 
 export interface HomeSection {
   id: number;
   type: HomeSectionType;
   title: string;
+  subtitle: string | null;
+  button_text: string | null;
+  button_link: string | null;
+  image: string | null;
+  image_url: string | null;
+  slides: HomeSectionSlide[] | null;
   category_id: number | null;
   category?: Category | null;
   product_limit: number;

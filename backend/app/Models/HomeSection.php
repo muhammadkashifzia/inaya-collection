@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['type', 'title', 'category_id', 'product_limit', 'sort_order', 'is_active'])]
+#[Fillable(['type', 'title', 'subtitle', 'button_text', 'button_link', 'image', 'slides', 'category_id', 'product_limit', 'sort_order', 'is_active'])]
 class HomeSection extends Model
 {
     /** @use HasFactory<HomeSectionFactory> */
@@ -22,6 +22,7 @@ class HomeSection extends Model
     {
         return [
             'type' => HomeSectionType::class,
+            'slides' => 'array',
             'product_limit' => 'integer',
             'sort_order' => 'integer',
             'is_active' => 'boolean',

@@ -7,8 +7,8 @@
 
 # Node
 node_modules/
-store/node_modules/
-store/.next/
+app/node_modules/
+app/.next/
 dist/
 .env
 .env.local

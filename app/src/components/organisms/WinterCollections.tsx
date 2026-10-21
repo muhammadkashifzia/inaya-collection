@@ -8,7 +8,7 @@ export function WinterCollections({ banners }: { banners: Banner[] }) {
   if (banners.length === 0) return null;
 
   return (
-    <section className="py-14 md:py-15">
+    <section className="py-14 md:py-10">
       <Container>
         <SectionHeader title="Our Recent Winter Unstitched Collections" />
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar md:gap-4 md:overflow-visible">
