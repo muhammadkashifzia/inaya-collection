@@ -84,6 +84,29 @@ class ProductController extends Controller
         return response()->json(null, 204);
     }
 
+    /**
+     * Bulk soft-delete multiple products.
+     */
+    public function bulkDestroy(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1', 'max:100'],
+            'ids.*' => ['integer', 'exists:products,id'],
+        ]);
+
+        $count = Product::query()
+            ->whereIn('id', $validated['ids'])
+            ->get()
+            ->each(function (Product $product) use ($request): void {
+                $product->update(['status' => ProductStatus::Archived]);
+                $product->delete();
+                Log::info('Product deleted (bulk)', ['product_id' => $product->id, 'admin_id' => $request->user()->id]);
+            })
+            ->count();
+
+        return response()->json(['message' => "{$count} products deleted.", 'count' => $count]);
+    }
+
     public function restore(int $product): ProductResource
     {
         $model = Product::onlyTrashed()->findOrFail($product);

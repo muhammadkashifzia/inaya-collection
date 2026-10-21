@@ -45,7 +45,45 @@ export default function ProductList() {
   const [showFilters, setShowFilters] = useState(false);
   const [confirmProduct, setConfirmProduct] = useState<Product | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [confirmBulk, setConfirmBulk] = useState(false);
   const hasActiveFilters = !!(values.status || values.category || values.trashed || values.low_stock);
+
+  const currentIds = (data?.data ?? []).filter((p) => !p.deleted_at).map((p) => p.id);
+  const allSelected = currentIds.length > 0 && currentIds.every((id) => selected.has(id));
+  const someSelected = selected.size > 0;
+
+  function toggleOne(id: number) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleAll() {
+    if (allSelected) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(currentIds));
+    }
+  }
+
+  async function bulkDelete() {
+    if (selected.size === 0) return;
+    setBulkDeleting(true);
+    try {
+      await http.post("/admin/products/bulk-delete", { ids: [...selected] });
+      setSelected(new Set());
+      setConfirmBulk(false);
+      reload();
+    } catch {
+      // handled silently
+    } finally {
+      setBulkDeleting(false);
+    }
+  }
 
   // Import modal state
   const importModal = useModal();
@@ -233,11 +271,49 @@ export default function ProductList() {
         >
           {data && (
             <>
+              {/* ── Bulk action bar ── */}
+              {someSelected && (
+                <div className="mb-3 flex items-center gap-3 rounded-lg border border-brand-200 bg-brand-50 px-4 py-2.5 dark:border-brand-500/30 dark:bg-brand-500/10">
+                  <span className="text-sm font-medium text-brand-700 dark:text-brand-300">
+                    {selected.size} selected
+                  </span>
+                  <Button size="sm" variant="danger" startIcon={<TrashBinIcon className="size-3.5" />} onClick={() => setConfirmBulk(true)}>
+                    Delete selected
+                  </Button>
+                  <button type="button" onClick={() => setSelected(new Set())} className="ms-auto text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    Clear selection
+                  </button>
+                </div>
+              )}
+
               <DataTable
                 caption="Products"
                 rows={data.data}
                 rowKey={(p) => p.id}
                 columns={[
+                  {
+                    key: "select",
+                    header: (
+                      <input
+                        type="checkbox"
+                        className="size-4 rounded accent-brand-500"
+                        checked={allSelected}
+                        onChange={toggleAll}
+                        aria-label="Select all products"
+                      />
+                    ),
+                    className: "w-10",
+                    cell: (p) =>
+                      p.deleted_at ? null : (
+                        <input
+                          type="checkbox"
+                          className="size-4 rounded accent-brand-500"
+                          checked={selected.has(p.id)}
+                          onChange={() => toggleOne(p.id)}
+                          aria-label={`Select ${p.name}`}
+                        />
+                      ),
+                  },
                   {
                     key: "product",
                     header: "Product",
@@ -320,6 +396,15 @@ export default function ProductList() {
         confirmLabel="Delete"
         onConfirm={() => void onConfirmDelete()}
         onCancel={() => setConfirmProduct(null)}
+      />
+
+      <ConfirmDialog
+        open={confirmBulk}
+        title={`Delete ${selected.size} products?`}
+        message="Selected products will be archived and hidden from the store. Order history is kept."
+        confirmLabel={bulkDeleting ? "Deleting..." : "Delete all"}
+        onConfirm={() => void bulkDelete()}
+        onCancel={() => setConfirmBulk(false)}
       />
 
       {/* ── Import Modal ── */}

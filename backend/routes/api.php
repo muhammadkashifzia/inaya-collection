@@ -98,6 +98,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::get('products', [Admin\ProductController::class, 'index'])->name('products.index');
             Route::get('products/export', [Admin\ProductController::class, 'export'])->name('products.export');
             Route::post('products/import', [Admin\ProductController::class, 'import'])->name('products.import');
+            Route::post('products/bulk-delete', [Admin\ProductController::class, 'bulkDestroy'])->name('products.bulk-destroy');
             Route::post('products', [Admin\ProductController::class, 'store'])->name('products.store');
             Route::get('products/{product}', [Admin\ProductController::class, 'show'])->whereNumber('product')->name('products.show');
             Route::put('products/{product}', [Admin\ProductController::class, 'update'])->name('products.update');
