@@ -79,7 +79,7 @@ class HomeController extends Controller
                 'button_text' => $section->button_text,
                 'button_link' => $section->button_link,
                 'image' => $section->image ? Storage::disk('public')->url($section->image) : null,
-                'slides' => collect($section->slides ?? [])->map(fn (array $slide): array => [
+                'slides' => collect($section->slides ?? [])->filter(fn ($slide): bool => is_array($slide) && ! empty($slide['image']))->map(fn (array $slide): array => [
                     'image' => ! empty($slide['image']) ? Storage::disk('public')->url($slide['image']) : null,
                     'text' => $slide['text'] ?? null,
                     'link' => $slide['link'] ?? null,
