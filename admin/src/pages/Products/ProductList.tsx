@@ -95,6 +95,7 @@ export default function ProductList() {
     created: number;
     updated: number;
     skipped: number;
+    image_rows: number;
     errors: string[];
   } | null>(null);
 
@@ -148,6 +149,7 @@ export default function ProductList() {
         created: number;
         updated: number;
         skipped: number;
+        image_rows: number;
         errors: string[];
       }>("/admin/products/import", form);
       setImportResult(result);
@@ -158,6 +160,7 @@ export default function ProductList() {
         created: 0,
         updated: 0,
         skipped: 0,
+        image_rows: 0,
         errors: [],
       });
     } finally {
@@ -471,6 +474,7 @@ export default function ProductList() {
                 <span className="text-success-600 dark:text-success-400">{importResult.created} created</span>
                 <span className="text-brand-600 dark:text-brand-400">{importResult.updated} updated</span>
                 {importResult.skipped > 0 && <span className="text-warning-600 dark:text-warning-400">{importResult.skipped} skipped</span>}
+                {importResult.image_rows > 0 && <span className="text-gray-500 dark:text-gray-400">{importResult.image_rows} image rows</span>}
               </div>
               {importResult.errors.length > 0 && (
                 <ul className="mt-3 max-h-32 list-disc overflow-y-auto ps-5 text-theme-xs text-error-600 dark:text-error-400">

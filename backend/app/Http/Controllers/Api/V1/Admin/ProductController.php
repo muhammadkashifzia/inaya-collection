@@ -276,6 +276,7 @@ class ProductController extends Controller
         $created = 0;
         $updated = 0;
         $skipped = 0;
+        $imageRows = 0;
         $errors = [];
         $rowNum = 1;
 
@@ -315,11 +316,11 @@ class ProductController extends Controller
                             $nextSort = ($parent->images()->max('sort_order') ?? -1) + 1;
                             $this->importImage($parent, $data['image_url'], $errors, $rowNum, $nextSort);
                         }
+                        $imageRows++;
                     } else {
                         $errors[] = "Row {$rowNum}: missing Title, skipped.";
+                        $skipped++;
                     }
-                    $skipped++;
-
                     continue;
                 }
 
@@ -435,10 +436,11 @@ class ProductController extends Controller
         ]);
 
         return response()->json([
-            'message' => "Import complete: {$created} created, {$updated} updated, {$skipped} skipped.",
+            'message' => "Import complete: {$created} created, {$updated} updated, {$skipped} skipped, {$imageRows} extra image rows processed.",
             'created' => $created,
             'updated' => $updated,
             'skipped' => $skipped,
+            'image_rows' => $imageRows,
             'errors' => array_slice($errors, 0, 20),
         ]);
     }
@@ -475,10 +477,25 @@ class ProductController extends Controller
         }
 
         try {
-            $contents = @file_get_contents($imageUrl, false, stream_context_create([
-                'http' => ['timeout' => 8, 'ignore_errors' => true],
-                'ssl' => ['verify_peer' => false],
-            ]));
+            // Retry up to 3 times with increasing timeout.
+            $contents = false;
+            $timeouts = [10, 15, 20];
+            foreach ($timeouts as $attempt => $timeout) {
+                $contents = @file_get_contents($imageUrl, false, stream_context_create([
+                    'http' => [
+                        'timeout' => $timeout,
+                        'ignore_errors' => true,
+                        'header' => "User-Agent: Mozilla/5.0\r\n",
+                    ],
+                    'ssl' => ['verify_peer' => false, 'verify_peer_name' => false],
+                ]));
+                if ($contents !== false && strlen($contents) >= 100) {
+                    break;
+                }
+                if ($attempt < count($timeouts) - 1) {
+                    usleep(500_000);
+                }
+            }
 
             if ($contents === false || strlen($contents) < 100) {
                 $errors[] = "Row {$rowNum}: could not download image from URL.";
