@@ -19,7 +19,7 @@ export function BannerSection({ title, slides }: BannerSectionProps) {
   if (validSlides.length === 0) return null;
 
   return (
-    <section className="py-14 md:py-15">
+    <section className="py-14 md:py-10">
       <Container>
         {title && <SectionHeader title={title} />}
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar md:gap-4 md:overflow-visible">
