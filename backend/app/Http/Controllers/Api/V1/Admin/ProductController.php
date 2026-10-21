@@ -216,6 +216,9 @@ class ProductController extends Controller
             'file' => ['required', 'file', 'mimes:csv,txt', 'max:10240'],
         ]);
 
+        // Large CSVs with image downloads can take a while.
+        set_time_limit(300);
+
         $path = $request->file('file')->getRealPath();
         $handle = fopen($path, 'r');
 
@@ -473,7 +476,7 @@ class ProductController extends Controller
 
         try {
             $contents = @file_get_contents($imageUrl, false, stream_context_create([
-                'http' => ['timeout' => 15, 'ignore_errors' => true],
+                'http' => ['timeout' => 8, 'ignore_errors' => true],
                 'ssl' => ['verify_peer' => false],
             ]));
 
