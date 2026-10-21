@@ -36,19 +36,31 @@ class HomeSectionResource extends JsonResource
     /**
      * Resolve slide image paths to full URLs.
      *
-     * @return array<int, array{image: string, image_url: string|null, text: string|null, link: string|null}>|null
+     * @return list<array{image: string, image_url: string|null, text: string|null, link: string|null}>|null
      */
     private function resolveSlides(): ?array
     {
-        if (! is_array($this->slides) || count($this->slides) === 0) {
+        $slides = $this->slides;
+
+        if (! is_array($slides) || $slides === []) {
             return null;
         }
 
-        return array_values(array_map(fn (array $slide): array => [
-            'image' => $slide['image'] ?? '',
-            'image_url' => ! empty($slide['image']) ? Storage::disk('public')->url($slide['image']) : null,
-            'text' => $slide['text'] ?? null,
-            'link' => $slide['link'] ?? null,
-        ], array_filter($this->slides, 'is_array')));
+        $resolved = [];
+
+        foreach ($slides as $slide) {
+            if (! is_array($slide)) {
+                continue;
+            }
+
+            $resolved[] = [
+                'image' => $slide['image'] ?? '',
+                'image_url' => ! empty($slide['image']) ? Storage::disk('public')->url($slide['image']) : null,
+                'text' => $slide['text'] ?? null,
+                'link' => $slide['link'] ?? null,
+            ];
+        }
+
+        return $resolved === [] ? null : $resolved;
     }
 }
