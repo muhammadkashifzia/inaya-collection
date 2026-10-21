@@ -235,24 +235,39 @@ class ProductController extends Controller
         $headerRow = array_map(fn (string $h): string => strtolower(trim($h)), $headerRow);
 
         // Map CSV column names → internal keys.
+        // Includes both our own simple headers and Shopify export headers.
         $columnMap = [
             'handle' => 'slug',
             'title' => 'name',
             'sku' => 'sku',
+            'variant sku' => 'sku',
             'category' => 'category_name',
+            'product category' => 'category_name',
             'brand' => 'brand',
+            'vendor' => 'brand',
+            'type' => 'type',
             'status' => 'status',
+            'published' => 'published',
             'price' => 'price',
+            'variant price' => 'price',
             'sale price' => 'sale_price',
+            'variant compare at price' => 'compare_price',
+            'variant inventory qty' => 'stock',
             'fabric' => 'fabric',
+            'fabric (product.metafields.shopify.fabric)' => 'fabric',
             'pieces' => 'pieces',
             'featured' => 'is_featured',
             'short description' => 'short_description',
             'description' => 'description',
+            'body (html)' => 'description',
             'meta title' => 'meta_title',
+            'seo title' => 'meta_title',
             'meta description' => 'meta_description',
+            'seo description' => 'meta_description',
             'published at' => 'published_at',
             'image url' => 'image_url',
+            'image src' => 'image_url',
+            'tags' => 'tags',
         ];
 
         $created = 0;
@@ -289,7 +304,17 @@ class ProductController extends Controller
 
                 // Need at least a name.
                 if (empty($data['name'])) {
-                    $errors[] = "Row {$rowNum}: missing Title, skipped.";
+                    // Shopify CSV: rows without a Title are extra images
+                    // for the previous product identified by Handle (slug).
+                    if (! empty($data['slug']) && ! empty($data['image_url'])) {
+                        $parent = Product::withTrashed()->where('slug', $data['slug'])->first();
+                        if ($parent) {
+                            $nextSort = ($parent->images()->max('sort_order') ?? -1) + 1;
+                            $this->importImage($parent, $data['image_url'], $errors, $rowNum, $nextSort);
+                        }
+                    } else {
+                        $errors[] = "Row {$rowNum}: missing Title, skipped.";
+                    }
                     $skipped++;
 
                     continue;
@@ -310,13 +335,23 @@ class ProductController extends Controller
                     $categoryId = $categories[strtolower($data['category_name'])] ?? null;
                 }
 
+                // Derive pieces from Type when not explicitly provided.
+                $pieces = ! empty($data['pieces']) ? (int) $data['pieces'] : null;
+                if ($pieces === null && ! empty($data['type'])) {
+                    if (str_contains(strtolower($data['type']), '3-piece') || str_contains(strtolower($data['type']), '3 piece')) {
+                        $pieces = 3;
+                    } elseif (str_contains(strtolower($data['type']), '2-piece') || str_contains(strtolower($data['type']), '2 piece')) {
+                        $pieces = 2;
+                    }
+                }
+
                 $attrs = array_filter([
                     'name' => $data['name'],
                     'slug' => ! empty($data['slug']) ? $data['slug'] : Str::slug($data['name']),
                     'sku' => $data['sku'] ?? null,
                     'brand' => $data['brand'] ?? null,
                     'fabric' => $data['fabric'] ?? null,
-                    'pieces' => ! empty($data['pieces']) ? (int) $data['pieces'] : null,
+                    'pieces' => $pieces,
                     'short_description' => $data['short_description'] ?? null,
                     'description' => $data['description'] ?? null,
                     'meta_title' => $data['meta_title'] ?? null,
@@ -324,17 +359,32 @@ class ProductController extends Controller
                     'published_at' => ! empty($data['published_at']) ? $data['published_at'] : null,
                 ], fn ($v): bool => $v !== null && $v !== '');
 
-                if (! empty($data['price'])) {
-                    $attrs['price'] = Money::toMinor($data['price']);
+                // Shopify pricing: "Variant Compare At Price" is the original
+                // price and "Variant Price" is the sale price.
+                $variantPrice = ! empty($data['price']) ? Money::toMinor($data['price']) : null;
+                $comparePrice = ! empty($data['compare_price']) ? Money::toMinor($data['compare_price']) : null;
+
+                if ($comparePrice && $variantPrice && $comparePrice > $variantPrice) {
+                    $attrs['price'] = $comparePrice;
+                    $attrs['sale_price'] = $variantPrice;
+                } elseif ($variantPrice) {
+                    $attrs['price'] = $variantPrice;
                 }
+
                 if (! empty($data['sale_price'])) {
                     $attrs['sale_price'] = Money::toMinor($data['sale_price']);
                 }
+
+                // Resolve status from Shopify's "Status" or "Published" column.
                 if (! empty($data['status'])) {
                     $validStatuses = array_column(ProductStatus::cases(), 'value');
                     if (in_array($data['status'], $validStatuses, true)) {
                         $attrs['status'] = $data['status'];
                     }
+                } elseif (isset($data['published'])) {
+                    $attrs['status'] = in_array(strtolower($data['published']), ['true', '1', 'yes'], true)
+                        ? ProductStatus::Active->value
+                        : ProductStatus::Draft->value;
                 }
                 if (isset($data['is_featured'])) {
                     $attrs['is_featured'] = in_array(strtolower($data['is_featured']), ['yes', '1', 'true'], true);
@@ -351,6 +401,12 @@ class ProductController extends Controller
                     // New product — ensure required fields have defaults.
                     $attrs['status'] ??= ProductStatus::Draft->value;
                     $attrs['price'] ??= 0;
+
+                    // Auto-generate a unique SKU when the CSV doesn't provide one.
+                    if (empty($attrs['sku'])) {
+                        $attrs['sku'] = $this->generateUniqueSku($attrs['slug'] ?? Str::slug($attrs['name']));
+                    }
+
                     $product = Product::create($attrs);
                     $this->importImage($product, $data['image_url'] ?? '', $errors, $rowNum);
                     $created++;
@@ -385,13 +441,33 @@ class ProductController extends Controller
     }
 
     /**
-     * Download an image from a URL and attach it to a product (only if it has no images yet).
+     * Generate a unique SKU derived from the product slug.
+     */
+    private function generateUniqueSku(string $slug): string
+    {
+        $base = Str::upper(Str::limit(Str::slug($slug, '-'), 50, ''));
+        $sku = $base;
+
+        while (Product::withTrashed()->where('sku', $sku)->exists()) {
+            $sku = $base.'-'.Str::upper(Str::random(4));
+        }
+
+        return $sku;
+    }
+
+    /**
+     * Download an image from a URL and attach it to a product.
      *
      * @param  list<string>  $errors
      */
-    private function importImage(Product $product, string $imageUrl, array &$errors, int $rowNum): void
+    private function importImage(Product $product, string $imageUrl, array &$errors, int $rowNum, int $sortOrder = 0): void
     {
-        if ($imageUrl === '' || $product->images()->exists()) {
+        if ($imageUrl === '') {
+            return;
+        }
+
+        // Skip if this exact URL was already imported for this product.
+        if ($product->images()->exists() && $sortOrder === 0) {
             return;
         }
 
@@ -422,7 +498,7 @@ class ProductController extends Controller
             $product->images()->create([
                 'path' => $path,
                 'alt' => $product->name,
-                'sort_order' => 0,
+                'sort_order' => $sortOrder,
             ]);
         } catch (\Throwable $e) {
             $errors[] = "Row {$rowNum}: image download failed — {$e->getMessage()}";

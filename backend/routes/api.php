@@ -86,7 +86,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     });
 
     // ---------------------------------------------------------------- Admin
-    Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', 'active', 'staff'])->group(function (): void {
+    Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', 'active', 'staff', 'revalidate'])->group(function (): void {
         Route::get('dashboard', Admin\DashboardController::class)->middleware('can:'.Permission::ViewDashboard->value)->name('dashboard');
 
         // Two-factor authentication management (any staff member)

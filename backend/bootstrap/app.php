@@ -3,6 +3,7 @@
 use App\Http\Middleware\CachePublicApiResponse;
 use App\Http\Middleware\EnsureStaffMember;
 use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\RevalidateStorefrontCache;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'staff' => EnsureStaffMember::class,
             'active' => EnsureUserIsActive::class,
             'cache.api' => CachePublicApiResponse::class,
+            'revalidate' => RevalidateStorefrontCache::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

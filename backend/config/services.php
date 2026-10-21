@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'nextjs' => [
+        'revalidation_url' => env('NEXTJS_REVALIDATION_URL'),
+        'revalidation_secret' => env('NEXTJS_REVALIDATION_SECRET'),
+    ],
+
 ];

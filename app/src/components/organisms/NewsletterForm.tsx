@@ -43,7 +43,7 @@ export function NewsletterForm() {
         <button
           type="submit"
           disabled={state.tone === "busy"}
-          className="h-11 bg-brand px-4 text-xs font-semibold uppercase tracking-widest text-white hover:bg-brand-dark disabled:opacity-60"
+          className="h-11 bg-[#9e0e26] px-4 text-xs font-semibold uppercase tracking-widest text-white hover:bg-[#8a0c21] disabled:opacity-60"
         >
           {state.tone === "busy" ? "…" : "Subscribe"}
         </button>
