@@ -10,6 +10,7 @@ import Pagination from "@/components/admin/Pagination";
 import { ProductStatusBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
+import { Drawer } from "@/components/ui/drawer";
 import { Modal } from "@/components/ui/modal";
 import { useApi } from "@/hooks/useApi";
 import { useListQuery } from "@/hooks/useListQuery";
@@ -48,6 +49,7 @@ export default function ProductList() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [confirmBulk, setConfirmBulk] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
   const hasActiveFilters = !!(values.status || values.category || values.trashed || values.low_stock);
 
   const currentIds = (data?.data ?? []).filter((p) => !p.deleted_at).map((p) => p.id);
@@ -324,9 +326,9 @@ export default function ProductList() {
                       <Button size="sm" variant="outline" onClick={() => void restore(p.id)}>Restore</Button>
                     ) : (
                       <div className="flex items-center gap-1 border-t border-gray-100 pt-3 dark:border-gray-800">
-                        <Link to={`/products/${p.id}`} title="View" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10">
+                        <button type="button" onClick={() => setPreviewProduct(p)} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10">
                           <EyeIcon className="size-4" /> View
-                        </Link>
+                        </button>
                         <Link to={`/products/${p.id}`} title="Edit" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10">
                           <PencilIcon className="size-4" /> Edit
                         </Link>
@@ -416,9 +418,9 @@ export default function ProductList() {
                         </Button>
                       ) : (
                         <div className="flex items-center justify-end gap-1">
-                          <Link to={`/products/${p.id}`} title="View" className="inline-flex rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-brand-400">
+                          <button type="button" onClick={() => setPreviewProduct(p)} title="View" className="inline-flex rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-brand-400">
                             <EyeIcon className="size-[18px]" />
-                          </Link>
+                          </button>
                           <Link to={`/products/${p.id}`} title="Edit" className="inline-flex rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-brand-400">
                             <PencilIcon className="size-[18px]" />
                           </Link>
@@ -542,6 +544,139 @@ export default function ProductList() {
           </>
         )}
       </Modal>
+
+      {/* ── Product Preview Drawer ── */}
+      <Drawer isOpen={previewProduct !== null} onClose={() => setPreviewProduct(null)} title={previewProduct?.name ?? "Product"}>
+        {previewProduct && (
+          <div className="p-6">
+            {/* Image gallery */}
+            {previewProduct.image && (
+              <div className="mb-6 overflow-hidden rounded-xl bg-gray-100 dark:bg-white/5">
+                <img src={previewProduct.image} alt={previewProduct.name} className="h-64 w-full object-cover object-top" />
+              </div>
+            )}
+            {(previewProduct.images?.length ?? 0) > 1 && (
+              <div className="mb-6 flex gap-2 overflow-x-auto pb-1">
+                {previewProduct.images!.map((img) => (
+                  <div key={img.id} className="size-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
+                    <img src={img.url} alt="" className="h-full w-full object-cover object-top" loading="lazy" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Status & badges */}
+            <div className="mb-5 flex flex-wrap items-center gap-2">
+              <ProductStatusBadge status={previewProduct.status} />
+              {previewProduct.is_featured && (
+                <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-1 text-theme-xs font-medium text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">★ Featured</span>
+              )}
+              {previewProduct.deleted_at && (
+                <span className="inline-flex items-center rounded-full bg-error-50 px-2.5 py-1 text-theme-xs font-medium text-error-600 dark:bg-error-500/10 dark:text-error-400">Deleted</span>
+              )}
+            </div>
+
+            {/* Info grid */}
+            <div className="mb-6 grid grid-cols-2 gap-4 rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+              <div>
+                <p className="text-theme-xs text-gray-500 dark:text-gray-400">Price</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {previewProduct.sale_price ? (
+                    <><span className="text-brand-600">{money(previewProduct.sale_price)}</span> <s className="text-theme-xs font-normal text-gray-400">{money(previewProduct.price)}</s></>
+                  ) : money(previewProduct.price)}
+                </p>
+              </div>
+              <div>
+                <p className="text-theme-xs text-gray-500 dark:text-gray-400">SKU</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{previewProduct.sku || "—"}</p>
+              </div>
+              <div>
+                <p className="text-theme-xs text-gray-500 dark:text-gray-400">Stock</p>
+                <p className={`text-sm font-medium ${previewProduct.total_stock === 0 ? "text-error-600" : (previewProduct.total_stock ?? 0) <= previewProduct.low_stock_threshold ? "text-warning-600" : "text-gray-900 dark:text-white"}`}>
+                  {previewProduct.total_stock ?? "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-theme-xs text-gray-500 dark:text-gray-400">Sold</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{previewProduct.sales_count ?? 0}</p>
+              </div>
+              <div>
+                <p className="text-theme-xs text-gray-500 dark:text-gray-400">Category</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{previewProduct.category?.name ?? "—"}</p>
+              </div>
+              <div>
+                <p className="text-theme-xs text-gray-500 dark:text-gray-400">Brand</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{previewProduct.brand ?? "—"}</p>
+              </div>
+              {previewProduct.fabric && (
+                <div>
+                  <p className="text-theme-xs text-gray-500 dark:text-gray-400">Fabric</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{previewProduct.fabric}</p>
+                </div>
+              )}
+              {previewProduct.pieces && (
+                <div>
+                  <p className="text-theme-xs text-gray-500 dark:text-gray-400">Pieces</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{previewProduct.pieces}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Variants */}
+            {(previewProduct.variants?.length ?? 0) > 0 && (
+              <div className="mb-6">
+                <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Variants ({previewProduct.variants!.length})</h3>
+                <div className="space-y-2">
+                  {previewProduct.variants!.map((v) => (
+                    <div key={v.id} className="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 dark:border-gray-800">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-800 dark:text-white/90">{v.sku}</p>
+                        <p className="text-theme-xs text-gray-500">
+                          {Object.entries(v.options ?? {}).map(([k, val]) => `${k}: ${val}`).join(" · ")}
+                        </p>
+                      </div>
+                      <div className="text-end">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{money(v.price)}</p>
+                        <p className={`text-theme-xs ${v.stock === 0 ? "text-error-600" : "text-gray-500"}`}>Stock: {v.stock}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            {previewProduct.short_description && (
+              <div className="mb-6">
+                <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Short Description</h3>
+                <div className="prose prose-sm max-w-none text-gray-600 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: previewProduct.short_description }} />
+              </div>
+            )}
+
+            {/* Tags */}
+            {(previewProduct.tags?.length ?? 0) > 0 && (
+              <div className="mb-6">
+                <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">Tags</h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {previewProduct.tags!.map((t) => (
+                    <span key={t.id} className="rounded-full bg-gray-100 px-2.5 py-1 text-theme-xs font-medium text-gray-600 dark:bg-white/5 dark:text-gray-400">{t.name}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Footer actions */}
+            <div className="sticky bottom-0 -mx-6 border-t border-gray-200 bg-white px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setPreviewProduct(null)}>Close</Button>
+                <Link to={`/products/${previewProduct.id}`}>
+                  <Button startIcon={<PencilIcon className="size-4" />}>Edit product</Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </Drawer>
     </>
   );
 }
