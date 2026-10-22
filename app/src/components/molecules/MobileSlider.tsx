@@ -12,15 +12,15 @@ interface MobileSliderProps {
 
 /**
  * On mobile (< md) renders a full-width auto-sliding carousel — one card
- * visible at a time, dot indicators, no arrows.
+ * visible at a time, dot indicators, no arrows. Uses translate for sliding.
  * On md+ the children render in a normal flex row (pass-through).
  */
 export function MobileSlider({ children, className }: MobileSliderProps) {
   const items = Children.toArray(children);
   const total = items.length;
-  const trackRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
 
   /* ---- autoplay ---- */
   const resetAutoplay = useCallback(() => {
@@ -39,50 +39,41 @@ export function MobileSlider({ children, className }: MobileSliderProps) {
     };
   }, [resetAutoplay]);
 
-  /* ---- scroll to current slide ---- */
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    const slide = track.children[current] as HTMLElement | undefined;
-    if (slide) {
-      track.scrollTo({ left: slide.offsetLeft, behavior: "smooth" });
-    }
-  }, [current]);
+  /* ---- swipe handlers ---- */
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.touches[0].clientX);
+  };
 
-  /* ---- sync dots on manual swipe ---- */
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    let timeout: ReturnType<typeof setTimeout>;
-    const onScroll = () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        const w = track.clientWidth;
-        if (w === 0) return;
-        const idx = Math.round(track.scrollLeft / w);
-        setCurrent(idx);
-        resetAutoplay();
-      }, 80);
-    };
-    track.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      track.removeEventListener("scroll", onScroll);
-      clearTimeout(timeout);
-    };
-  }, [resetAutoplay]);
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
+    const diff = touchStart - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        setCurrent((prev) => (prev + 1) % total);
+      } else {
+        setCurrent((prev) => (prev - 1 + total) % total);
+      }
+      resetAutoplay();
+    }
+    setTouchStart(null);
+  };
 
   if (total === 0) return null;
 
   return (
     <>
-      {/* Mobile: slider */}
-      <div className={cn("md:hidden", className)}>
+      {/* Mobile: slider with translate */}
+      <div
+        className={cn("overflow-hidden md:hidden", className)}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
         <div
-          ref={trackRef}
-          className="flex snap-x snap-mandatory overflow-x-auto no-scrollbar"
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${current * 100}%)` }}
         >
           {items.map((child, i) => (
-            <div key={i} className="w-full min-w-full flex-shrink-0 snap-center px-1">
+            <div key={i} className="w-full min-w-full flex-shrink-0 px-1">
               {child}
             </div>
           ))}
