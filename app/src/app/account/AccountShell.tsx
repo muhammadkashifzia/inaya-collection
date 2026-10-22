@@ -37,13 +37,19 @@ export function AccountShell({ title, children }: { title: string; children: Rea
       <p className="mb-8 text-sm text-muted">Signed in as {user.email}</p>
       <div className="grid gap-10 md:grid-cols-[200px_1fr]">
         <nav aria-label="Account">
-          <ul className="flex gap-2 overflow-x-auto md:flex-col">
+          <ul className="flex gap-1 overflow-x-auto border-b border-line pb-px md:flex-col md:gap-0 md:overflow-visible md:border-b-0 md:pb-0">
             {LINKS.map((l) => {
               const active = l.href === "/account" ? pathname === "/account" : pathname.startsWith(l.href);
               return (
                 <li key={l.href}>
                   <Link href={l.href} aria-current={active ? "page" : undefined}
-                    className={cn("block whitespace-nowrap border-l-2 px-3 py-2 text-sm font-semibold uppercase tracking-widest", active ? "border-brand text-brand" : "border-transparent hover:text-brand")}>
+                    className={cn(
+                      "block whitespace-nowrap px-3 py-2 text-xs font-semibold uppercase tracking-widest transition-colors",
+                      "border-b-2 md:border-b-0 md:border-l-2",
+                      active
+                        ? "border-brand text-brand"
+                        : "border-transparent text-muted hover:text-brand",
+                    )}>
                     {l.label}
                   </Link>
                 </li>
@@ -56,7 +62,10 @@ export function AccountShell({ title, children }: { title: string; children: Rea
                   await signOut();
                   router.replace("/");
                 }}
-                className="block whitespace-nowrap border-l-2 border-transparent px-3 py-2 text-left text-sm font-semibold uppercase tracking-widest text-muted hover:text-brand"
+                className={cn(
+                  "block whitespace-nowrap px-3 py-2 text-left text-xs font-semibold uppercase tracking-widest text-muted transition-colors hover:text-brand",
+                  "border-b-2 md:border-b-0 md:border-l-2 border-transparent",
+                )}
               >
                 Sign out
               </button>
