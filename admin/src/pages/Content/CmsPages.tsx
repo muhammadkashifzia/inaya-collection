@@ -85,6 +85,24 @@ export default function CmsPages() {
               caption="Pages"
               rows={data}
               rowKey={(p) => p.id}
+              mobileCard={(p) => (
+                <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                  <div className="mb-2 flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-gray-800 dark:text-white/90">{p.title}</p>
+                      <a href={`${STOREFRONT_URL}/pages/${p.slug}`} target="_blank" rel="noopener noreferrer" className="text-theme-xs text-gray-500 hover:text-brand-500">/pages/{p.slug} ↗</a>
+                    </div>
+                    <ActiveBadge active={p.is_published} on="Published" off="Draft" />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-theme-xs text-gray-500">Updated: {date(p.updated_at)}</span>
+                    <div className="flex gap-1">
+                      <EditAction onClick={() => open(p)} />
+                      <DeleteAction onClick={() => void remove(p)} />
+                    </div>
+                  </div>
+                </div>
+              )}
               columns={[
                 { key: "title", header: "Title", cell: (p) => <span className="font-medium text-gray-800 dark:text-white/90">{p.title}</span> },
                 { key: "url", header: "URL", cell: (p) => <a href={`${STOREFRONT_URL}/pages/${p.slug}`} target="_blank" rel="noopener noreferrer" className="text-theme-xs text-gray-500 hover:text-brand-500">/pages/{p.slug} ↗</a> },

@@ -111,6 +111,9 @@ export default function Categories() {
   const [search, setSearch] = useState("");
   const [confirmCat, setConfirmCat] = useState<Category | null>(null);
 
+  /* mobile accordion for form */
+  const [formOpen, setFormOpen] = useState(false);
+
   /* local row order for drag-and-drop */
   const [localOrder, setLocalOrder] = useState<Category[] | null>(null);
 
@@ -176,6 +179,7 @@ export default function Categories() {
       image: { path: c.image_path ?? null, url: c.image },
       is_active: c.is_active,
     });
+    setFormOpen(true);
     document.getElementById("category-form")?.scrollIntoView({ behavior: "smooth" });
   }
 
@@ -233,10 +237,33 @@ export default function Categories() {
         {/* ──────────── LEFT: Add / Edit Form ──────────── */}
         <div id="category-form">
           <Card>
-            <form onSubmit={save} noValidate className="space-y-4">
+            {/* Accordion toggle – mobile only */}
+            <button
+              type="button"
+              onClick={() => setFormOpen(!formOpen)}
+              className="flex w-full items-center justify-between lg:hidden"
+            >
               <h2 className="text-base font-semibold text-gray-800 dark:text-white/90">
                 {isEditing ? "Edit category" : "Add new category"}
               </h2>
+              <svg
+                className={`size-5 shrink-0 text-gray-500 transition-transform duration-200 ${formOpen ? "rotate-180" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
+            </button>
+
+            {/* Form body: always visible on lg+, accordion on mobile */}
+            <div className={`${formOpen ? "mt-4 block" : "hidden"} lg:!block`}>
+              <form onSubmit={save} noValidate className="space-y-4">
+                {/* Desktop-only heading (hidden on mobile since the accordion button shows it) */}
+                <h2 className="hidden text-base font-semibold text-gray-800 dark:text-white/90 lg:block">
+                  {isEditing ? "Edit category" : "Add new category"}
+                </h2>
 
               <Notice tone="error">
                 {formError && !Object.keys(formError.errors).length ? formError.message : null}
@@ -316,7 +343,8 @@ export default function Categories() {
                   </Button>
                 )}
               </div>
-            </form>
+              </form>
+            </div>
           </Card>
         </div>
 
@@ -354,76 +382,120 @@ export default function Categories() {
             emptyTitle="No categories yet."
           >
             {data && (
-              <div className="overflow-x-auto">
-                <Table className="text-sm">
-                  <caption className="sr-only">Categories</caption>
-                  <TableHeader className="border-b border-gray-100 dark:border-gray-800">
-                    <TableRow>
-                      <TableCell isHeader className="w-8 px-2 py-3" />
-                      <TableCell isHeader className="w-16 px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Image</TableCell>
-                      <TableCell isHeader className="px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Name</TableCell>
-                      <TableCell isHeader className="px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Description</TableCell>
-                      <TableCell isHeader className="px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Slug</TableCell>
-                      <TableCell isHeader className="px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Status</TableCell>
-                      <TableCell isHeader className="px-4 py-3 text-end text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Count</TableCell>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-                    {filtered.map((c, i) => (
-                      <DraggableRow key={c.id} row={c} index={i} moveRow={isSearching ? () => {} : moveRow}>
-                        <TableCell className="w-16 px-4 py-3">
-                          <div className="size-10 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
-                            {c.image ? (
-                              <img src={c.image} alt="" className="h-full w-full object-cover" />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-gray-300 dark:text-gray-600">
-                                <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
-                                </svg>
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="px-4 py-3">
-                          <div>
-                            <button
-                              type="button"
-                              className="text-start text-theme-sm font-medium text-brand-500 hover:underline"
-                              onClick={() => startEdit(c)}
-                            >
+              <>
+                {/* ── Mobile card view ── */}
+                <div className="space-y-3 p-4 md:hidden" role="list" aria-label="Categories">
+                  {filtered.map((c) => (
+                    <div key={c.id} role="listitem" className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                      <div className="mb-3 flex items-start gap-3">
+                        <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
+                          {c.image ? (
+                            <img src={c.image} alt="" className="h-full w-full object-cover object-top" />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-gray-300 dark:text-gray-600">
+                              <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="font-medium text-gray-800 dark:text-white/90">
                               {c.parent && <span className="text-gray-400">{c.parent.name} › </span>}
                               {c.name}
-                            </button>
-                            <div className="invisible mt-1 flex gap-1 text-theme-xs font-medium group-hover:visible">
-                              <button type="button" className="text-brand-500 hover:underline" onClick={() => startEdit(c)}>
-                                Edit
-                              </button>
-                              <span className="text-gray-300 dark:text-gray-600">|</span>
-                              <button type="button" className="text-error-500 hover:underline" onClick={() => setConfirmCat(c)}>
-                                Delete
-                              </button>
-                            </div>
+                            </p>
+                            <ActiveBadge active={c.is_active} on="Visible" off="Hidden" />
                           </div>
-                        </TableCell>
-                        <TableCell className="px-4 py-3">
-                          <span className="line-clamp-2 max-w-xs text-[13px] text-gray-500 dark:text-gray-400">
-                            {c.description || "—"}
-                          </span>
-                        </TableCell>
-                        <TableCell className="px-4 py-3">
-                          <span className="text-[13px] text-gray-500 dark:text-gray-400">{c.slug}</span>
-                        </TableCell>
-                        <TableCell className="px-4 py-3">
-                          <ActiveBadge active={c.is_active} on="Visible" off="Hidden" />
-                        </TableCell>
-                        <TableCell className="px-4 py-3 text-end">
-                          <span className="font-medium text-brand-500">{c.products_count ?? 0}</span>
-                        </TableCell>
-                      </DraggableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                          <p className="text-theme-xs text-gray-500">/{c.slug}</p>
+                        </div>
+                      </div>
+                      {c.description && <p className="mb-3 line-clamp-2 text-theme-xs text-gray-500 dark:text-gray-400">{c.description}</p>}
+                      <div className="flex items-center justify-between">
+                        <span className="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">
+                          <span className="me-1 font-medium text-brand-500">{c.products_count ?? 0}</span> products
+                        </span>
+                        <div className="flex gap-3 text-sm font-medium">
+                          <button type="button" className="text-brand-500 hover:underline" onClick={() => startEdit(c)}>Edit</button>
+                          <button type="button" className="text-error-500 hover:underline" onClick={() => setConfirmCat(c)}>Delete</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* ── Desktop table view ── */}
+                <div className="hidden overflow-x-auto md:block">
+                  <Table className="text-sm">
+                    <caption className="sr-only">Categories</caption>
+                    <TableHeader className="border-b border-gray-100 dark:border-gray-800">
+                      <TableRow>
+                        <TableCell isHeader className="w-8 px-2 py-3" />
+                        <TableCell isHeader className="w-16 px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Image</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Name</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Description</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Slug</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Status</TableCell>
+                        <TableCell isHeader className="px-4 py-3 text-end text-theme-sm font-medium tracking-wide whitespace-nowrap text-gray-500 dark:text-gray-400">Count</TableCell>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
+                      {filtered.map((c, i) => (
+                        <DraggableRow key={c.id} row={c} index={i} moveRow={isSearching ? () => {} : moveRow}>
+                          <TableCell className="w-16 px-4 py-3">
+                            <div className="size-10 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
+                              {c.image ? (
+                                <img src={c.image} alt="" className="h-full w-full object-cover object-top" />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center text-gray-300 dark:text-gray-600">
+                                  <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                                  </svg>
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3">
+                            <div>
+                              <button
+                                type="button"
+                                className="text-start text-theme-sm font-medium text-brand-500 hover:underline"
+                                onClick={() => startEdit(c)}
+                              >
+                                {c.parent && <span className="text-gray-400">{c.parent.name} › </span>}
+                                {c.name}
+                              </button>
+                              <div className="invisible mt-1 flex gap-1 text-theme-xs font-medium group-hover:visible">
+                                <button type="button" className="text-brand-500 hover:underline" onClick={() => startEdit(c)}>
+                                  Edit
+                                </button>
+                                <span className="text-gray-300 dark:text-gray-600">|</span>
+                                <button type="button" className="text-error-500 hover:underline" onClick={() => setConfirmCat(c)}>
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3">
+                            <span className="line-clamp-2 max-w-xs text-[13px] text-gray-500 dark:text-gray-400">
+                              {c.description || "—"}
+                            </span>
+                          </TableCell>
+                          <TableCell className="px-4 py-3">
+                            <span className="text-[13px] text-gray-500 dark:text-gray-400">{c.slug}</span>
+                          </TableCell>
+                          <TableCell className="px-4 py-3">
+                            <ActiveBadge active={c.is_active} on="Visible" off="Hidden" />
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-end">
+                            <span className="font-medium text-brand-500">{c.products_count ?? 0}</span>
+                          </TableCell>
+                        </DraggableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </DataState>
 

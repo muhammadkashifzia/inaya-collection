@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, FormAlert, TextField } from "@/components/atoms";
+import { Button, FormAlert, PasswordField, TextField } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
 import { useToast } from "@/context/ToastContext";
 import { api, ApiError } from "@/lib/api";
@@ -79,9 +79,9 @@ function PasswordForm() {
       <h2 id="password-heading" className="mb-4 font-heading text-xl font-semibold">Change password</h2>
       <form onSubmit={onSubmit} className="grid max-w-xl gap-4" noValidate>
         <FormAlert tone="error">{error && Object.keys(error.errors).length === 0 ? error.message : null}</FormAlert>
-        <TextField label="Current password" type="password" autoComplete="current-password" required value={form.currentPassword} onChange={(e) => setForm({ ...form, currentPassword: e.target.value })} error={error?.field("current_password")} />
-        <TextField label="New password" type="password" autoComplete="new-password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} error={error?.field("password")} hint="At least 8 characters with letters and numbers." />
-        <TextField label="Confirm new password" type="password" autoComplete="new-password" required value={form.passwordConfirmation} onChange={(e) => setForm({ ...form, passwordConfirmation: e.target.value })} />
+        <PasswordField label="Current password" autoComplete="current-password" required value={form.currentPassword} onChange={(e) => setForm({ ...form, currentPassword: e.target.value })} error={error?.field("current_password")} />
+        <PasswordField label="New password" autoComplete="new-password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} error={error?.field("password")} hint="At least 8 characters with letters and numbers." />
+        <PasswordField label="Confirm new password" autoComplete="new-password" required value={form.passwordConfirmation} onChange={(e) => setForm({ ...form, passwordConfirmation: e.target.value })} />
         <div><Button type="submit" disabled={busy} aria-busy={busy}>{busy ? "Saving…" : "Update password"}</Button></div>
       </form>
     </section>

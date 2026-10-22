@@ -43,6 +43,31 @@ export default function OrderList() {
                 caption="Orders"
                 rows={data.data}
                 rowKey={(o) => o.number}
+                mobileCard={(o) => (
+                  <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div className="mb-3 flex items-start justify-between gap-2">
+                      <div>
+                        <Link to={`/orders/${o.number}`} className="text-base font-semibold text-ink-900 hover:text-brand-500 dark:text-white">{o.number}</Link>
+                        <p className="mt-0.5 text-theme-xs text-gray-500">{date(o.placed_at, true)}</p>
+                      </div>
+                      <span className="font-semibold text-ink-900 dark:text-white">{money(o.grand_total)}</span>
+                    </div>
+                    <div className="mb-3">
+                      <p className="text-sm font-medium text-gray-800 dark:text-white/90">{o.customer_name}</p>
+                      <p className="text-theme-xs text-gray-500">{o.phone}</p>
+                    </div>
+                    <div className="mb-3 flex flex-wrap gap-2">
+                      {o.shipping_address?.city && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">📍 {o.shipping_address.city}</span>
+                      )}
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">📦 {o.items_count ?? "—"} items</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <OrderStatusBadge status={o.status} />
+                      <PaymentStatusBadge status={o.payment_status} />
+                    </div>
+                  </div>
+                )}
                 columns={[
                   { key: "number", header: "Order", cell: (o) => <Link to={`/orders/${o.number}`} className="font-semibold text-ink-900 hover:text-brand-500 dark:text-white">{o.number}</Link> },
                   { key: "date", header: "Placed", cell: (o) => date(o.placed_at, true) },

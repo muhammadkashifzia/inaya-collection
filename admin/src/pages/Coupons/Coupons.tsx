@@ -10,7 +10,7 @@ import Pagination from "@/components/admin/Pagination";
 import { ActiveBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
 import { useApi } from "@/hooks/useApi";
 import { useListQuery } from "@/hooks/useListQuery";
 import { ApiError, http } from "@/lib/api";
@@ -129,6 +129,40 @@ export default function Coupons() {
                 caption="Coupons"
                 rows={data.data}
                 rowKey={(c) => c.id}
+                mobileCard={(c) => {
+                  const s = couponState(c);
+                  return (
+                    <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                      <div className="mb-3 flex items-start justify-between gap-2">
+                        <div>
+                          <code className="rounded bg-gray-100 px-2 py-1 text-sm font-semibold dark:bg-white/5">{c.code}</code>
+                          {c.description && <p className="mt-1 text-theme-xs text-gray-500">{c.description}</p>}
+                        </div>
+                        <ActiveBadge active={s.active} on={s.label} off={s.label} />
+                      </div>
+                      <div className="mb-3 flex flex-wrap gap-2">
+                        <span className="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300">
+                          {c.type === "percentage" ? `${c.value}% off` : `${money(c.value)} off`}
+                        </span>
+                        {c.min_order_amount ? (
+                          <span className="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">Min: {money(c.min_order_amount)}</span>
+                        ) : null}
+                        <span className="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">
+                          Used: {c.used_count}{c.usage_limit ? ` / ${c.usage_limit}` : ""}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-theme-xs text-gray-500">
+                          {c.starts_at || c.expires_at ? `${date(c.starts_at) === "—" ? "Now" : date(c.starts_at)} → ${date(c.expires_at) === "—" ? "No end" : date(c.expires_at)}` : "Always"}
+                        </span>
+                        <div className="flex gap-1">
+                          <EditAction onClick={() => open(c)} />
+                          <DeleteAction onClick={() => void remove(c)} />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }}
                 columns={[
                   { key: "code", header: "Code", cell: (c) => <span><code className="rounded bg-gray-100 px-2 py-1 font-semibold dark:bg-white/5">{c.code}</code>{c.description && <span className="block pt-1 text-theme-xs text-gray-500">{c.description}</span>}</span> },
                   { key: "value", header: "Discount", cell: (c) => (c.type === "percentage" ? `${c.value}% off` : `${money(c.value)} off`) },
@@ -155,10 +189,9 @@ export default function Coupons() {
         </DataState>
       </Card>
 
-      <Modal isOpen={draft !== null} onClose={() => setDraft(null)} className="m-4 max-w-2xl p-6 sm:p-8">
+      <Drawer isOpen={draft !== null} onClose={() => setDraft(null)} title={draft?.id ? `Edit ${draft?.code}` : "New coupon"}>
         {draft && (
-          <form onSubmit={save} noValidate className="space-y-5">
-            <h2 className="font-display text-2xl font-semibold text-ink-900 dark:text-white">{draft.id ? `Edit ${draft.code}` : "New coupon"}</h2>
+          <form onSubmit={save} noValidate className="space-y-5 p-6">
             <Notice tone="error">{formError && !Object.keys(formError.errors).length ? formError.message : null}</Notice>
             <div className="grid gap-4 md:grid-cols-2">
               <TextInput label="Code" required value={draft.code} onChange={(e) => setDraft({ ...draft, code: e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, "") })} error={fe("code")} maxLength={50} placeholder="WINTER10" />
@@ -186,13 +219,15 @@ export default function Coupons() {
               </div>
             </fieldset>
             <Toggle label="Active" checked={draft.is_active} onChange={(v) => setDraft({ ...draft, is_active: v })} />
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setDraft(null)}>Cancel</Button>
-              <Button type="submit" loading={busy}>Save coupon</Button>
+            <div className="sticky bottom-0 -mx-6 border-t border-gray-200 bg-white px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setDraft(null)}>Cancel</Button>
+                <Button type="submit" loading={busy}>Save coupon</Button>
+              </div>
             </div>
           </form>
         )}
-      </Modal>
+      </Drawer>
     </>
   );
 }

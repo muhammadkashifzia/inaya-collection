@@ -100,6 +100,41 @@ export default function Reviews() {
                 caption="Product reviews"
                 rows={data.data}
                 rowKey={(r) => r.id}
+                mobileCard={(r) => (
+                  <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div className="mb-2 flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <StarRating rating={r.rating} />
+                        {r.title && <p className="mt-1 font-medium text-gray-800 dark:text-white/90">{r.title}</p>}
+                      </div>
+                      <Badge size="sm" color={STATUS_COLOR[r.status]}>{STATUS_LABEL[r.status]}</Badge>
+                    </div>
+                    <p className="mb-2 line-clamp-3 text-theme-xs whitespace-pre-line text-gray-600 dark:text-gray-400">{r.body}</p>
+                    <div className="mb-3 flex flex-wrap gap-2">
+                      {r.product && (
+                        <Link to={`/products/${r.product.id}`} className="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 hover:text-brand-500 dark:border-gray-700 dark:text-gray-400">
+                          📦 {r.product.name}
+                        </Link>
+                      )}
+                      <span className="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">
+                        👤 {r.name}{r.is_verified_buyer && " ✓"}
+                      </span>
+                      <span className="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">
+                        {date(r.created_at)}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1 border-t border-gray-100 pt-3 dark:border-gray-800">
+                      {r.status !== "approved" && (
+                        <button type="button" disabled={busyId === r.id} className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-success-600 hover:bg-success-50 disabled:opacity-50 dark:text-success-500" onClick={() => void setStatus(r, "approved")}>Approve</button>
+                      )}
+                      {r.status !== "rejected" && (
+                        <button type="button" disabled={busyId === r.id} className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-warning-600 hover:bg-warning-50 disabled:opacity-50 dark:text-warning-500" onClick={() => void setStatus(r, "rejected")}>Reject</button>
+                      )}
+                      <EditAction onClick={() => setEditing(r)} />
+                      <DeleteAction onClick={() => void remove(r)} disabled={busyId === r.id} />
+                    </div>
+                  </div>
+                )}
                 columns={[
                   {
                     key: "review",

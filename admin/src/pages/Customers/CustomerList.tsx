@@ -35,6 +35,28 @@ export default function CustomerList() {
                 caption="Customers"
                 rows={data.data}
                 rowKey={(c) => c.id}
+                mobileCard={(c) => (
+                  <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div className="mb-3 flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-sm font-semibold text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
+                          {c.name?.charAt(0)?.toUpperCase() ?? "?"}
+                        </div>
+                        <div className="min-w-0">
+                          <Link to={`/customers/${c.id}`} className="block truncate font-medium text-gray-800 hover:text-brand-500 dark:text-white/90">{c.name}</Link>
+                          <p className="truncate text-theme-xs text-gray-500">{c.email}</p>
+                        </div>
+                      </div>
+                      <ActiveBadge active={c.is_active} on="Active" off="Deactivated" />
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {c.phone && <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">📞 {c.phone}</span>}
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">🛒 {c.orders_count ?? 0} orders</span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">💰 {money(c.orders_total ?? 0)}</span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">📅 {date(c.created_at)}</span>
+                    </div>
+                  </div>
+                )}
                 columns={[
                   {
                     key: "name",

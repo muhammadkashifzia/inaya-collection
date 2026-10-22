@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Button, FormAlert, TextField } from "@/components/atoms";
+import { Button, FormAlert, PasswordField, TextField } from "@/components/atoms";
 import { api, ApiError } from "@/lib/api";
 import { AuthCard } from "../AuthCard";
 
@@ -50,8 +50,8 @@ export function ResetPasswordForm() {
         <form onSubmit={onSubmit} className="space-y-5" noValidate>
           <FormAlert tone="error">{error && !error.field("password") ? (error.field("email") ?? error.message) : null}</FormAlert>
           <TextField label="Email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-          <TextField label="New password" type="password" autoComplete="new-password" required value={password} onChange={(e) => setPassword(e.target.value)} error={error?.field("password")} hint="At least 8 characters with letters and numbers." />
-          <TextField label="Confirm new password" type="password" autoComplete="new-password" required value={confirmation} onChange={(e) => setConfirmation(e.target.value)} />
+          <PasswordField label="New password" autoComplete="new-password" required value={password} onChange={(e) => setPassword(e.target.value)} error={error?.field("password")} hint="At least 8 characters with letters and numbers." />
+          <PasswordField label="Confirm new password" autoComplete="new-password" required value={confirmation} onChange={(e) => setConfirmation(e.target.value)} />
           <Button type="submit" fullWidth size="lg" disabled={busy} aria-busy={busy}>
             {busy ? "Saving…" : "Reset password"}
           </Button>

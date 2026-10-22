@@ -190,7 +190,7 @@ export default function HomeSections() {
                   <div className="flex -space-x-2">
                     {s.slides.slice(0, 4).map((sl, j) => (
                       <div key={j} className="size-10 shrink-0 overflow-hidden rounded-lg border-2 border-white bg-gray-100 dark:border-gray-800 dark:bg-white/5">
-                        {sl.image_url && <img src={sl.image_url} alt="" className="h-full w-full object-cover" />}
+                        {sl.image_url && <img src={sl.image_url} alt="" className="h-full w-full object-cover object-top" />}
                       </div>
                     ))}
                     {s.slides.length > 4 && (
