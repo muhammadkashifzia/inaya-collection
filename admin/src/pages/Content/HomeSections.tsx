@@ -7,7 +7,7 @@ import { DeleteAction, EditAction } from "@/components/admin/TableActions";
 import { ActiveBadge } from "@/components/admin/StatusBadge";
 import PageMeta from "@/components/common/PageMeta";
 import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
 import { useApi } from "@/hooks/useApi";
 import { ApiError, http } from "@/lib/api";
 import { PlusIcon, TrashBinIcon, UploadIcon } from "@/icons";
@@ -220,71 +220,85 @@ export default function HomeSections() {
         </DataState>
       </Card>
 
-      <Modal isOpen={draft !== null} onClose={() => setDraft(null)} className="m-4 max-w-2xl p-6 sm:p-8">
+      <Drawer isOpen={draft !== null} onClose={() => setDraft(null)} title={draft?.id ? "Edit section" : "Add section"}>
         {draft && (
-          <form onSubmit={save} noValidate className="space-y-5">
-            <h2 className="font-display text-2xl font-semibold text-ink-900 dark:text-white">{draft.id ? "Edit section" : "Add section"}</h2>
+          <form onSubmit={save} noValidate className="space-y-5 p-6">
             <Notice tone="error">{formError && !Object.keys(formError.errors).length ? formError.message : null}</Notice>
             <SelectInput label="Section type" value={draft.type} onChange={(e) => setDraft({ ...draft, type: e.target.value as HomeSectionType })} options={TYPES.map((t) => ({ value: t.value, label: t.label }))} hint={TYPES.find((t) => t.value === draft.type)?.hint} />
             <TextInput label="Heading" required value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} error={formError?.field("title")} maxLength={255} />
 
             {/* ── Banner image slides ── */}
             {draft.type === "banner_image" && (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Banner slides <span className="text-error-500">*</span>
                   </label>
-                  <button type="button" onClick={addSlide} className="inline-flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-600">
+                  <button type="button" onClick={addSlide} className="inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-3 py-1.5 text-sm font-medium text-brand-500 transition-colors hover:bg-brand-100 dark:bg-brand-500/10 dark:hover:bg-brand-500/20">
                     <PlusIcon className="size-4" /> Add slide
                   </button>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {draft.slides.map((slide, idx) => (
-                    <div key={idx} className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-white/2">
-                      <div className="mb-3 flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Slide {idx + 1}</span>
+                    <div key={idx} className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-white/[0.02]">
+                      {/* Slide header */}
+                      <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/70 px-4 py-2.5 dark:border-gray-700/50 dark:bg-white/[0.02]">
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Slide {idx + 1}</span>
                         {draft.slides.length > 1 && (
-                          <button type="button" onClick={() => removeSlide(idx)} className="inline-flex items-center gap-1 text-sm text-error-500 hover:text-error-600">
+                          <button type="button" onClick={() => removeSlide(idx)} className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-theme-xs font-medium text-error-500 transition-colors hover:bg-error-50 dark:hover:bg-error-500/10">
                             <TrashBinIcon className="size-3.5" /> Remove
                           </button>
                         )}
                       </div>
 
-                      {/* Image */}
-                      {slide.image_url ? (
-                        <div className="relative mb-3 overflow-hidden rounded-lg">
-                          <img src={slide.image_url} alt="" className="aspect-[5/2] w-full object-cover" />
+                      <div className="p-4">
+                        {/* Image preview or upload */}
+                        {slide.image_url ? (
+                          <div className="group relative mb-4 overflow-hidden rounded-lg">
+                            <img src={slide.image_url} alt="" className="aspect-[5/2] w-full object-cover" />
+                            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/0 opacity-0 transition-all group-hover:bg-black/40 group-hover:opacity-100">
+                              <button
+                                type="button"
+                                onClick={() => { uploadTargetIndex.current = idx; imageInputRef.current?.click(); }}
+                                className="rounded-lg bg-white/90 px-3 py-1.5 text-theme-xs font-medium text-gray-700 shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+                              >
+                                Replace
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { updateSlide(idx, "image", ""); updateSlide(idx, "image_url", ""); }}
+                                className="rounded-lg bg-error-500/90 px-3 py-1.5 text-theme-xs font-medium text-white shadow-sm backdrop-blur-sm transition-colors hover:bg-error-500"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
                           <button
                             type="button"
-                            onClick={() => { updateSlide(idx, "image", ""); updateSlide(idx, "image_url", ""); }}
-                            className="absolute end-2 top-2 rounded-lg bg-black/50 px-2.5 py-1 text-theme-xs font-medium text-white backdrop-blur-sm hover:bg-black/70"
+                            onClick={() => { uploadTargetIndex.current = idx; imageInputRef.current?.click(); }}
+                            disabled={uploadingIndex === idx}
+                            className="mb-4 flex w-full cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-6 transition-colors hover:border-brand-400 hover:bg-brand-50/30 disabled:opacity-50 dark:border-gray-600 dark:hover:border-brand-400 dark:hover:bg-brand-500/5"
                           >
-                            Remove
+                            {uploadingIndex === idx ? (
+                              <span className="size-6 animate-spin rounded-full border-2 border-brand-500 border-e-transparent" />
+                            ) : (
+                              <UploadIcon className="size-6 text-gray-400" />
+                            )}
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                              {uploadingIndex === idx ? "Uploading..." : "Click to upload banner image"}
+                            </span>
+                            <span className="text-theme-xs text-gray-400 dark:text-gray-500">
+                              JPG, PNG or WebP &middot; Recommended 1200&times;400
+                            </span>
                           </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => { uploadTargetIndex.current = idx; imageInputRef.current?.click(); }}
-                          disabled={uploadingIndex === idx}
-                          className="mb-3 flex w-full cursor-pointer items-center gap-3 rounded-lg border-2 border-dashed border-gray-300 px-4 py-4 transition-colors hover:border-brand-400 disabled:opacity-50 dark:border-gray-600 dark:hover:border-brand-400"
-                        >
-                          {uploadingIndex === idx ? (
-                            <span className="size-5 animate-spin rounded-full border-2 border-brand-500 border-e-transparent" />
-                          ) : (
-                            <UploadIcon className="size-5 text-gray-400" />
-                          )}
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {uploadingIndex === idx ? "Uploading..." : "Upload image"}
-                          </span>
-                        </button>
-                      )}
+                        )}
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <TextInput label="Overlay text" value={slide.text} onChange={(e) => updateSlide(idx, "text", e.target.value)} maxLength={255} placeholder="e.g. Silk" />
-                        <TextInput label="Link" value={slide.link} onChange={(e) => updateSlide(idx, "link", e.target.value)} maxLength={255} placeholder="/collections/silk" />
+                        <div className="grid grid-cols-2 gap-3">
+                          <TextInput label="Overlay text" value={slide.text} onChange={(e) => updateSlide(idx, "text", e.target.value)} maxLength={255} placeholder="e.g. Silk" />
+                          <TextInput label="Link" value={slide.link} onChange={(e) => updateSlide(idx, "link", e.target.value)} maxLength={255} placeholder="/collections/silk" />
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -314,13 +328,15 @@ export default function HomeSections() {
               <TextInput label="Products to show" type="number" min={1} max={24} value={draft.product_limit} onChange={(e) => setDraft({ ...draft, product_limit: e.target.value })} error={formError?.field("product_limit")} />
             )}
             <Toggle label="Show on homepage" checked={draft.is_active} onChange={(v) => setDraft({ ...draft, is_active: v })} />
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setDraft(null)}>Cancel</Button>
-              <Button type="submit" loading={busy}>Save section</Button>
+            <div className="sticky bottom-0 -mx-6 border-t border-gray-200 bg-white px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setDraft(null)}>Cancel</Button>
+                <Button type="submit" loading={busy}>Save section</Button>
+              </div>
             </div>
           </form>
         )}
-      </Modal>
+      </Drawer>
     </>
   );
 }
