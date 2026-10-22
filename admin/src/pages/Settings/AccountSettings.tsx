@@ -168,99 +168,10 @@ function ChangePasswordCard() {
   );
 }
 
-/** MFA status indicator with disable option. */
-function TwoFactorStatusCard() {
-  const { user, refresh } = useAuth();
-  const toast = useToast();
-  const isEnabled = user?.two_factor_enabled ?? false;
-  const [showDisable, setShowDisable] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<ApiError | null>(null);
-
-  async function disable(e: FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      await http.post("/admin/two-factor/disable", { current_password: currentPassword });
-      toast.success("Two-factor authentication disabled.");
-      setShowDisable(false);
-      setCurrentPassword("");
-      await refresh();
-    } catch (err) {
-      setError(toError(err, "Could not disable 2FA."));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <Card title="Two-factor authentication">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {isEnabled ? (
-              <>
-                <span className="inline-flex size-8 items-center justify-center rounded-full bg-success-100 text-success-600 dark:bg-success-500/10 dark:text-success-400">✓</span>
-                <div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</p>
-                  <p className="text-theme-xs text-gray-500 dark:text-gray-400">Authenticator app is configured.</p>
-                </div>
-              </>
-            ) : (
-              <>
-                <span className="inline-flex size-8 items-center justify-center rounded-full bg-warning-100 text-warning-600 dark:bg-warning-500/10 dark:text-warning-400">!</span>
-                <div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Not configured</p>
-                  <p className="text-theme-xs text-gray-500 dark:text-gray-400">You'll be asked to set it up on your next sign-in.</p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        {isEnabled && !showDisable && (
-          <Button variant="outline" size="sm" onClick={() => setShowDisable(true)}>
-            Disable 2FA
-          </Button>
-        )}
-
-        {showDisable && (
-          <form onSubmit={(e) => void disable(e)} className="space-y-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700" noValidate>
-            <Notice tone="error">{error && !Object.keys(error.errors).length ? error.message : null}</Notice>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Enter your password to disable two-factor authentication.</p>
-            <div className="max-w-xs">
-              <TextInput
-                label="Current password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                error={error?.field("current_password")}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button type="submit" size="sm" loading={busy} disabled={!currentPassword}>
-                Confirm disable
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => { setShowDisable(false); setCurrentPassword(""); setError(null); }}>
-                Cancel
-              </Button>
-            </div>
-          </form>
-        )}
-      </div>
-    </Card>
-  );
-}
-
 /** "Account" tab of the settings page: credentials of the signed-in user. */
 export default function AccountSettings() {
   return (
     <>
-      <TwoFactorStatusCard />
       <ChangeEmailCard />
       <ChangePasswordCard />
     </>

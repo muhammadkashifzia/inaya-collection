@@ -3,8 +3,6 @@ import { RequireAuth, RequirePermission } from "./components/auth/RequireAuth";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import AppLayout from "./layout/AppLayout";
 import SignIn from "./pages/AuthPages/SignIn";
-import TwoFactorChallenge from "./pages/AuthPages/TwoFactorChallenge";
-import TwoFactorSetup from "./pages/AuthPages/TwoFactorSetup";
 import Categories from "./pages/Categories/Categories";
 import CmsPages from "./pages/Content/CmsPages";
 import Banners from "./pages/Content/Banners";
@@ -66,8 +64,6 @@ export default function App() {
         </Route>
 
         <Route path="/signin" element={<SignIn />} />
-        <Route path="/signin/two-factor" element={<TwoFactorChallenge />} />
-        <Route path="/signin/two-factor-setup" element={<TwoFactorSetup />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

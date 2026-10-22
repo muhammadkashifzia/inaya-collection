@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
 import { Notice, TextInput } from "@/components/admin/Fields";
 import Button from "@/components/ui/button/Button";
@@ -8,7 +8,7 @@ import { ApiError } from "@/lib/api";
 
 /** Staff sign-in against POST /api/v1/auth/login (Sanctum session). */
 export default function SignInForm() {
-  const { login, user, ready, twoFactorState } = useAuth();
+  const { login, user, ready } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from ?? "/";
@@ -19,15 +19,6 @@ export default function SignInForm() {
   const [error, setError] = useState<ApiError | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Redirect to the appropriate 2FA page after password auth succeeds.
-  useEffect(() => {
-    if (twoFactorState === "setup") {
-      navigate("/signin/two-factor-setup", { replace: true, state: { from } });
-    } else if (twoFactorState === "challenge") {
-      navigate("/signin/two-factor", { replace: true, state: { from } });
-    }
-  }, [twoFactorState, navigate, from]);
-
   if (ready && user) return <Navigate to={from} replace />;
 
   async function onSubmit(e: React.FormEvent) {
@@ -36,10 +27,7 @@ export default function SignInForm() {
     setError(null);
     try {
       await login(email.trim(), password, remember);
-      // If no 2FA redirect happened, the user state is set and we redirect.
-      if (twoFactorState === "none") {
-        navigate(from.startsWith("/") && !from.startsWith("//") ? from : "/", { replace: true });
-      }
+      navigate(from.startsWith("/") && !from.startsWith("//") ? from : "/", { replace: true });
     } catch (err) {
       setError(err instanceof ApiError ? err : new ApiError("Sign-in failed. Please try again.", 0));
     } finally {
@@ -85,7 +73,6 @@ export default function SignInForm() {
           <Button type="submit" className="w-full" loading={busy}>
             Sign in
           </Button>
-
         </form>
       </div>
     </div>

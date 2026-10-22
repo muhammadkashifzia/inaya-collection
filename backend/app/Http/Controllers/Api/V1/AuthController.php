@@ -64,21 +64,6 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::guard('web')->user();
 
-        // Staff members must always go through 2FA.
-        if ($user->isStaffMember()) {
-            $request->session()->put('two_factor:user_id', $user->id);
-            $request->session()->put('two_factor:remember', (bool) ($data['remember'] ?? false));
-
-            Auth::guard('web')->logout();
-            $request->session()->regenerate();
-
-            // Not yet configured → force setup; already configured → ask for code.
-            return response()->json([
-                'two_factor' => true,
-                'two_factor_setup' => ! $user->hasTwoFactorEnabled(),
-            ]);
-        }
-
         $request->session()->regenerate();
         $user->forceFill(['last_login_at' => now()])->save();
         $this->carts->resolve($user, $data['cart_token'] ?? null, create: false);
