@@ -1,14 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, Children, type ReactNode } from "react";
 import { cn } from "@/lib/format";
 
 const AUTOPLAY_MS = 4000;
 
 interface MobileSliderProps {
-  /** Items to render — each becomes one slide on mobile. */
-  children: ReactNode[];
-  /** Class applied to the outer wrapper. */
+  children: ReactNode;
   className?: string;
 }
 
@@ -18,7 +16,8 @@ interface MobileSliderProps {
  * On md+ the children render in a normal flex row (pass-through).
  */
 export function MobileSlider({ children, className }: MobileSliderProps) {
-  const total = children.length;
+  const items = Children.toArray(children);
+  const total = items.length;
   const trackRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -82,8 +81,8 @@ export function MobileSlider({ children, className }: MobileSliderProps) {
           ref={trackRef}
           className="flex snap-x snap-mandatory overflow-x-auto no-scrollbar"
         >
-          {children.map((child, i) => (
-            <div key={i} className="w-full flex-shrink-0 snap-center px-1">
+          {items.map((child, i) => (
+            <div key={i} className="w-full min-w-full flex-shrink-0 snap-center px-1">
               {child}
             </div>
           ))}
@@ -115,7 +114,7 @@ export function MobileSlider({ children, className }: MobileSliderProps) {
 
       {/* Desktop: normal flex row */}
       <div className={cn("hidden gap-3 md:flex md:gap-4", className)}>
-        {children}
+        {items}
       </div>
     </>
   );
