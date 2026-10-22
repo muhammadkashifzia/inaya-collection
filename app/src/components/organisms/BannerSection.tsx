@@ -54,7 +54,7 @@ export function BannerSection({ title, slides }: BannerSectionProps) {
   });
 
   return (
-    <section className="py-14 md:py-10">
+    <section className="py-8 md:py-10">
       <Container>
         {title && <SectionHeader title={title} />}
         <MobileSlider>{cards}</MobileSlider>

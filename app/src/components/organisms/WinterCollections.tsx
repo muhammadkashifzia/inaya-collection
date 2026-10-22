@@ -35,7 +35,7 @@ export function WinterCollections({ banners }: { banners: Banner[] }) {
   });
 
   return (
-    <section className="py-14 md:py-10">
+    <section className="py-8 md:py-10">
       <Container>
         <SectionHeader title="Our Recent Winter Unstitched Collections" />
         <MobileSlider>{cards}</MobileSlider>
