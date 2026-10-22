@@ -36,7 +36,7 @@ export function AccountShell({ title, children }: { title: string; children: Rea
       <Heading level={1} className="mb-2">{title}</Heading>
       <p className="mb-8 text-sm text-muted">Signed in as {user.email}</p>
       <div className="grid gap-10 md:grid-cols-[200px_1fr]">
-        <nav aria-label="Account">
+        <nav aria-label="Account" className="min-w-0 overflow-hidden md:overflow-visible">
           <ul className="flex gap-1 overflow-x-auto overflow-y-hidden border-b border-line pb-px no-scrollbar md:flex-col md:gap-0 md:overflow-visible md:border-b-0 md:pb-0">
             {LINKS.map((l) => {
               const active = l.href === "/account" ? pathname === "/account" : pathname.startsWith(l.href);
