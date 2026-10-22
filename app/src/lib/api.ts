@@ -154,7 +154,7 @@ export const api = {
     return mapUser(json.data);
   },
   async register(input: { name: string; email: string; phone?: string; password: string; passwordConfirmation: string }): Promise<User> {
-    const json = await request<{ data: unknown }>("POST", "/customer/register", {
+    const json = await request<{ data: unknown }>("POST", "/auth/register", {
       body: {
         name: input.name,
         email: input.email,
