@@ -45,3 +45,12 @@ body {
     to { transform: translateX(0); opacity: 1; }
   }
 }
+
+/* Hide scrollbar but keep scroll functionality */
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
