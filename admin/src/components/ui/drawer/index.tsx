@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -16,20 +16,38 @@ export const Drawer: React.FC<DrawerProps> = ({
   className = "",
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
+  const stableClose = useCallback(() => onCloseRef.current(), []);
+
+  // Body scroll lock — only depends on isOpen
   useEffect(() => {
     if (!isOpen) return;
-    panelRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
+
+  // Focus panel once when drawer opens (not on every render)
+  useEffect(() => {
+    if (isOpen) {
+      // Small delay so the transition starts before focus fires
+      const id = requestAnimationFrame(() => panelRef.current?.focus());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [isOpen]);
+
+  // Escape key listener — uses stable ref so it never re-subscribes
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") stableClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isOpen, stableClose]);
 
   return (
     <div
@@ -41,7 +59,7 @@ export const Drawer: React.FC<DrawerProps> = ({
         type="button"
         aria-label="Close drawer"
         tabIndex={-1}
-        onClick={onClose}
+        onClick={stableClose}
         className={`absolute inset-0 bg-gray-400/50 backdrop-blur-[32px] transition-opacity duration-300 ${
           isOpen ? "opacity-100" : "opacity-0"
         }`}
@@ -67,7 +85,7 @@ export const Drawer: React.FC<DrawerProps> = ({
               {title}
             </h2>
             <button
-              onClick={onClose}
+              onClick={stableClose}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             >
               <svg
