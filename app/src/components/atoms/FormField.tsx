@@ -1,3 +1,5 @@
+"use client";
+
 import { useId, useState, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from "react";
 import { cn } from "@/lib/format";
 
