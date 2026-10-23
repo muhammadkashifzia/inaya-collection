@@ -8,4 +8,4 @@ export { IconButton } from "./IconButton";
 export { Price } from "./Price";
 export { ServiceWorkerRegister } from "./ServiceWorkerRegister";
 export { Stars } from "./Stars";
-export { FormAlert, PasswordField, TextAreaField, TextField } from "./FormField";
+export { FormAlert, PasswordField, SelectField, TextAreaField, TextField } from "./FormField";

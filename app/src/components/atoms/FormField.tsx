@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from "react";
+import { useId, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { cn } from "@/lib/format";
 
 interface FieldProps {
@@ -108,6 +108,36 @@ export function TextAreaField({ label, error, hint, className, id, ...props }: F
         className="min-h-24 w-full border border-line bg-white p-3 text-sm outline-none focus:border-ink aria-[invalid=true]:border-error"
         {...props}
       />
+      {hint && !error && <p className="text-xs text-muted">{hint}</p>}
+      {error && (
+        <p id={errorId} className="text-xs font-semibold text-error">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Labelled select dropdown with an accessible error message. */
+export function SelectField({ label, error, hint, className, id, children, ...props }: FieldProps & SelectHTMLAttributes<HTMLSelectElement>) {
+  const autoId = useId();
+  const inputId = id ?? autoId;
+  const errorId = `${inputId}-error`;
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <label htmlFor={inputId} className="text-xs font-semibold uppercase tracking-widest text-ink">
+        {label}
+        {props.required && <span aria-hidden="true" className="text-error"> *</span>}
+      </label>
+      <select
+        id={inputId}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errorId : undefined}
+        className={cn(inputClass, "border-line appearance-none bg-[length:16px] bg-[right_12px_center] bg-no-repeat", "bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%236b7280%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M5.22%208.22a.75.75%200%20011.06%200L10%2011.94l3.72-3.72a.75.75%200%20111.06%201.06l-4.25%204.25a.75.75%200%2001-1.06%200L5.22%209.28a.75.75%200%20010-1.06z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E')]")}
+        {...props}
+      >
+        {children}
+      </select>
       {hint && !error && <p className="text-xs text-muted">{hint}</p>}
       {error && (
         <p id={errorId} className="text-xs font-semibold text-error">
