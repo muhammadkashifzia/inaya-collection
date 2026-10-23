@@ -19,9 +19,10 @@ interface ShopTheLookProps {
 }
 
 /**
- * "Shop the Look" — lifestyle image left, product detail right.
- * Arrows cycle looks; dots cycle products within a look.
- * Right-side product image swaps to the second image on hover.
+ * "Shop the Look"
+ * Desktop: lifestyle image left + product card right.
+ * Mobile: only the lifestyle image as a swipeable slider with "View Product" overlay.
+ * Arrows cycle looks; dots cycle products (desktop only).
  */
 export function ShopTheLook({ title, looks }: ShopTheLookProps) {
   const validLooks = looks.filter((l) => l.image && l.products.length > 0);
@@ -70,14 +71,52 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
             </>
           )}
 
-          <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-[1.3fr_1fr] md:gap-12 lg:gap-16">
+          {/* ── Mobile: lifestyle image only + View Product button ── */}
+          <div className="md:hidden">
+            <div className="relative aspect-[3/4] overflow-hidden bg-cream">
+              <AppImage
+                src={look.image}
+                alt={`${title} look ${lookIdx + 1}`}
+                fill
+                sizes="100vw"
+                className="object-cover"
+                priority
+              />
+              {/* Overlay button at bottom */}
+              <div className="absolute inset-x-0 bottom-0 flex justify-center bg-gradient-to-t from-black/50 to-transparent pb-6 pt-16">
+                <Link
+                  href={href}
+                  className="inline-block border border-white px-8 py-3 text-[11px] font-bold uppercase tracking-[0.15em] text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-ink"
+                >
+                  View Product
+                </Link>
+              </div>
+            </div>
+            {/* Mobile dots for looks */}
+            {validLooks.length > 1 && (
+              <div className="mt-4 flex justify-center gap-2">
+                {validLooks.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    aria-label={`Look ${i + 1}`}
+                    onClick={() => { setLookIdx(i); setProdIdx(0); }}
+                    className={`h-2 w-2 rounded-full transition-colors ${i === lookIdx % validLooks.length ? "bg-ink" : "bg-gray-300"}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── Desktop: lifestyle image + product card ── */}
+          <div className="mx-auto hidden max-w-5xl gap-12 md:grid md:grid-cols-[1.3fr_1fr] lg:gap-16">
             {/* Left — lifestyle image */}
             <div className="relative aspect-[3/4] overflow-hidden bg-cream">
               <AppImage
                 src={look.image}
                 alt={`${title} look ${lookIdx + 1}`}
                 fill
-                sizes="(min-width: 768px) 50vw, 100vw"
+                sizes="50vw"
                 className="object-cover"
                 priority
               />
@@ -96,7 +135,6 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
                     href={href}
                     className="relative block aspect-[3/4] overflow-hidden bg-cream"
                   >
-                    {/* First image — always mounted, fades out on hover */}
                     <AppImage
                       src={product.images[0]}
                       alt={product.title}
@@ -104,7 +142,6 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
                       sizes="280px"
                       className={`object-cover transition-opacity duration-500 ${hovered && secondImage ? "opacity-0" : "opacity-100"}`}
                     />
-                    {/* Second image — always mounted behind, fades in on hover */}
                     {secondImage && (
                       <AppImage
                         src={secondImage}
@@ -142,7 +179,7 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
                 </div>
               </div>
 
-              {/* Dot indicators */}
+              {/* Dot indicators for products */}
               {look.products.length > 1 && (
                 <div className="mt-6 flex gap-2.5" role="tablist" aria-label="Products in this look">
                   {look.products.map((p, i) => (

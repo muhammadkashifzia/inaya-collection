@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -31,21 +32,21 @@ class CacheRevalidationService
 
     /**
      * Flush all Laravel-side API response cache entries (the CachePublicApiResponse middleware).
-     * Uses pattern/tag clearing where possible; falls back to a prefix scan.
+     * Targets only keys with the "api_cache:" prefix to avoid nuking sessions, queues, etc.
      */
     private function flushLaravelApiCache(): void
     {
         try {
-            // The CachePublicApiResponse middleware stores with key prefix "api_cache:".
-            // Database/file drivers don't support tag-based flushing, so we clear
-            // all matching keys. This is acceptable because the cache rebuilds quickly.
-            $store = Cache::getStore();
+            $connection = config('database.default');
+            $table = config('cache.stores.database.table', 'cache');
 
-            if (method_exists($store, 'flush')) {
-                // For simple stores (file, array), flush everything — the API cache
-                // is the primary user of the default cache store.
-                Cache::flush();
-            }
+            // Targeted delete: only remove API response cache entries.
+            DB::connection($connection)
+                ->table($table)
+                ->where('key', 'like', '%api_cache:%')
+                ->delete();
+
+            Log::debug('Flushed Laravel API cache entries.');
         } catch (\Throwable $e) {
             Log::warning('Failed to flush Laravel API cache', ['error' => $e->getMessage()]);
         }
@@ -62,18 +63,36 @@ class CacheRevalidationService
         $secret = config('services.nextjs.revalidation_secret');
 
         if (! $url || ! $secret) {
+            Log::warning('Next.js revalidation skipped — URL or secret not configured.', [
+                'url_set' => (bool) $url,
+                'secret_set' => (bool) $secret,
+            ]);
+
             return;
         }
 
         try {
-            Http::timeout(5)
+            $response = Http::timeout(5)
                 ->retry(2, 100)
                 ->post($url, [
                     'secret' => $secret,
                     'tags' => $tags,
                 ]);
+
+            if ($response->successful()) {
+                Log::info('Next.js cache revalidated', [
+                    'tags' => $tags,
+                    'response' => $response->json(),
+                ]);
+            } else {
+                Log::warning('Next.js revalidation returned non-success status', [
+                    'url' => $url,
+                    'tags' => $tags,
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+            }
         } catch (\Throwable $e) {
-            // Non-critical — log and move on. The cache will expire naturally.
             Log::warning('Next.js revalidation failed', [
                 'url' => $url,
                 'tags' => $tags,
