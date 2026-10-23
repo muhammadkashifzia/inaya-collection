@@ -155,6 +155,8 @@ export function ProductReviews({ slug }: { slug: string }) {
       const next = await api.productReviews(slug, data.page + 1);
       setData(next);
       setReviews((r) => [...r, ...next.reviews]);
+    } catch {
+      // Silently keep existing reviews visible; user can retry.
     } finally {
       setLoadingMore(false);
     }

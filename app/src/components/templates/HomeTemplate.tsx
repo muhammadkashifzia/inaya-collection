@@ -1,4 +1,4 @@
-import { BannerSection, CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection, WinterCollections } from "@/components/organisms";
+import { BannerSection, CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection, ShopTheLook, WinterCollections } from "@/components/organisms";
 import type { HomeData, HomeSection, SiteConfig } from "@/types";
 
 /**
@@ -68,5 +68,7 @@ function Section({ section }: { section: HomeSection }) {
           slides={section.slides}
         />
       );
+    case "shop_the_look":
+      return <ShopTheLook title={section.title} looks={section.looks} />;
   }
 }

@@ -24,9 +24,13 @@ export function OrderConfirmation() {
     if (!number || !authReady) return;
     const stored = sessionStorage.getItem(`gw-order-${number}`);
     if (stored) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read from sessionStorage (browser-only)
-      setOrder(JSON.parse(stored) as Order);
-      return;
+      try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read from sessionStorage (browser-only)
+        setOrder(JSON.parse(stored) as Order);
+        return;
+      } catch {
+        sessionStorage.removeItem(`gw-order-${number}`);
+      }
     }
     if (user) {
       api.order(number).then(setOrder).catch(() => setMissing(true));
