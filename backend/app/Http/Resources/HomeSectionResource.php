@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\HomeSection;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -16,6 +17,7 @@ class HomeSectionResource extends JsonResource
     public function toArray(Request $request): array
     {
         $slides = null;
+        $looks = null;
         $imageUrl = null;
 
         try {
@@ -40,6 +42,32 @@ class HomeSectionResource extends JsonResource
                 }
             }
 
+            $rawLooks = $this->resource->getAttributes()['looks'] ?? null;
+            $decodedLooks = is_string($rawLooks) ? json_decode($rawLooks, true) : (is_array($rawLooks) ? $rawLooks : null);
+
+            if (is_array($decodedLooks) && $decodedLooks !== []) {
+                $looks = [];
+                foreach ($decodedLooks as $look) {
+                    if (! is_array($look)) {
+                        continue;
+                    }
+                    $looks[] = [
+                        'image' => $look['image'] ?? '',
+                        'image_url' => ! empty($look['image']) ? Storage::disk('public')->url($look['image']) : null,
+                        'product_ids' => $look['product_ids'] ?? [],
+                        'products' => collect($look['product_ids'] ?? [])
+                            ->map(fn ($id) => Product::find($id))
+                            ->filter()
+                            ->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])
+                            ->values()
+                            ->all(),
+                    ];
+                }
+                if ($looks === []) {
+                    $looks = null;
+                }
+            }
+
             $rawImage = $this->resource->getAttributes()['image'] ?? null;
             $imageUrl = $rawImage ? Storage::disk('public')->url($rawImage) : null;
         } catch (\Throwable) {
@@ -56,6 +84,7 @@ class HomeSectionResource extends JsonResource
             'image' => $this->resource->getAttributes()['image'] ?? null,
             'image_url' => $imageUrl,
             'slides' => $slides,
+            'looks' => $looks,
             'category_id' => $this->category_id,
             'category' => new CategoryResource($this->whenLoaded('category')),
             'product_limit' => $this->product_limit,

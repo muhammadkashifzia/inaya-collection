@@ -119,6 +119,7 @@ class ContentController extends Controller
     private function sectionData(Request $request): array
     {
         $isBanner = $request->input('type') === HomeSectionType::BannerImage->value;
+        $isLook = $request->input('type') === HomeSectionType::ShopTheLook->value;
 
         $data = $request->validate([
             'type' => ['required', Rule::enum(HomeSectionType::class)],
@@ -131,6 +132,10 @@ class ContentController extends Controller
             'slides.*.image' => ['required', 'string', 'max:255'],
             'slides.*.text' => ['nullable', 'string', 'max:255'],
             'slides.*.link' => ['nullable', 'string', 'max:255'],
+            'looks' => [Rule::requiredIf($isLook), 'nullable', 'array', 'min:1', 'max:10'],
+            'looks.*.image' => ['required', 'string', 'max:255'],
+            'looks.*.product_ids' => ['required', 'array', 'min:1'],
+            'looks.*.product_ids.*' => ['integer', 'exists:products,id'],
             'category_id' => [Rule::requiredIf($request->input('type') === HomeSectionType::Category->value), 'nullable', 'integer', 'exists:categories,id'],
             'product_limit' => ['nullable', 'integer', 'min:1', 'max:24'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
@@ -147,6 +152,11 @@ class ContentController extends Controller
             $data['button_link'] = null;
             $data['image'] = null;
             $data['slides'] = null;
+        }
+
+        // Null out looks for non-look types.
+        if (! $isLook) {
+            $data['looks'] = null;
         }
 
         return $data;
