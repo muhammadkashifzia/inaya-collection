@@ -19,7 +19,7 @@ function RatingInput({ value, onChange, error }: { value: number; onChange: (v: 
   return (
     <fieldset>
       <legend className="mb-1.5 text-xs font-semibold uppercase tracking-widest text-ink">
-        Your rating <span aria-hidden="true" className="text-brand">*</span>
+        Your rating <span aria-hidden="true" className="text-error">*</span>
       </legend>
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((n) => (
@@ -35,7 +35,7 @@ function RatingInput({ value, onChange, error }: { value: number; onChange: (v: 
           </label>
         ))}
       </div>
-      {error && <p className="mt-1 text-xs font-semibold text-brand">{error}</p>}
+      {error && <p className="mt-1 text-xs font-semibold text-error">{error}</p>}
     </fieldset>
   );
 }

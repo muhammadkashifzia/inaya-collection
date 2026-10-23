@@ -195,7 +195,7 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
                   <input type="radio" name="saved-address" checked={addressId === null} onChange={() => setAddressId(null)} />
                   Use a new address
                 </label>
-                {fieldError("shipping_address_id") && <p className="text-xs font-semibold text-brand">{fieldError("shipping_address_id")}</p>}
+                {fieldError("shipping_address_id") && <p className="text-xs font-semibold text-error">{fieldError("shipping_address_id")}</p>}
               </fieldset>
             )}
             {!useSaved && (
@@ -233,7 +233,7 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
                 </label>
               );
             })}
-            {fieldError("shipping_method") && <p className="text-xs font-semibold text-brand">{fieldError("shipping_method")}</p>}
+            {fieldError("shipping_method") && <p className="text-xs font-semibold text-error">{fieldError("shipping_method")}</p>}
           </section>
 
           <section aria-labelledby="payment-heading" className="space-y-3">
@@ -272,7 +272,7 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
             ))}
           </ul>
           {(display?.issues.length ?? 0) > 0 && (
-            <ul className="space-y-1 text-xs font-semibold text-brand" role="alert">
+            <ul className="space-y-1 text-xs font-semibold text-error" role="alert">
               {display!.issues.map((i) => <li key={i.itemId}>{i.message}</li>)}
             </ul>
           )}

@@ -11,7 +11,7 @@ interface FieldProps {
 }
 
 const inputClass =
-  "h-11 w-full border bg-white px-3 text-sm outline-none transition-colors focus:border-ink aria-[invalid=true]:border-brand";
+  "h-11 w-full border bg-white px-3 text-sm outline-none transition-colors focus:border-ink aria-[invalid=true]:border-error";
 
 /** Labelled input with an accessible error message. */
 export function TextField({ label, error, hint, className, id, ...props }: FieldProps & InputHTMLAttributes<HTMLInputElement>) {
@@ -22,7 +22,7 @@ export function TextField({ label, error, hint, className, id, ...props }: Field
     <div className={cn("flex flex-col gap-1.5", className)}>
       <label htmlFor={inputId} className="text-xs font-semibold uppercase tracking-widest text-ink">
         {label}
-        {props.required && <span aria-hidden="true" className="text-brand"> *</span>}
+        {props.required && <span aria-hidden="true" className="text-error"> *</span>}
       </label>
       <input
         id={inputId}
@@ -33,7 +33,7 @@ export function TextField({ label, error, hint, className, id, ...props }: Field
       />
       {hint && !error && <p className="text-xs text-muted">{hint}</p>}
       {error && (
-        <p id={errorId} className="text-xs font-semibold text-brand">
+        <p id={errorId} className="text-xs font-semibold text-error">
           {error}
         </p>
       )}
@@ -51,7 +51,7 @@ export function PasswordField({ label, error, hint, className, id, ...props }: F
     <div className={cn("flex flex-col gap-1.5", className)}>
       <label htmlFor={inputId} className="text-xs font-semibold uppercase tracking-widest text-ink">
         {label}
-        {props.required && <span aria-hidden="true" className="text-brand"> *</span>}
+        {props.required && <span aria-hidden="true" className="text-error"> *</span>}
       </label>
       <div className="relative">
         <input
@@ -83,7 +83,7 @@ export function PasswordField({ label, error, hint, className, id, ...props }: F
       </div>
       {hint && !error && <p className="text-xs text-muted">{hint}</p>}
       {error && (
-        <p id={errorId} className="text-xs font-semibold text-brand">
+        <p id={errorId} className="text-xs font-semibold text-error">
           {error}
         </p>
       )}
@@ -99,18 +99,18 @@ export function TextAreaField({ label, error, hint, className, id, ...props }: F
     <div className={cn("flex flex-col gap-1.5", className)}>
       <label htmlFor={inputId} className="text-xs font-semibold uppercase tracking-widest text-ink">
         {label}
-        {props.required && <span aria-hidden="true" className="text-brand"> *</span>}
+        {props.required && <span aria-hidden="true" className="text-error"> *</span>}
       </label>
       <textarea
         id={inputId}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className="min-h-24 w-full border border-line bg-white p-3 text-sm outline-none focus:border-ink aria-[invalid=true]:border-brand"
+        className="min-h-24 w-full border border-line bg-white p-3 text-sm outline-none focus:border-ink aria-[invalid=true]:border-error"
         {...props}
       />
       {hint && !error && <p className="text-xs text-muted">{hint}</p>}
       {error && (
-        <p id={errorId} className="text-xs font-semibold text-brand">
+        <p id={errorId} className="text-xs font-semibold text-error">
           {error}
         </p>
       )}
@@ -126,7 +126,7 @@ export function FormAlert({ tone, children }: { tone: "error" | "success" | "inf
       role={tone === "error" ? "alert" : "status"}
       className={cn(
         "px-4 py-3 text-sm font-medium",
-        tone === "error" && "bg-brand/10 text-brand",
+        tone === "error" && "bg-error/10 text-error",
         tone === "success" && "bg-emerald-50 text-emerald-800",
         tone === "info" && "bg-cream text-ink",
       )}

@@ -26,7 +26,7 @@ export function CartLineItem({ item, onNavigate, issue }: { item: CartLine; onNa
           {onSale && <s className="text-xs font-medium text-muted">{formatPrice(item.regularPrice)}</s>}
         </p>
         {issue && (
-          <p role="alert" className="text-xs font-semibold text-brand">
+          <p role="alert" className="text-xs font-semibold text-error">
             {issue}
           </p>
         )}

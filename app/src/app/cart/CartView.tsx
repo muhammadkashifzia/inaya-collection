@@ -15,7 +15,7 @@ export function CartView() {
   return (
     <Container className="py-12">
       <Heading level={1} className="mb-8">Your Cart</Heading>
-      {cartError && <p role="alert" className="mb-6 bg-brand/10 px-4 py-3 text-sm text-brand">{cartError}</p>}
+      {cartError && <p role="alert" className="mb-6 bg-error/10 px-4 py-3 text-sm text-error">{cartError}</p>}
 
       {cart === null ? (
         <p className="py-16 text-center text-muted">Loading your cart…</p>
@@ -35,7 +35,7 @@ export function CartView() {
             <h2 className="font-heading text-xl font-semibold">Order summary</h2>
             <CouponForm />
             <CartTotals cart={cart} shippingNote="Shipping is calculated at checkout." />
-            {blocking && <p className="text-xs font-semibold text-brand">Please fix the highlighted items before checking out.</p>}
+            {blocking && <p className="text-xs font-semibold text-error">Please fix the highlighted items before checking out.</p>}
             <ButtonLink href="/checkout" fullWidth size="lg" className={blocking ? "pointer-events-none opacity-50" : undefined}>
               Proceed to checkout
             </ButtonLink>

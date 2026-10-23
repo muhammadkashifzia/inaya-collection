@@ -151,7 +151,7 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
 
         <div className="flex flex-wrap items-center gap-4">
           <QuantitySelector value={qty} onChange={setQty} max={maxQuantity} disabled={!available} />
-          <p className={cn("flex items-center gap-1 text-sm font-semibold", available ? "text-emerald-700" : "text-brand")} aria-live="polite">
+          <p className={cn("flex items-center gap-1 text-sm font-semibold", available ? "text-emerald-700" : "text-error")} aria-live="polite">
             <Icon name={available ? "check" : "close"} size={16} />
             {!variant ? "Select options" : available ? (variant.lowStock ? "Only a few left" : "In stock") : "Sold out"}
           </p>
