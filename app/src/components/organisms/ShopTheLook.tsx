@@ -35,7 +35,6 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
   const product = look.products[prodIdx % look.products.length];
   const href = `/products/${product.slug}`;
   const secondImage = product.images.length > 1 ? product.images[1] : null;
-  const displayImage = hovered && secondImage ? secondImage : product.images[0];
 
   function goLook(dir: -1 | 1) {
     setLookIdx((i) => (i + dir + validLooks.length) % validLooks.length);
@@ -86,24 +85,35 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
 
             {/* Right — product detail card */}
             <div className="flex flex-col items-center justify-center">
-              <div
-                className="w-full max-w-[280px]"
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
-              >
+              <div className="w-full max-w-[280px]">
                 {/* Product image with hover swap + wishlist */}
-                <div className="relative mb-5">
+                <div
+                  className="relative mb-5"
+                  onMouseEnter={() => setHovered(true)}
+                  onMouseLeave={() => setHovered(false)}
+                >
                   <Link
                     href={href}
                     className="relative block aspect-[3/4] overflow-hidden bg-cream"
                   >
+                    {/* First image — always mounted, fades out on hover */}
                     <AppImage
-                      src={displayImage}
+                      src={product.images[0]}
                       alt={product.title}
                       fill
                       sizes="280px"
-                      className="object-cover transition-opacity duration-300"
+                      className={`object-cover transition-opacity duration-500 ${hovered && secondImage ? "opacity-0" : "opacity-100"}`}
                     />
+                    {/* Second image — always mounted behind, fades in on hover */}
+                    {secondImage && (
+                      <AppImage
+                        src={secondImage}
+                        alt={product.title}
+                        fill
+                        sizes="280px"
+                        className={`object-cover transition-opacity duration-500 ${hovered ? "opacity-100" : "opacity-0"}`}
+                      />
+                    )}
                   </Link>
                   <div className="absolute right-2 top-2">
                     <WishlistButton product={product} />
