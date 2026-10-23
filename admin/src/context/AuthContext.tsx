@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { http, setUnauthorizedHandler, ApiError } from "@/lib/api";
 import type { AdminUser, PermissionKey } from "@/types/api";
 
+type TwoFactorState = null | "challenge" | "setup";
+
 interface AuthValue {
   user: AdminUser | null;
   ready: boolean;
@@ -10,6 +12,14 @@ interface AuthValue {
   logout: () => Promise<void>;
   /** Re-read the signed-in user (e.g. after changing the email). */
   refresh: () => Promise<void>;
+  /** Current 2FA state: null (none), "challenge" (code required), "setup" (enroll required). */
+  twoFactorState: TwoFactorState;
+  /** Submit the TOTP code to complete a 2FA challenge. */
+  verifyTwoFactor: (code: string) => Promise<void>;
+  /** Fetch the TOTP secret + otpauth URI for first-time 2FA enrolment. */
+  fetchTwoFactorSetup: () => Promise<{ secret: string; uri: string }>;
+  /** Confirm the setup by verifying the first TOTP code. */
+  confirmTwoFactorSetup: (code: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -17,6 +27,7 @@ const AuthContext = createContext<AuthValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [ready, setReady] = useState(false);
+  const [twoFactorState, setTwoFactorState] = useState<TwoFactorState>(null);
 
   useEffect(() => {
     setUnauthorizedHandler(() => setUser(null));
@@ -29,7 +40,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string, remember: boolean) => {
-    const res = await http.post<{ data?: AdminUser }>("/auth/login", { email, password, remember });
+    const res = await http.post<{ data?: AdminUser; two_factor?: "challenge" | "setup" }>("/auth/login", { email, password, remember });
+
+    if (res.two_factor) {
+      setTwoFactorState(res.two_factor);
+      return;
+    }
 
     if (res.data?.role === "customer") {
       await http.post("/auth/logout").catch(() => undefined);
@@ -41,11 +57,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await http.post("/auth/logout").catch(() => undefined);
     setUser(null);
+    setTwoFactorState(null);
   }, []);
 
   const refresh = useCallback(async () => {
     const me = await http.get<AdminUser>("/me");
     setUser(me.role === "customer" ? null : me);
+  }, []);
+
+  const verifyTwoFactor = useCallback(async (code: string) => {
+    await http.post("/auth/two-factor/verify", { code });
+    setTwoFactorState(null);
+    setUser(await http.get<AdminUser>("/me"));
+  }, []);
+
+  const fetchTwoFactorSetup = useCallback(async () => {
+    const res = await http.get<{ secret: string; uri: string }>("/auth/two-factor/setup");
+    return res;
+  }, []);
+
+  const confirmTwoFactorSetup = useCallback(async (code: string) => {
+    await http.post("/auth/two-factor/confirm-setup", { code });
+    setTwoFactorState(null);
+    setUser(await http.get<AdminUser>("/me"));
   }, []);
 
   const value = useMemo<AuthValue>(
@@ -56,8 +90,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       refresh,
+      twoFactorState,
+      verifyTwoFactor,
+      fetchTwoFactorSetup,
+      confirmTwoFactorSetup,
     }),
-    [user, ready, login, logout, refresh],
+    [user, ready, login, logout, refresh, twoFactorState, verifyTwoFactor, fetchTwoFactorSetup, confirmTwoFactorSetup],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
