@@ -41,6 +41,28 @@ export default function Movements() {
                 caption="Stock movements"
                 rows={data.data}
                 rowKey={(m) => m.id}
+                mobileCard={(m) => (
+                  <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div className="mb-2 flex items-start justify-between gap-2">
+                      <div>
+                        <button type="button" className="text-start hover:text-brand-500" onClick={() => set("variant_id", m.variant_id)}>
+                          <span className="block font-medium text-gray-800 dark:text-white/90">{m.product_name ?? "—"}</span>
+                          <code className="text-theme-xs text-gray-500">{m.sku}</code>
+                        </button>
+                      </div>
+                      <span className={`shrink-0 font-semibold ${m.quantity_change > 0 ? "text-success-600" : "text-error-600"}`}>
+                        {m.quantity_change > 0 ? `+${m.quantity_change}` : m.quantity_change}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">{date(m.created_at, true)}</span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">{REASON_LABEL[m.reason] ?? m.reason}</span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">After: {m.stock_after}</span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">{m.by ?? (m.order_id ? "Checkout" : "System")}</span>
+                    </div>
+                    {m.note && <p className="mt-2 truncate text-theme-xs text-gray-500">{m.note}</p>}
+                  </div>
+                )}
                 columns={[
                   { key: "date", header: "When", cell: (m) => date(m.created_at, true) },
                   {

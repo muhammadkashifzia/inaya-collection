@@ -99,6 +99,14 @@ class HomeController extends Controller
                     'link' => $slide['link'] ?? null,
                 ])->values()->all(),
             ],
+            HomeSectionType::ShopTheLook => [
+                'looks' => collect($section->looks ?? [])->filter(fn ($look): bool => is_array($look) && ! empty($look['image']))->map(fn (array $look): array => [
+                    'image' => ! empty($look['image']) ? Storage::disk('public')->url($look['image']) : null,
+                    'products' => ProductResource::collection(
+                        $this->cards()->whereIn('products.id', $look['product_ids'] ?? [])->get(),
+                    ),
+                ])->values()->all(),
+            ],
         };
     }
 

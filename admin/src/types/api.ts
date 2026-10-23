@@ -265,6 +265,7 @@ export type HomeSectionType =
   | "category_tabs"
   | "category_grid"
   | "banner_image"
+  | "shop_the_look"
   | "reviews";
 
 export interface HomeSectionSlide {

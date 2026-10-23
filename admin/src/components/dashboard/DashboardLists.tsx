@@ -15,6 +15,19 @@ export function RecentOrders({ orders }: { orders: DashboardData["recent_orders"
           caption="Recent orders"
           rows={orders}
           rowKey={(o) => o.number}
+          mobileCard={(o) => (
+            <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+              <div className="mb-2 flex items-start justify-between gap-2">
+                <Link to={`/orders/${o.number}`} className="font-medium text-ink-900 hover:text-brand-500 dark:text-white">{o.number}</Link>
+                <span className="font-semibold">{money(o.grand_total)}</span>
+              </div>
+              <p className="mb-2 truncate text-sm text-gray-600 dark:text-gray-400">{o.customer_name} · {date(o.placed_at)}</p>
+              <div className="flex items-center gap-2">
+                <OrderStatusBadge status={o.status} />
+                <PaymentStatusBadge status={o.payment_status} />
+              </div>
+            </div>
+          )}
           columns={[
             { key: "number", header: "Order", cell: (o) => <Link to={`/orders/${o.number}`} className="font-medium text-ink-900 hover:text-brand-500 dark:text-white">{o.number}</Link> },
             { key: "customer", header: "Customer", cell: (o) => <span className="block max-w-40 truncate">{o.customer_name}</span> },

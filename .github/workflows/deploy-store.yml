@@ -74,6 +74,7 @@ jobs:
           process.env.NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || '$API_URL';
           process.env.API_URL = process.env.API_URL || '$API_URL';
           process.env.NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || '$STORE_URL';
+          process.env.REVALIDATION_SECRET = process.env.REVALIDATION_SECRET || '${{ secrets.REVALIDATION_SECRET }}';
           require('./server.js');
           EOF
 
@@ -106,6 +107,7 @@ jobs:
               echo "SetEnv NEXT_PUBLIC_API_URL $API_URL"
               echo "SetEnv API_URL $API_URL"
               echo "SetEnv NEXT_PUBLIC_SITE_URL $STORE_URL"
+              echo "SetEnv REVALIDATION_SECRET ${{ secrets.REVALIDATION_SECRET }}"
               echo "Options -Indexes"
             } > "$RUNNER_TEMP/ht/.htaccess"
             cp_upload "$RUNNER_TEMP/ht/.htaccess" "$REMOTE_DIR"

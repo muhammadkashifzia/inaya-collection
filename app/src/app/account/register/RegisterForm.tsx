@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Button, FormAlert, TextField } from "@/components/atoms";
+import { Button, FormAlert, PasswordField, TextField } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
 import { useToast } from "@/context/ToastContext";
 import { ApiError } from "@/lib/api";
@@ -42,8 +42,8 @@ export function RegisterForm() {
         <TextField label="Full name" autoComplete="name" required value={form.name} onChange={set("name")} error={error?.field("name")} maxLength={120} />
         <TextField label="Email" type="email" autoComplete="email" required value={form.email} onChange={set("email")} error={error?.field("email")} maxLength={255} />
         <TextField label="Phone (optional)" type="tel" autoComplete="tel" value={form.phone} onChange={set("phone")} error={error?.field("phone")} maxLength={30} />
-        <TextField label="Password" type="password" autoComplete="new-password" required value={form.password} onChange={set("password")} error={error?.field("password")} hint="At least 8 characters with letters and numbers." />
-        <TextField label="Confirm password" type="password" autoComplete="new-password" required value={form.passwordConfirmation} onChange={set("passwordConfirmation")} />
+        <PasswordField label="Password" autoComplete="new-password" required value={form.password} onChange={set("password")} error={error?.field("password")} hint="At least 8 characters with letters and numbers." />
+        <PasswordField label="Confirm password" autoComplete="new-password" required value={form.passwordConfirmation} onChange={set("passwordConfirmation")} />
         <Button type="submit" fullWidth size="lg" disabled={busy} aria-busy={busy}>
           {busy ? "Creating account…" : "Create account"}
         </Button>

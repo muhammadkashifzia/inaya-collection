@@ -14,5 +14,6 @@ export { ProductRail } from "./ProductRail";
 export { ProductReviews } from "./ProductReviews";
 export { ServiceHighlights } from "./ServiceHighlights";
 export { ShopByCollection } from "./ShopByCollection";
+export { ShopTheLook } from "./ShopTheLook";
 export { TrustBar } from "./TrustBar";
 export { WinterCollections } from "./WinterCollections";

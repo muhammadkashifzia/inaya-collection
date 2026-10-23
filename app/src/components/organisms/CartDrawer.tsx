@@ -70,7 +70,7 @@ export function CartDrawer({ freeShippingThreshold }: { freeShippingThreshold: n
         )}
 
         {cartError && (
-          <p role="alert" className="mx-5 mt-3 bg-brand/10 px-3 py-2 text-xs font-semibold text-brand">
+          <p role="alert" className="mx-5 mt-3 bg-error/10 px-3 py-2 text-xs font-semibold text-error">
             {cartError}
           </p>
         )}

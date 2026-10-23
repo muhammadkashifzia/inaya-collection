@@ -53,6 +53,21 @@ export default function MessageList() {
                 caption="Contact messages"
                 rows={data.data}
                 rowKey={(m) => m.id}
+                mobileCard={(m) => (
+                  <button type="button" onClick={() => setOpenId(m.id)} className="block w-full rounded-xl border border-gray-200 bg-white p-4 text-start dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div className="mb-2 flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className={`truncate ${m.is_read ? "font-medium text-gray-700 dark:text-gray-300" : "font-semibold text-gray-900 dark:text-white"}`}>{m.name}</p>
+                        <p className="truncate text-theme-xs text-gray-500">{m.email}</p>
+                        {m.phone && <p className="text-theme-xs text-gray-500">{m.phone}</p>}
+                      </div>
+                      <Badge size="sm" color={m.is_read ? "light" : "warning"}>{m.is_read ? "Read" : "New"}</Badge>
+                    </div>
+                    {m.subject && <p className={`mb-1 truncate text-sm ${m.is_read ? "text-gray-700 dark:text-gray-300" : "font-semibold text-gray-900 dark:text-white"}`}>{m.subject}</p>}
+                    <p className="line-clamp-2 text-theme-xs text-gray-500">{m.message}</p>
+                    <p className="mt-2 text-theme-xs text-gray-400">{date(m.created_at, true)}</p>
+                  </button>
+                )}
                 columns={[
                   {
                     key: "from",

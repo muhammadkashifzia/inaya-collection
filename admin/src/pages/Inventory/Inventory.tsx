@@ -79,6 +79,27 @@ export default function Inventory() {
                 caption="Inventory"
                 rows={data.data}
                 rowKey={(r) => r.id}
+                mobileCard={(r) => (
+                  <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div className="mb-3">
+                      <Link to={`/products/${r.product_id}`} className="font-medium text-gray-800 hover:text-brand-500 dark:text-white/90">{r.product_name}</Link>
+                      <p className="text-theme-xs text-gray-500">{r.name !== "Default" ? r.name : "Default variant"}</p>
+                    </div>
+                    <div className="mb-3 flex flex-wrap gap-2">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">SKU: {r.sku}</span>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">Alert: {r.low_stock_threshold}</span>
+                      <span className={`inline-flex min-w-10 items-center justify-center rounded-full px-2.5 py-1 text-theme-xs font-semibold ${r.stock === 0 ? "bg-error-50 text-error-600 dark:bg-error-500/15" : r.is_low_stock ? "bg-warning-50 text-warning-700 dark:bg-warning-500/15" : "bg-success-50 text-success-700 dark:bg-success-500/15"}`}>
+                        Stock: {r.stock}
+                      </span>
+                    </div>
+                    <div className="flex gap-3">
+                      <Link to={`/inventory/movements?variant_id=${r.id}`} className="text-sm text-gray-500 hover:text-brand-500">History</Link>
+                      <Button size="sm" variant="outline" onClick={() => { setFormError(null); setForm({ direction: "add", quantity: "", reason: "restock", note: "" }); setTarget(r); }}>
+                        Adjust
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 columns={[
                   {
                     key: "product",

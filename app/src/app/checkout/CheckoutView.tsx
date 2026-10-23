@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { AppImage, Button, ButtonLink, Container, FormAlert, Heading, TextAreaField, TextField } from "@/components/atoms";
+import { AppImage, Button, ButtonLink, Container, FormAlert, Heading, SelectField, TextAreaField, TextField } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
 import { useToast } from "@/context/ToastContext";
 import { api, ApiError } from "@/lib/api";
 import { cn, formatPrice } from "@/lib/format";
+import { PK_PROVINCES, citiesOf, areasOf } from "@/lib/pk-geo";
 import type { Address, Cart, ShippingMethod } from "@/types";
 import { CouponForm } from "../cart/CouponForm";
 import { CartTotals } from "../cart/CartTotals";
@@ -19,7 +19,7 @@ interface CheckoutViewProps {
   allowGuestCheckout: boolean;
 }
 
-const emptyAddress = { fullName: "", phone: "", line1: "", line2: "", city: "", province: "", postalCode: "", country: "PK" };
+const emptyAddress = { fullName: "", phone: "", line1: "", line2: "", city: "", area: "", province: "", postalCode: "", country: "PK" };
 type AddressForm = typeof emptyAddress;
 
 /**
@@ -29,7 +29,6 @@ type AddressForm = typeof emptyAddress;
  * create duplicate orders.
  */
 export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThreshold, allowGuestCheckout }: CheckoutViewProps) {
-  const router = useRouter();
   const toast = useToast();
   const { user, authReady, cart, setCart } = useStore();
   const [summary, setSummary] = useState<Cart | null>(null);
@@ -108,7 +107,10 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
     setError(null);
     idempotencyKey.current ??= crypto.randomUUID();
 
-    const toInput = (a: AddressForm) => ({ ...a, line2: a.line2 || null, province: a.province || null, postalCode: a.postalCode || null });
+    const toInput = (a: AddressForm) => {
+      const { area, ...rest } = a;
+      return { ...rest, line2: [area, rest.line2].filter(Boolean).join(", ") || null, province: rest.province || null, postalCode: rest.postalCode || null };
+    };
     try {
       const order = await api.checkout(
         {
@@ -129,7 +131,13 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
       sessionStorage.setItem(`gw-order-${order.number}`, JSON.stringify(order));
       setCart({ ...cart!, items: [], itemCount: 0, subtotal: 0, discountTotal: 0, shippingTotal: 0, taxTotal: 0, grandTotal: 0, couponCode: null });
       toast.success("Order Placed", "Your order has been placed successfully!");
-      router.replace(`/checkout/success?order=${encodeURIComponent(order.number)}`);
+
+      // Hard redirect — destroys the entire React tree so the checkout
+      // form is guaranteed to be blank on the next visit.  This mirrors
+      // the industry-standard post-order flow used by Shopify, Stripe, etc.
+      // `location.replace` also keeps the browser-back button from
+      // returning to the stale checkout page.
+      window.location.replace(`/checkout/success?order=${encodeURIComponent(order.number)}`);
     } catch (err) {
       const apiError = err instanceof ApiError ? err : new ApiError("Something went wrong. Please try again.", 0);
       setError(apiError);
@@ -146,10 +154,20 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
     <div className="grid gap-4 md:grid-cols-2">
       <TextField label="Full name" required autoComplete="name" value={value.fullName} onChange={(e) => set({ ...value, fullName: e.target.value })} error={fieldError(`${prefix}.full_name`)} maxLength={120} />
       <TextField label="Phone" required type="tel" autoComplete="tel" value={value.phone} onChange={(e) => set({ ...value, phone: e.target.value })} error={fieldError(`${prefix}.phone`)} maxLength={30} />
-      <TextField className="md:col-span-2" label="Address" required autoComplete="address-line1" value={value.line1} onChange={(e) => set({ ...value, line1: e.target.value })} error={fieldError(`${prefix}.line1`)} maxLength={255} />
-      <TextField className="md:col-span-2" label="Apartment, area (optional)" autoComplete="address-line2" value={value.line2} onChange={(e) => set({ ...value, line2: e.target.value })} maxLength={255} />
-      <TextField label="City" required autoComplete="address-level2" value={value.city} onChange={(e) => set({ ...value, city: e.target.value })} error={fieldError(`${prefix}.city`)} maxLength={100} />
-      <TextField label="Province" autoComplete="address-level1" value={value.province} onChange={(e) => set({ ...value, province: e.target.value })} maxLength={100} />
+      <SelectField label="Province" required autoComplete="address-level1" value={value.province} onChange={(e) => set({ ...value, province: e.target.value, city: "", area: "" })} error={fieldError(`${prefix}.province`)}>
+        <option value="">Select province</option>
+        {PK_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
+      </SelectField>
+      <SelectField label="City" required autoComplete="address-level2" value={value.city} onChange={(e) => set({ ...value, city: e.target.value, area: "" })} error={fieldError(`${prefix}.city`)} disabled={!value.province}>
+        <option value="">Select city</option>
+        {citiesOf(value.province).map((c) => <option key={c} value={c}>{c}</option>)}
+      </SelectField>
+      <SelectField className="md:col-span-2" label="Area" value={value.area} onChange={(e) => set({ ...value, area: e.target.value })} error={fieldError(`${prefix}.area`)} disabled={!value.city}>
+        <option value="">Select area</option>
+        {areasOf(value.province, value.city).map((a) => <option key={a} value={a}>{a}</option>)}
+      </SelectField>
+      <TextField className="md:col-span-2" label="Street address" required autoComplete="address-line1" value={value.line1} onChange={(e) => set({ ...value, line1: e.target.value })} error={fieldError(`${prefix}.line1`)} maxLength={255} placeholder="House #, Street, Road" />
+      <TextField className="md:col-span-2" label="Apartment, suite (optional)" autoComplete="address-line2" value={value.line2} onChange={(e) => set({ ...value, line2: e.target.value })} maxLength={255} />
       <TextField label="Postal code" autoComplete="postal-code" value={value.postalCode} onChange={(e) => set({ ...value, postalCode: e.target.value })} maxLength={20} />
     </div>
   );
@@ -195,7 +213,7 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
                   <input type="radio" name="saved-address" checked={addressId === null} onChange={() => setAddressId(null)} />
                   Use a new address
                 </label>
-                {fieldError("shipping_address_id") && <p className="text-xs font-semibold text-brand">{fieldError("shipping_address_id")}</p>}
+                {fieldError("shipping_address_id") && <p className="text-xs font-semibold text-error">{fieldError("shipping_address_id")}</p>}
               </fieldset>
             )}
             {!useSaved && (
@@ -233,7 +251,7 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
                 </label>
               );
             })}
-            {fieldError("shipping_method") && <p className="text-xs font-semibold text-brand">{fieldError("shipping_method")}</p>}
+            {fieldError("shipping_method") && <p className="text-xs font-semibold text-error">{fieldError("shipping_method")}</p>}
           </section>
 
           <section aria-labelledby="payment-heading" className="space-y-3">
@@ -272,7 +290,7 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
             ))}
           </ul>
           {(display?.issues.length ?? 0) > 0 && (
-            <ul className="space-y-1 text-xs font-semibold text-brand" role="alert">
+            <ul className="space-y-1 text-xs font-semibold text-error" role="alert">
               {display!.issues.map((i) => <li key={i.itemId}>{i.message}</li>)}
             </ul>
           )}

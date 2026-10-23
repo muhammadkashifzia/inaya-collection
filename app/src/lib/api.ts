@@ -140,21 +140,21 @@ export const api = {
   // ----- Auth
   async me(): Promise<User | null> {
     try {
-      return mapUser(await request("GET", "/customer/me"));
+      return mapUser(await request("GET", "/me"));
     } catch (error) {
       if (error instanceof ApiError && (error.status === 401 || error.status === 403)) return null;
       throw error;
     }
   },
   async login(email: string, password: string, remember = false): Promise<User> {
-    const json = await request<{ data: unknown }>("POST", "/customer/login", {
+    const json = await request<{ data: unknown }>("POST", "/auth/login", {
       body: { email, password, remember, cart_token: getCartToken() ?? undefined },
     });
     setCartToken(null);
     return mapUser(json.data);
   },
   async register(input: { name: string; email: string; phone?: string; password: string; passwordConfirmation: string }): Promise<User> {
-    const json = await request<{ data: unknown }>("POST", "/customer/register", {
+    const json = await request<{ data: unknown }>("POST", "/auth/register", {
       body: {
         name: input.name,
         email: input.email,
@@ -167,10 +167,10 @@ export const api = {
     setCartToken(null);
     return mapUser(json.data);
   },
-  logout: () => request<void>("POST", "/customer/logout"),
-  forgotPassword: (email: string) => request<{ message: string }>("POST", "/customer/forgot-password", { body: { email } }),
+  logout: () => request<void>("POST", "/auth/logout"),
+  forgotPassword: (email: string) => request<{ message: string }>("POST", "/auth/forgot-password", { body: { email } }),
   resetPassword: (input: { token: string; email: string; password: string; passwordConfirmation: string }) =>
-    request<{ message: string }>("POST", "/customer/reset-password", {
+    request<{ message: string }>("POST", "/auth/reset-password", {
       body: { token: input.token, email: input.email, password: input.password, password_confirmation: input.passwordConfirmation },
     }),
 

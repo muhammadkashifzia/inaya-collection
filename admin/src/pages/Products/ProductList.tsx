@@ -296,6 +296,47 @@ export default function ProductList() {
                 caption="Products"
                 rows={data.data}
                 rowKey={(p) => p.id}
+                mobileCard={(p) => (
+                  <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div className="mb-3 flex items-start gap-3">
+                      <div className="size-14 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
+                        {p.image && <img src={p.image} alt="" className="h-full w-full object-cover object-top" loading="lazy" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <Link to={`/products/${p.id}`} className="block truncate font-medium text-gray-800 hover:text-brand-500 dark:text-white/90">{p.name}</Link>
+                          {p.deleted_at ? <span className="shrink-0 text-theme-xs text-error-600">Deleted</span> : <ProductStatusBadge status={p.status} />}
+                        </div>
+                        <p className="text-theme-xs text-gray-500">{p.sku} {p.is_featured && <span className="ms-1 text-brand-500">★ Featured</span>}</p>
+                        <p className="text-theme-xs text-gray-500">{p.category?.name ?? "—"}</p>
+                      </div>
+                    </div>
+                    <div className="mb-3 flex flex-wrap gap-2">
+                      <span className="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300">
+                        {p.sale_price ? (<><span className="font-semibold text-brand-600">{money(p.sale_price)}</span> <s className="ms-1 text-gray-400">{money(p.price)}</s></>) : money(p.price)}
+                      </span>
+                      <span className={`inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs dark:border-gray-700 ${p.total_stock === 0 ? "font-semibold text-error-600" : (p.total_stock ?? 0) <= p.low_stock_threshold ? "font-semibold text-warning-600" : "text-gray-600 dark:text-gray-400"}`}>
+                        Stock: {p.total_stock ?? "—"}{(p.variants?.length ?? 0) > 1 && ` (${p.variants?.length}v)`}
+                      </span>
+                      <span className="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">Sold: {p.sales_count ?? 0}</span>
+                    </div>
+                    {p.deleted_at ? (
+                      <Button size="sm" variant="outline" onClick={() => void restore(p.id)}>Restore</Button>
+                    ) : (
+                      <div className="flex items-center gap-1 border-t border-gray-100 pt-3 dark:border-gray-800">
+                        <Link to={`/products/${p.id}`} title="View" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10">
+                          <EyeIcon className="size-4" /> View
+                        </Link>
+                        <Link to={`/products/${p.id}`} title="Edit" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10">
+                          <PencilIcon className="size-4" /> Edit
+                        </Link>
+                        <button type="button" onClick={() => setConfirmProduct(p)} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-error-500 hover:bg-error-50 dark:hover:bg-error-500/10">
+                          <TrashBinIcon className="size-4" /> Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
                 columns={[
                   {
                     key: "select",
@@ -326,7 +367,7 @@ export default function ProductList() {
                     cell: (p) => (
                       <div className="flex items-center gap-3">
                         <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
-                          {p.image && <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />}
+                          {p.image && <img src={p.image} alt="" className="h-full w-full object-cover object-top" loading="lazy" />}
                         </div>
                         <div className="min-w-0">
                           <Link to={`/products/${p.id}`} className="block max-w-72 truncate font-medium text-gray-800 hover:text-brand-500 dark:text-white/90">

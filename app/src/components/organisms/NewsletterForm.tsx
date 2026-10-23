@@ -49,7 +49,7 @@ export function NewsletterForm() {
         </button>
       </div>
       {state.message && (
-        <p role={state.tone === "error" ? "alert" : "status"} className={state.tone === "error" ? "mt-2 text-xs text-red-300" : "mt-2 text-xs text-emerald-300"}>
+        <p role={state.tone === "error" ? "alert" : "status"} className={state.tone === "error" ? "mt-2 text-xs text-error" : "mt-2 text-xs text-emerald-300"}>
           {state.message}
         </p>
       )}

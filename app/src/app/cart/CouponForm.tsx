@@ -13,7 +13,7 @@ export function CouponForm() {
       <div className="flex items-center justify-between gap-3 bg-white px-3 py-2 text-sm">
         <span>
           Coupon <strong>{cart.couponCode}</strong>
-          {cart.couponError && <span className="block text-xs font-semibold text-brand">{cart.couponError}</span>}
+          {cart.couponError && <span className="block text-xs font-semibold text-error">{cart.couponError}</span>}
         </span>
         <button type="button" onClick={() => void removeCoupon()} disabled={cartBusy} className="text-xs font-semibold uppercase underline">
           Remove
@@ -48,7 +48,7 @@ export function CouponForm() {
           Apply
         </button>
       </div>
-      {error && <p id="coupon-error" role="alert" className="text-xs font-semibold text-brand">{error}</p>}
+      {error && <p id="coupon-error" role="alert" className="text-xs font-semibold text-error">{error}</p>}
     </form>
   );
 }

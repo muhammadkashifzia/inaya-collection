@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button, FormAlert, TextField } from "@/components/atoms";
+import { Button, FormAlert, PasswordField, TextField } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
 import { useToast } from "@/context/ToastContext";
 import { ApiError } from "@/lib/api";
@@ -52,7 +52,7 @@ export function LoginForm() {
       <form onSubmit={onSubmit} className="space-y-5" noValidate>
         <FormAlert tone="error">{error && !error.field("email") ? error.message : null}</FormAlert>
         <TextField label="Email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} error={error?.field("email")} maxLength={255} />
-        <TextField label="Password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} error={error?.field("password")} maxLength={255} />
+        <PasswordField label="Password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} error={error?.field("password")} maxLength={255} />
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember me

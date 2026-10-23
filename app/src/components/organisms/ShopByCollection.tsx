@@ -4,7 +4,7 @@ import type { Collection } from "@/types";
 
 export function ShopByCollection({ title, collections }: { title: string; collections: Collection[] }) {
   return (
-    <section className="py-14 md:py-10">
+    <section className="py-8 md:py-10">
       <Container>
         <SectionHeader title={title} />
         <div className="grid grid-cols-2 gap-x-1 gap-y-5 md:gap-x-2 md:gap-y-8 lg:grid-cols-4">

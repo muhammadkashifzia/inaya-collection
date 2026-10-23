@@ -137,6 +137,7 @@ export type HomeSection =
   | { id: number; type: "featured" | "best_sellers" | "latest" | "discounted"; title: string; products: Product[] }
   | { id: number; type: "category"; title: string; category: Collection | null; products: Product[] }
   | { id: number; type: "banner_image"; title: string; subtitle: string | null; button_text: string | null; button_link: string | null; image: string | null; slides: { image: string | null; text: string | null; link: string | null }[] }
+  | { id: number; type: "shop_the_look"; title: string; looks: { image: string; products: Product[] }[] }
   | { id: number; type: "reviews"; title: string };
 
 export interface HomeData {

@@ -2,33 +2,24 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { http, setUnauthorizedHandler, ApiError } from "@/lib/api";
 import type { AdminUser, PermissionKey } from "@/types/api";
 
-/**
- * Admin session (Sanctum cookie). Only admin/staff accounts may use the
- * dashboard; customers are signed out immediately. The API enforces the
- * same rules on every endpoint.
- *
- * AWS-style 2FA: every staff login goes through MFA. If 2FA is not yet
- * configured the user is forced to set it up before gaining access.
- */
-
-type TwoFactorState = "none" | "setup" | "challenge";
+type TwoFactorState = null | "challenge" | "setup";
 
 interface AuthValue {
   user: AdminUser | null;
   ready: boolean;
-  /** Current 2FA state after password auth. */
-  twoFactorState: TwoFactorState;
   can: (permission: PermissionKey) => boolean;
   login: (email: string, password: string, remember: boolean) => Promise<void>;
-  /** Fetch the TOTP secret + QR URI for first-time setup. */
-  fetchTwoFactorSetup: () => Promise<{ secret: string; uri: string }>;
-  /** Confirm setup code and complete login. */
-  confirmTwoFactorSetup: (code: string) => Promise<void>;
-  /** Verify a TOTP code (already enrolled). */
-  verifyTwoFactor: (code: string) => Promise<void>;
   logout: () => Promise<void>;
   /** Re-read the signed-in user (e.g. after changing the email). */
   refresh: () => Promise<void>;
+  /** Current 2FA state: null (none), "challenge" (code required), "setup" (enroll required). */
+  twoFactorState: TwoFactorState;
+  /** Submit the TOTP code to complete a 2FA challenge. */
+  verifyTwoFactor: (code: string) => Promise<void>;
+  /** Fetch the TOTP secret + otpauth URI for first-time 2FA enrolment. */
+  fetchTwoFactorSetup: () => Promise<{ secret: string; uri: string }>;
+  /** Confirm the setup by verifying the first TOTP code. */
+  confirmTwoFactorSetup: (code: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -36,7 +27,7 @@ const AuthContext = createContext<AuthValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [ready, setReady] = useState(false);
-  const [twoFactorState, setTwoFactorState] = useState<TwoFactorState>("none");
+  const [twoFactorState, setTwoFactorState] = useState<TwoFactorState>(null);
 
   useEffect(() => {
     setUnauthorizedHandler(() => setUser(null));
@@ -49,10 +40,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string, remember: boolean) => {
-    const res = await http.post<{ data?: AdminUser; two_factor?: boolean; two_factor_setup?: boolean }>("/auth/login", { email, password, remember });
+    const res = await http.post<{ data?: AdminUser; two_factor?: "challenge" | "setup" }>("/auth/login", { email, password, remember });
 
     if (res.two_factor) {
-      setTwoFactorState(res.two_factor_setup ? "setup" : "challenge");
+      setTwoFactorState(res.two_factor);
       return;
     }
 
@@ -63,34 +54,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(await http.get<AdminUser>("/me"));
   }, []);
 
-  const fetchTwoFactorSetup = useCallback(async () => {
-    return await http.post<{ secret: string; uri: string }>("/auth/two-factor-setup", {});
-  }, []);
-
-  const confirmTwoFactorSetup = useCallback(async (code: string) => {
-    const res = await http.post<{ data: AdminUser }>("/auth/two-factor-setup/confirm", { code });
-    if (res.data.role === "customer") {
-      await http.post("/auth/logout").catch(() => undefined);
-      throw new ApiError("This account does not have admin access.", 403);
-    }
-    setTwoFactorState("none");
-    setUser(await http.get<AdminUser>("/me"));
-  }, []);
-
-  const verifyTwoFactor = useCallback(async (code: string) => {
-    const res = await http.post<{ data: AdminUser }>("/auth/two-factor-challenge", { code });
-    if (res.data.role === "customer") {
-      await http.post("/auth/logout").catch(() => undefined);
-      throw new ApiError("This account does not have admin access.", 403);
-    }
-    setTwoFactorState("none");
-    setUser(await http.get<AdminUser>("/me"));
-  }, []);
-
   const logout = useCallback(async () => {
     await http.post("/auth/logout").catch(() => undefined);
     setUser(null);
-    setTwoFactorState("none");
+    setTwoFactorState(null);
   }, []);
 
   const refresh = useCallback(async () => {
@@ -98,20 +65,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(me.role === "customer" ? null : me);
   }, []);
 
+  const verifyTwoFactor = useCallback(async (code: string) => {
+    await http.post("/auth/two-factor/verify", { code });
+    setTwoFactorState(null);
+    setUser(await http.get<AdminUser>("/me"));
+  }, []);
+
+  const fetchTwoFactorSetup = useCallback(async () => {
+    const res = await http.get<{ secret: string; uri: string }>("/auth/two-factor/setup");
+    return res;
+  }, []);
+
+  const confirmTwoFactorSetup = useCallback(async (code: string) => {
+    await http.post("/auth/two-factor/confirm-setup", { code });
+    setTwoFactorState(null);
+    setUser(await http.get<AdminUser>("/me"));
+  }, []);
+
   const value = useMemo<AuthValue>(
     () => ({
       user,
       ready,
-      twoFactorState,
       can: (permission) => user?.role === "admin" || Boolean(user?.permissions?.includes(permission)),
       login,
-      fetchTwoFactorSetup,
-      confirmTwoFactorSetup,
-      verifyTwoFactor,
       logout,
       refresh,
+      twoFactorState,
+      verifyTwoFactor,
+      fetchTwoFactorSetup,
+      confirmTwoFactorSetup,
     }),
-    [user, ready, twoFactorState, login, fetchTwoFactorSetup, confirmTwoFactorSetup, verifyTwoFactor, logout, refresh],
+    [user, ready, login, logout, refresh, twoFactorState, verifyTwoFactor, fetchTwoFactorSetup, confirmTwoFactorSetup],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -88,6 +88,21 @@ export default function Tags() {
               caption="Tags"
               rows={data}
               rowKey={(t) => t.id}
+              mobileCard={(t) => (
+                <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-gray-800 dark:text-white/90">{t.name}</p>
+                      <p className="text-theme-xs text-gray-500 dark:text-gray-400">{t.slug}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">{t.products_count ?? 0} products</span>
+                      <EditAction onClick={() => open(t)} />
+                      <DeleteAction onClick={() => void remove(t)} />
+                    </div>
+                  </div>
+                </div>
+              )}
               columns={[
                 {
                   key: "name",

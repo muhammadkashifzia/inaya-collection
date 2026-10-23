@@ -76,6 +76,15 @@ jobs:
             dirty=true
           fi
 
+          # --- Auto-fix: Next.js revalidation URL must point to the live storefront ---
+          reval_url=$(value NEXTJS_REVALIDATION_URL)
+          want_reval="https://anaya.eastlogic.com/api/revalidate"
+          if [ -n "$reval_url" ] && [ "$reval_url" != "$want_reval" ]; then
+            echo "::warning::NEXTJS_REVALIDATION_URL is '$reval_url' — auto-fixing to $want_reval"
+            content=$(printf '%s\n' "$content" | sed "s|^NEXTJS_REVALIDATION_URL=.*|NEXTJS_REVALIDATION_URL=$want_reval|")
+            dirty=true
+          fi
+
           if [ "$dirty" = true ]; then
             resp=$(curl -sS -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.env" \
               --data-urlencode "content=$content" "$CPANEL_HOST/execute/Fileman/save_file_content")

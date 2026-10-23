@@ -54,7 +54,7 @@ export function SearchResults() {
           Search
         </button>
       </form>
-      {error && <p role="alert" className="mb-6 text-brand">{error}</p>}
+      {error && <p role="alert" className="mb-6 text-error">{error}</p>}
       {!q ? (
         <p className="text-muted">Type a fabric, colour or design to start.</p>
       ) : loading ? (

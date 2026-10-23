@@ -106,6 +106,16 @@ export default function CustomerDetail() {
                     caption="Customer orders"
                     rows={data.recent_orders}
                     rowKey={(o) => o.number}
+                    mobileCard={(o) => (
+                      <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                        <div className="mb-2 flex items-start justify-between gap-2">
+                          <Link to={`/orders/${o.number}`} className="font-medium hover:text-brand-500">{o.number}</Link>
+                          <span className="font-semibold">{money(o.grand_total)}</span>
+                        </div>
+                        <p className="mb-2 text-sm text-gray-500">{date(o.placed_at)} · {o.items_count ?? "—"} items</p>
+                        <OrderStatusBadge status={o.status} />
+                      </div>
+                    )}
                     columns={[
                       { key: "n", header: "Order", cell: (o) => <Link to={`/orders/${o.number}`} className="font-medium hover:text-brand-500">{o.number}</Link> },
                       { key: "d", header: "Placed", cell: (o) => date(o.placed_at) },

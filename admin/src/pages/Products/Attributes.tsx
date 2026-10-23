@@ -118,6 +118,28 @@ export default function Attributes() {
               caption="Attributes"
               rows={data}
               rowKey={(a) => a.id}
+              mobileCard={(a) => (
+                <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]">
+                  <div className="mb-2 flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-gray-800 dark:text-white/90">{a.name}</p>
+                      <p className="text-theme-xs text-gray-500 dark:text-gray-400">Key: {a.slug} · Order: {a.sort_order}</p>
+                    </div>
+                    <div className="flex shrink-0 gap-1">
+                      <EditAction onClick={() => open(a)} />
+                      <DeleteAction onClick={() => void remove(a)} />
+                    </div>
+                  </div>
+                  {a.values.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {a.values.slice(0, 8).map((v) => (
+                        <Badge key={v.id} size="sm" color="light">{v.value}</Badge>
+                      ))}
+                      {a.values.length > 8 && <span className="text-theme-xs text-gray-500">+{a.values.length - 8} more</span>}
+                    </div>
+                  )}
+                </div>
+              )}
               columns={[
                 {
                   key: "name",
