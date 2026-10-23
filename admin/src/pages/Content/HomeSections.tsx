@@ -437,17 +437,6 @@ export default function HomeSections() {
                   ))}
                 </div>
 
-                <input
-                  ref={imageInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) void uploadSlideImage(file, uploadTargetIndex.current);
-                    if (imageInputRef.current) imageInputRef.current.value = "";
-                  }}
-                />
                 {formError?.field("slides") && (
                   <p className="text-sm text-error-500">{formError.field("slides")}</p>
                 )}
@@ -519,6 +508,19 @@ export default function HomeSections() {
                 {formError?.field("looks") && <p className="text-sm text-error-500">{formError.field("looks")}</p>}
               </div>
             )}
+
+            {/* Shared file input for banner slides and look images */}
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void uploadSlideImage(file, uploadTargetIndex.current);
+                if (imageInputRef.current) imageInputRef.current.value = "";
+              }}
+            />
 
             {draft.type === "category" && (
               <SelectInput label="Category" required value={draft.category_id} onChange={(e) => setDraft({ ...draft, category_id: e.target.value })} placeholder="Choose\u2026" options={(categories.data ?? []).map((c) => ({ value: String(c.id), label: c.name }))} error={formError?.field("category_id")} />
