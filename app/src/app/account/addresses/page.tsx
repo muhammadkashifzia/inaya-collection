@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Button, FormAlert, SelectField, TextField } from "@/components/atoms";
+import { Button, FormAlert, SearchableSelect, SelectField, TextField } from "@/components/atoms";
 import { api, ApiError } from "@/lib/api";
 import { PK_PROVINCES, citiesOf, areasOf } from "@/lib/pk-geo";
 import type { Address, AddressInput } from "@/types";
@@ -59,24 +59,17 @@ export default function AddressesPage() {
       {editing && f ? (
         <form onSubmit={save} className="grid max-w-2xl gap-4 md:grid-cols-2" noValidate>
           <h2 className="font-heading text-xl font-semibold md:col-span-2">{editing.id ? "Edit address" : "New address"}</h2>
-          <TextField label="Label (e.g. Home)" value={f.label ?? ""} onChange={set("label")} maxLength={40} />
           <TextField label="Full name" required value={f.fullName} onChange={set("fullName")} error={err("full_name")} maxLength={120} />
           <TextField label="Phone" type="tel" required value={f.phone} onChange={set("phone")} error={err("phone")} maxLength={30} />
           <SelectField label="Province" required value={f.province ?? ""} onChange={(e) => setForm({ province: e.target.value, city: "", area: "" })} error={err("province")}>
             <option value="">Select province</option>
             {PK_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
           </SelectField>
-          <SelectField label="City" required value={f.city} onChange={(e) => setForm({ city: e.target.value, area: "" })} error={err("city")} disabled={!f.province}>
-            <option value="">Select city</option>
-            {citiesOf(f.province ?? "").map((c) => <option key={c} value={c}>{c}</option>)}
-          </SelectField>
-          <SelectField className="md:col-span-2" label="Area" value={f.area} onChange={set("area")} error={err("area")} disabled={!f.city}>
-            <option value="">Select area</option>
-            {areasOf(f.province ?? "", f.city).map((a) => <option key={a} value={a}>{a}</option>)}
-          </SelectField>
+          <SearchableSelect label="City" required value={f.city} options={citiesOf(f.province ?? "")} onChange={(v) => setForm({ city: v, area: "" })} placeholder="Select city" error={err("city")} disabled={!f.province} />
+          <SearchableSelect label="Area" value={f.area} options={areasOf(f.province ?? "", f.city)} onChange={(v) => setForm({ area: v })} placeholder="Select area" error={err("area")} disabled={!f.city} />
+          <TextField label="Postal code" value={f.postalCode ?? ""} onChange={set("postalCode")} maxLength={20} />
           <TextField className="md:col-span-2" label="Street address" required value={f.line1} onChange={set("line1")} error={err("line1")} maxLength={255} placeholder="House #, Street, Road" />
           <TextField className="md:col-span-2" label="Apartment, suite (optional)" value={f.line2 ?? ""} onChange={set("line2")} maxLength={255} />
-          <TextField label="Postal code" value={f.postalCode ?? ""} onChange={set("postalCode")} maxLength={20} />
           <label className="flex items-center gap-2 text-sm md:col-span-2">
             <input type="checkbox" checked={Boolean(f.isDefaultShipping)} onChange={set("isDefaultShipping")} /> Default delivery address
           </label>

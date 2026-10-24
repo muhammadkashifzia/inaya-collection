@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { AppImage, Button, ButtonLink, Container, FormAlert, Heading, SelectField, TextAreaField, TextField } from "@/components/atoms";
+import { AppImage, Button, ButtonLink, Container, FormAlert, Heading, SearchableSelect, SelectField, TextAreaField, TextField } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
 import { useToast } from "@/context/ToastContext";
 import { api, ApiError } from "@/lib/api";
@@ -158,17 +158,11 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
         <option value="">Select province</option>
         {PK_PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
       </SelectField>
-      <SelectField label="City" required autoComplete="address-level2" value={value.city} onChange={(e) => set({ ...value, city: e.target.value, area: "" })} error={fieldError(`${prefix}.city`)} disabled={!value.province}>
-        <option value="">Select city</option>
-        {citiesOf(value.province).map((c) => <option key={c} value={c}>{c}</option>)}
-      </SelectField>
-      <SelectField className="md:col-span-2" label="Area" value={value.area} onChange={(e) => set({ ...value, area: e.target.value })} error={fieldError(`${prefix}.area`)} disabled={!value.city}>
-        <option value="">Select area</option>
-        {areasOf(value.province, value.city).map((a) => <option key={a} value={a}>{a}</option>)}
-      </SelectField>
+      <SearchableSelect label="City" required value={value.city} options={citiesOf(value.province)} onChange={(v) => set({ ...value, city: v, area: "" })} placeholder="Select city" error={fieldError(`${prefix}.city`)} disabled={!value.province} />
+      <SearchableSelect label="Area" value={value.area} options={areasOf(value.province, value.city)} onChange={(v) => set({ ...value, area: v })} placeholder="Select area" error={fieldError(`${prefix}.area`)} disabled={!value.city} />
+      <TextField label="Postal code" autoComplete="postal-code" value={value.postalCode} onChange={(e) => set({ ...value, postalCode: e.target.value })} error={fieldError(`${prefix}.postal_code`)} maxLength={20} />
       <TextField className="md:col-span-2" label="Street address" required autoComplete="address-line1" value={value.line1} onChange={(e) => set({ ...value, line1: e.target.value })} error={fieldError(`${prefix}.line1`)} maxLength={255} placeholder="House #, Street, Road" />
       <TextField className="md:col-span-2" label="Apartment, suite (optional)" autoComplete="address-line2" value={value.line2} onChange={(e) => set({ ...value, line2: e.target.value })} maxLength={255} />
-      <TextField label="Postal code" autoComplete="postal-code" value={value.postalCode} onChange={(e) => set({ ...value, postalCode: e.target.value })} maxLength={20} />
     </div>
   );
 
