@@ -109,7 +109,7 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
           </div>
 
           {/* ── Desktop: lifestyle image + product card ── */}
-          <div className="mx-auto hidden max-w-5xl gap-12 md:grid md:grid-cols-[1.3fr_1fr] lg:gap-16">
+          <div className="mx-auto hidden max-w-[800px] gap-12 md:grid md:grid-cols-[1.3fr_1fr] lg:gap-16">
             {/* Left — lifestyle image */}
             <div className="relative aspect-[3/4] overflow-hidden bg-cream">
               <AppImage

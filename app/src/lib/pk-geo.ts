@@ -7,31 +7,307 @@ export type PkGeo = Record<string, Record<string, string[]>>;
 
 export const PK_GEO: PkGeo = {
   "Azad Kashmir": {
+    "Bagh": [
+      "Bagh City",
+      "Dhirkot",
+      "Kahuta Road",
+      "Leepa Valley Road",
+      "Main Bazar",
+      "Rera",
+      "Roomi"
+    ],
+    "Bhimber": [
+      "Barnala",
+      "Bhimber City",
+      "Chowk Shaheedan",
+      "Jatlan",
+      "Main Bazar",
+      "Samahni"
+    ],
+    "Hattian Bala": [
+      "Chinari",
+      "Hattian City",
+      "Leepa Road",
+      "Main Bazar",
+      "Nauseri",
+      "Sharda Road",
+      "Tehsil Road"
+    ],
+    "Haveli": [
+      "Forward Kahuta",
+      "Haveli City",
+      "Kahuta",
+      "Main Bazar",
+      "Mumtaz Shaheed Road"
+    ],
     "Kotli": [
+      "Charhoi",
+      "Fatehpur",
       "Housing Scheme",
-      "Pindi Road"
+      "Khoiratta",
+      "Kotli City",
+      "Main Bazar",
+      "Nakyal",
+      "Pindi Road",
+      "Sehnsa",
+      "Tattapani"
     ],
     "Mirpur": [
       "Allama Iqbal Road",
+      "Chaksawari",
+      "Dadyal",
       "Haul Road",
+      "Islamgarh",
       "Kotli Road",
+      "Mangla",
+      "Mirpur City",
+      "New City",
       "Sector C-1",
       "Sector F-2",
       "Valley Homes"
     ],
     "Muzaffarabad": [
+      "Ambore",
       "Center Gojra",
+      "Chattar Kalas",
+      "Garhi Dupatta",
       "Muzzaffarabad City",
       "Naloochi Gojra",
       "Neelum Road",
+      "Patika",
       "Shahrah-e-Quaid-e-Azam"
+    ],
+    "Neelum": [
+      "Athmuqam",
+      "Dawarian",
+      "Dudhnial",
+      "Jura",
+      "Keran",
+      "Kundal Shahi",
+      "Neelum Road",
+      "Sharda",
+      "Taobat",
+      "Upper Neelum"
+    ],
+    "Poonch / Rawalakot": [
+      "Abbaspur",
+      "Banjosa",
+      "Hajira",
+      "Main Bazar",
+      "Rawalakot City",
+      "Trarkhel",
+      "Thorar"
+    ],
+    "Sudhnoti / Pallandri": [
+      "Baloch",
+      "Gorah",
+      "Mang",
+      "Pallandri Bazar",
+      "Pallandri City",
+      "Paras Road",
+      "Tanhal",
+      "Trarkhal"
     ]
   },
   "Balochistan": {
+    "Awaran": [
+      "Awaran City",
+      "Jhao",
+      "Mashkay",
+      "Main Bazar Awaran",
+      "Naal Road",
+      "Surab Road"
+    ],
+    "Barkhan": [
+      "Barkhan City",
+      "Barkhan Bazar",
+      "Kahan Road",
+      "Main Road Barkhan",
+      "Rakhni",
+      "Vitakri"
+    ],
+    "Chaman": [
+      "Boghra Road",
+      "Chaman City",
+      "Friendship Gate Road",
+      "Killi Abdur Rehman",
+      "Railway Station Road"
+    ],
+    "Dera Bugti": [
+      "Dera Bugti City",
+      "Dera Bugti Bazar",
+      "Loti",
+      "Main Road Dera Bugti",
+      "Pir Koh",
+      "Sui",
+      "Sui Gas Road"
+    ],
     "Gwadar": [
       "Burj Al Gwadar",
+      "East Bay Expressway",
       "GDA Residential Area",
-      "Jinnah Avenue"
+      "Gwadar City",
+      "Gwadar Port",
+      "Jinnah Avenue",
+      "Marine Drive",
+      "New Town",
+      "Padizar",
+      "Saadi Town"
+    ],
+    "Harnai": [
+      "Harnai City",
+      "Harnai Bazar",
+      "Khost",
+      "Shahrig",
+      "Sibi Road"
+    ],
+    "Hub": [
+      "Hub Chowki",
+      "Hub City",
+      "Hub Industrial Area",
+      "Hingol Road",
+      "SITE Area",
+      "Uthal Road",
+      "Windar Road"
+    ],
+    "Jaffarabad": [
+      "Dera Allahyar",
+      "Dera Allahyar Bazar",
+      "Gandakha",
+      "Jaffarabad City",
+      "Jaffarabad Bazar",
+      "Nasirabad Road",
+      "Sohbatpur",
+      "Usta Mohammad"
+    ],
+    "Jhal Magsi": [
+      "Gandakha",
+      "Jhal Magsi City",
+      "Jhal Magsi Bazar",
+      "Kot Magsi",
+      "Main Road Jhal Magsi",
+      "Tonsa Road"
+    ],
+    "Kachhi / Dhadar": [
+      "Bhag",
+      "Bibi Nani Road",
+      "Dhadar City",
+      "Dhadar Bazar",
+      "Mach",
+      "Mach Bolan",
+      "Sibi Road"
+    ],
+    "Kalat": [
+      "Kalat City",
+      "Kalat Bazar",
+      "Khan Mehtarzai",
+      "Mangochar",
+      "Mastung Road",
+      "Quetta Road",
+      "Surab"
+    ],
+    "Kech / Turbat": [
+      "Absar",
+      "Buleda",
+      "Dasht",
+      "Kech Bazar",
+      "Mand",
+      "Turbat Airport Road",
+      "Turbat Bazar",
+      "Turbat City",
+      "Tump"
+    ],
+    "Kharan": [
+      "Kharan Bazar",
+      "Kharan City",
+      "Nushki Road",
+      "Washuk Road",
+      "Dalbandin Road"
+    ],
+    "Khuzdar": [
+      "Feeder Road",
+      "Khuzdar City",
+      "Naal",
+      "National Highway",
+      "Nal",
+      "Ornach",
+      "Wadh",
+      "Zehri"
+    ],
+    "Kohlu": [
+      "Kahan",
+      "Kohlu Bazar",
+      "Kohlu City",
+      "Main Road Kohlu",
+      "Tamboo Road"
+    ],
+    "Lasbela / Uthal": [
+      "Bela",
+      "Bela Bazar",
+      "Hub Road",
+      "Lakhra",
+      "Lasbela Industrial Area",
+      "Sonmiani",
+      "Uthal Bazar",
+      "Uthal City",
+      "Windar"
+    ],
+    "Loralai": [
+      "Duki",
+      "Loralai Bypass",
+      "Loralai Bazar",
+      "Loralai City",
+      "Loralai Cantt",
+      "Main Road Loralai",
+      "Mekhtar",
+      "Zhob Road"
+    ],
+    "Mastung": [
+      "Dasht Road",
+      "Kalat Road",
+      "Mastung Bazar",
+      "Mastung City",
+      "Quetta Road Mastung",
+      "Surab Road"
+    ],
+    "Musakhel": [
+      "Drug",
+      "Drug Bazar",
+      "Kingri",
+      "Musakhel Bazar",
+      "Musakhel City",
+      "Zhob Road Musakhel"
+    ],
+    "Nasirabad": [
+      "Dera Murad Jamali",
+      "Dera Murad Jamali Bazar",
+      "Mehar Road",
+      "Nasirabad City",
+      "National Highway",
+      "Tamboo"
+    ],
+    "Nushki": [
+      "Dalbandin",
+      "Dalbandin Road",
+      "Nushki Bazar",
+      "Nushki City",
+      "Nushki Dalbandin Road",
+      "Quetta Road Nushki"
+    ],
+    "Panjgur": [
+      "Gichk",
+      "Panjgur Bazar",
+      "Panjgur City",
+      "Parom",
+      "Washuk Road Panjgur"
+    ],
+    "Pishin": [
+      "Khanozai",
+      "Pishin Bazar",
+      "Pishin City",
+      "Quetta Road Pishin",
+      "Saranan",
+      "Yaru"
     ],
     "Quetta": [
       "A-One City",
@@ -94,6 +370,179 @@ export const PK_GEO: PkGeo = {
       "Western Bypass",
       "Zarghoonabad Housing Scheme",
       "Zarghun Road"
+    ],
+    "Sherani": [
+      "Sherani City",
+      "Sherani Bazar",
+      "Zhob Road",
+      "Moghal Kot",
+      "Sherani Town"
+    ],
+    "Sibi": [
+      "Harnai Road",
+      "Hospital Road Sibi",
+      "Jhatpat",
+      "Railway Colony",
+      "Sibi Bazar",
+      "Sibi City",
+      "Quetta Road Sibi"
+    ],
+    "Washuk": [
+      "Basima",
+      "Mashkel",
+      "Nag",
+      "Washuk Bazar",
+      "Washuk City"
+    ],
+    "Zhob": [
+      "Appozai",
+      "Bypass Road Zhob",
+      "Kakar Colony",
+      "Muslimbagh",
+      "Qamar Din Karez",
+      "Sambaza",
+      "Zhob Bazar",
+      "Zhob City",
+      "Zhob Cantt"
+    ],
+    "Ziarat": [
+      "Juniper Forest Area",
+      "Kawas",
+      "Prospect Point Road",
+      "Quaid-e-Azam Residency Road",
+      "Sangan",
+      "Ziarat Bazar",
+      "Ziarat City"
+    ]
+  },
+  "Gilgit-Baltistan": {
+    "Astore": [
+      "Astore City",
+      "Astore Bazar",
+      "Bubin",
+      "Chilum",
+      "Gorikot",
+      "Gudai",
+      "Harchu",
+      "Mushkin",
+      "Rama",
+      "Rattu",
+      "Rupal Valley Road"
+    ],
+    "Diamer / Chilas": [
+      "Babusar Road",
+      "Chilas Bazar",
+      "Chilas City",
+      "Darel",
+      "Fair Meadows",
+      "Gonar",
+      "KKH Chilas",
+      "Tangir",
+      "Thalichi"
+    ],
+    "Ghanche": [
+      "Daghoni",
+      "Ghanche City",
+      "Hushe",
+      "Khaplu",
+      "Khaplu Bazar",
+      "Machulo",
+      "Mashabrum View",
+      "Saling"
+    ],
+    "Ghizer": [
+      "Chatorkhand",
+      "Gahkuch",
+      "Gahkuch Bazar",
+      "Gupis",
+      "Ishkoman",
+      "Khalti",
+      "Phander",
+      "Singal",
+      "Yasin",
+      "Yasin Bazar"
+    ],
+    "Gilgit": [
+      "Airport Road",
+      "Babar Road",
+      "Barmas",
+      "Basin Road",
+      "Danyore",
+      "Gilgit Bazar",
+      "Gilgit City",
+      "Hussainabad",
+      "Jutial",
+      "KKH Gilgit",
+      "Karakoram Highway",
+      "Kashrote",
+      "Khomer",
+      "Konodas",
+      "Napoora",
+      "Nomal",
+      "NLI Colony",
+      "River View Road",
+      "Sonikot",
+      "Yadgar Chowk",
+      "Zulfiqarabad"
+    ],
+    "Hunza": [
+      "Aliabad",
+      "Altit",
+      "Attabad Lake Area",
+      "Borith",
+      "Central Hunza",
+      "Duikar",
+      "Eagle's Nest Road",
+      "Ganish",
+      "Gulmit",
+      "Hussaini",
+      "Karimabad",
+      "Khunjerab Road",
+      "Passu",
+      "Sost",
+      "Upper Hunza"
+    ],
+    "Kharmang": [
+      "Kharmang City",
+      "Kharmang Bazar",
+      "Mehdiabad",
+      "Olding",
+      "Parkuta",
+      "Tolti"
+    ],
+    "Nagar": [
+      "Chalt",
+      "Hopar",
+      "Minapin",
+      "Nagar Bazar",
+      "Nagar City",
+      "Nilt",
+      "Pheker",
+      "Sumayar"
+    ],
+    "Shigar": [
+      "Hashupi",
+      "Marapi",
+      "Shigar City",
+      "Shigar Fort Road",
+      "Skardu Road",
+      "Talis"
+    ],
+    "Skardu": [
+      "Airport Road",
+      "Aliabad",
+      "Bazar Road",
+      "Hussainabad",
+      "Karakoram Highway",
+      "Kachura",
+      "New Bazar",
+      "Old Bazar",
+      "Sadpara Road",
+      "Satpara",
+      "Shangrila Road",
+      "Skardu Bazar",
+      "Skardu City",
+      "Upper Kachura"
     ]
   },
   "Islamabad": {
@@ -297,9 +746,21 @@ export const PK_GEO: PkGeo = {
       "Usmanabad"
     ],
     "Dera Ismail Khan": [
+      "Cantt",
+      "City Area",
+      "Circular Road",
+      "DI Khan Bazar",
       "Grid Station Road",
       "Gulshan Colony",
-      "Paharpur"
+      "Industrial Estate",
+      "Kotla Saidan",
+      "Main Bazar",
+      "Model Town DI Khan",
+      "Multan Road DI Khan",
+      "Paharpur",
+      "Paroa",
+      "Sheikh Yousaf",
+      "Tank Road"
     ],
     "Haripur": [
       "Circular Road",
@@ -333,7 +794,11 @@ export const PK_GEO: PkGeo = {
       "Zahoor e Islam Road"
     ],
     "Malakand": [
-      "Khankor"
+      "Batkhela",
+      "Dargai",
+      "Khankor",
+      "Sakhakot",
+      "Thana"
     ],
     "Mansehra": [
       "Baidra Road",
@@ -656,6 +1121,155 @@ export const PK_GEO: PkGeo = {
       "Tarlandi",
       "Topi",
       "Tordher"
+    ],
+    "Bannu": [
+      "Bannu Bazar",
+      "Bannu Cantt",
+      "Bannu City",
+      "Domail",
+      "Haved Road",
+      "Jani Khel Road",
+      "Lakki Road",
+      "Miryan",
+      "Sarai Naurang Road",
+      "Tank Adda Road"
+    ],
+    "Batagram": [
+      "Allai",
+      "Batagram Bazar",
+      "Batagram City",
+      "Karakoram Highway Batagram",
+      "Pashto",
+      "Thakot"
+    ],
+    "Buner": [
+      "Daggar",
+      "Daggar Bazar",
+      "Elai",
+      "Gagra",
+      "Khudu Khel",
+      "Mandanr",
+      "Swarai",
+      "Totalai"
+    ],
+    "Charsadda": [
+      "Charsadda City",
+      "Harichand",
+      "Prang",
+      "Rajjar",
+      "Shabqadar",
+      "Sherpao",
+      "Tangi",
+      "Umerzai"
+    ],
+    "Chitral": [
+      "Ayun",
+      "Booni",
+      "Bumburet",
+      "Chitral Bazar",
+      "Chitral City",
+      "Drosh",
+      "Garam Chashma",
+      "Kalash Valley Road",
+      "Kogozi",
+      "Mastuj",
+      "Shahi Bazar"
+    ],
+    "Dir Lower": [
+      "Balambat",
+      "Chakdara",
+      "Munda",
+      "Samarbagh",
+      "Talash",
+      "Talash Bazar",
+      "Timergara",
+      "Timergara Bazar"
+    ],
+    "Dir Upper": [
+      "Dir Bazar",
+      "Dir City",
+      "Kalkot",
+      "Kumrat Road",
+      "Lamutai",
+      "Patrak",
+      "Shringal",
+      "Wari",
+      "Wari Bazar"
+    ],
+    "Hangu": [
+      "Darsamand",
+      "Doaba",
+      "Hangu Bazar",
+      "Hangu City",
+      "Kohat Road Hangu",
+      "Main Bazar Hangu",
+      "Thal Road",
+      "Thall",
+      "Togh Sarai"
+    ],
+    "Karak": [
+      "Banda Daud Shah",
+      "Karak Bazar",
+      "Karak City",
+      "Latambar",
+      "Sabir Abad",
+      "Takht-e-Nasrati",
+      "Teri"
+    ],
+    "Lakki Marwat": [
+      "Lakki Bazar",
+      "Lakki City",
+      "Naurang",
+      "Sarai Naurang",
+      "Serai Gambila",
+      "Tajori",
+      "Waran"
+    ],
+    "Shangla": [
+      "Alpuri",
+      "Alpuri Bazar",
+      "Bisham",
+      "Bisham Bazar",
+      "Chakesar",
+      "Karakoram Highway Shangla",
+      "Karora",
+      "Lilownai",
+      "Martung",
+      "Puran"
+    ],
+    "Swat": [
+      "Bahrain",
+      "Barikot",
+      "Fizagat",
+      "GT Road Swat",
+      "Kalam",
+      "Kabal",
+      "Khwazakhela",
+      "Madyan",
+      "Malam Jabba Road",
+      "Matta",
+      "Mingora",
+      "Mingora Bazar",
+      "Saidu Sharif",
+      "Shamozai",
+      "Swat Expressway",
+      "University Town Swat"
+    ],
+    "Tank": [
+      "Gomal Road",
+      "Jandola",
+      "Tank Adda",
+      "Tank Bazar",
+      "Tank City",
+      "Wana Road"
+    ],
+    "Tor Ghar": [
+      "Judbah",
+      "Oghi",
+      "Oghi Bazar",
+      "Shergarh Road",
+      "Tor Ghar City",
+      "Nawan Shehr"
     ]
   },
   "Punjab": {
@@ -785,7 +1399,13 @@ export const PK_GEO: PkGeo = {
       "University Chowk"
     ],
     "Bhakkar": [
-      "Darya Khan Road"
+      "Bhakkar Bazar",
+      "Bhakkar City",
+      "Darya Khan",
+      "Darya Khan Road",
+      "Dullewala",
+      "Kallur Kot",
+      "Mankera"
     ],
     "Burewala": [
       "Amjad Town",
@@ -825,7 +1445,13 @@ export const PK_GEO: PkGeo = {
       "Village Janwal"
     ],
     "Chiniot": [
-      "Chiniot Jhumra Road"
+      "Bhawana",
+      "Chiniot Bazar",
+      "Chiniot City",
+      "Chiniot Jhumra Road",
+      "Faisalabad Road",
+      "Jhang Road",
+      "Lalian"
     ],
     "Dera Ghazi Khan": [
       "Allahabad",
@@ -1346,23 +1972,38 @@ export const PK_GEO: PkGeo = {
       "Vanike Tarar Road"
     ],
     "Haroonabad": [
+      "Fortabbas",
       "Haroonabad Bahawalnagar Road",
+      "Haroonabad Bazar",
+      "Haroonabad City",
+      "Minchinabad",
       "Tibba Noor Pura"
     ],
     "Hasilpur": [
       "Chunawala Road",
+      "Hasilpur Bazar",
+      "Hasilpur City",
       "Hasilpur Road",
+      "Multan Road Hasilpur",
       "Vehari Road"
     ],
     "Hassan Abdal": [
+      "Burhan",
       "GT Road",
+      "Hattian Road",
       "Islam Shaheed Road",
       "Karakoram Highway",
       "Khyber City",
-      "Mohalla Irshad Nagar"
+      "Mohalla Irshad Nagar",
+      "Taxila Road"
     ],
     "Jalalpur Jattan": [
-      "Jalalpur"
+      "GT Road Jalalpur",
+      "Gujrat Road",
+      "Jalalpur",
+      "Jalalpur Bazar",
+      "Jalalpur City",
+      "Kharian Road"
     ],
     "Jhang": [
       "Basti Atta Wali",
@@ -1416,7 +2057,12 @@ export const PK_GEO: PkGeo = {
       "Tahlianwala"
     ],
     "Kamalia": [
-      "Kamalia Mamu Kanjan Road"
+      "Chichawatni Road",
+      "Faisalabad Road Kamalia",
+      "Kamalia Bazar",
+      "Kamalia City",
+      "Kamalia Mamu Kanjan Road",
+      "Railway Road Kamalia"
     ],
     "Kasur": [
       "Ali Ahmad Shah Colony",
@@ -1497,8 +2143,14 @@ export const PK_GEO: PkGeo = {
       "Qwell Meadows"
     ],
     "Khushab": [
+      "Jauharabad",
       "Jauharabad Road",
-      "Mianwali Road"
+      "Khushab Bazar",
+      "Khushab City",
+      "Mianwali Road",
+      "Naushera",
+      "Noorpur Thal",
+      "Quaidabad"
     ],
     "Lahore": [
       "Abdalians Cooperative Housing Society",
@@ -1506,117 +2158,239 @@ export const PK_GEO: PkGeo = {
       "Airport Road",
       "Al Rehman Garden",
       "Allama Iqbal Town",
+      "Anarkali",
       "Architects Engineers Housing Society",
+      "Arif Jan Road",
       "Askari",
+      "Askari 10",
+      "Askari 11",
+      "Askari 9",
       "Audit & Accounts Housing Society",
+      "Awan Town",
+      "Azam Cloth Market",
       "BOR - Board of Revenue Housing Society",
+      "Baghbanpura",
       "Bahria Nasheman",
       "Bahria Orchard",
       "Bahria Town",
+      "Barki",
+      "Barki Road",
       "Bedian Road",
+      "Begumpura",
+      "Bhogiwal",
       "Bismillah Housing Scheme",
+      "Brandreth Road",
+      "Bund Road",
+      "Burki",
       "Canal Bank Housing Scheme",
       "Canal Garden",
+      "Canal Road",
       "Canal View",
       "Cantt",
       "Cavalry Extension",
       "Cavalry Ground",
       "Central Park Housing Scheme",
+      "Chauburji",
       "Chinar Bagh",
+      "Chunian",
+      "Citi Housing Society",
       "College Road",
+      "Cooks Colony",
+      "Commissioners Colony",
       "DHA 11 Rahbar",
       "DHA Defence",
+      "DHA Phase 1",
+      "DHA Phase 2",
+      "DHA Phase 3",
+      "DHA Phase 4",
+      "DHA Phase 5",
+      "DHA Phase 6",
+      "DHA Phase 7",
+      "DHA Phase 8",
+      "DHA Phase 9",
+      "Data Darbar",
+      "Davis Road",
       "Defence Road",
+      "Dharampura",
       "Divine Gardens",
       "Dream Avenue Lahore",
+      "Egerton Road",
       "EME Society",
       "Eden",
       "Eden Avenue Extension",
       "Faisal Town",
+      "Ferozpur Road",
       "Ferozepur Road",
       "Formanites Housing Scheme",
+      "Fortress Stadium",
       "GT Road",
       "Garden Town",
       "Garhi Shahu",
+      "Ghalib Market",
+      "Ghazi Road",
       "Ghous Garden",
       "Green City",
+      "Green Town",
       "Gulbahar Park",
       "Gulberg",
+      "Gulberg II",
+      "Gulberg III",
+      "Guldasht Town",
       "Gulshan-e-Lahore",
       "Gulshan-e-Ravi",
+      "Gujjarpura",
+      "Gujjumata",
+      "Hall Road",
+      "Hanjarwal",
       "Harbanspura",
       "Highcourt Society",
       "IEP Engineers Town",
       "Ichhra",
       "Iqbal Avenue",
+      "Iqbal Town",
       "Islampura",
       "Izmir Town",
       "Jail Road",
+      "Jallo Mor",
+      "Jinnah Hospital Road",
       "Johar Town",
       "Jubilee Town",
       "Judicial Colony",
+      "Kahna",
+      "Kahna Nau",
+      "Karim Block",
+      "Karol Ghati",
       "Khayaban-e-Amin",
+      "Khayaban-e-Jinnah",
+      "Kot Lakhpat",
+      "Kot Lakhpat Industrial Area",
+      "Krishan Nagar",
       "LDA Avenue",
-      "Labor Colony",
       "Lahore Canal Bank Cooperative Housing Society",
       "Lahore Medical Housing Society",
       "Lalazaar Garden",
+      "Lake City",
+      "Lawrence Garden",
       "Lawrence Road",
+      "Laxmi Chowk",
+      "Liberty Market",
+      "Lidhar",
+      "Link Road",
+      "Lorry Adda",
+      "Lower Mall",
+      "M.M. Alam Road",
+      "Main Boulevard",
       "Main Canal Bank Road",
+      "Main Market",
+      "Mall Road",
+      "Manga Mandi",
+      "Manawan",
       "Marghzar Officers Colony",
+      "McLeod Road",
+      "Miani Sahib",
       "Military Accounts Housing Society",
+      "Minar-e-Pakistan",
+      "Misri Shah",
       "Model Town",
+      "Model Town Extension",
+      "Model Town Link Road",
       "Mohafiz Town",
+      "Mohlanwal",
+      "Mozang",
       "Mughal Homes",
+      "Mughalpura",
       "Multan Road",
       "Muslim Town",
       "Mustafa Town",
       "NFC 1",
+      "NFC 2",
       "Nasheman-e-Iqbal",
+      "Nawan Kot",
       "Nawab Town",
       "Nazir Garden Society",
+      "New Anarkali",
+      "New Garden Town",
       "New Muslim Town",
       "New Super Town",
+      "Nisbat Road",
+      "Nishat Colony",
       "OPF Housing Scheme",
+      "Old Anarkali",
       "P & D Housing Society",
       "PCSIR Housing Scheme",
       "PCSIR Staff Colony",
+      "PECHS",
       "PIA Housing Scheme",
       "Pak Arab Housing Society",
       "Paragon City",
       "Park View Villas",
+      "Peco Road",
       "Punjab Coop Housing Society",
       "Punjab Govt Employees Society",
       "Punjab Small Industries Colony",
       "Punjab University Employees Society",
+      "Qainchi Amar Sadhu",
+      "Qila Gujjar Singh",
+      "Qila Lachman Singh",
+      "Queens Road",
+      "Race Course Road",
+      "Raiwind",
       "Raiwind Road",
+      "Ravi Road",
+      "Rehmanpura",
       "Revenue Society",
+      "Ring Road",
       "Sabzazar Scheme",
+      "Sagian Bypass",
       "Samanabad",
+      "Sanda",
+      "Sanda Road",
+      "Sant Nagar",
       "Shadab Garden",
       "Shadman",
+      "Shadbagh",
       "Shah Jamal",
+      "Shahdara",
+      "Shahkam Chowk",
+      "Shalimar",
+      "Shalimar Link Road",
+      "Shama Colony",
+      "Shimla Hill",
       "State Life Housing Society",
       "Sui Gas Housing Society",
       "Sukh Chayn Gardens",
+      "Sultan Pura",
+      "Sundar",
       "Sunfort Gardens",
       "Super Town",
       "TECH Society",
       "Taj Bagh Scheme",
       "Tajpura",
       "Tariq Gardens",
+      "Temple Road",
+      "Thokar Niaz Baig",
       "Township",
       "UET Housing Society",
       "Upper Mall",
       "Valencia Housing Society",
+      "Wahga",
+      "Wahga Border Road",
+      "Walton",
       "Walton Road",
       "Wapda Town",
       "West Wood Housing Society",
-      "Zaheer Villas"
+      "Yateem Khana Chowk",
+      "Zaheer Villas",
+      "Zaman Park"
     ],
     "Lodhran": [
       "B Colony",
+      "Dunyapur",
+      "Dunyapur Road",
+      "Kahror Pacca",
       "Lodhran Bypass",
+      "Lodhran Bazar",
+      "Lodhran City",
       "Multan Road",
       "National Highway 5"
     ],
@@ -1641,6 +2415,11 @@ export const PK_GEO: PkGeo = {
       "Wasu Road"
     ],
     "Mian Channu": [
+      "Kabirwala Road",
+      "Khanewal Road",
+      "Mian Channu Bazar",
+      "Mian Channu City",
+      "Multan Road",
       "Shami Road",
       "Tulamba",
       "Tulamba Road"
@@ -1911,20 +2690,35 @@ export const PK_GEO: PkGeo = {
     ],
     "Muridke": [
       "Canal Road",
-      "GT Road"
+      "GT Road",
+      "Muridke Bazar",
+      "Muridke City",
+      "Narang Mandi Road",
+      "Sheikhupura Road Muridke"
     ],
     "Muzaffargarh": [
+      "Alipur",
       "Bypass Road",
       "Chowk Munda",
       "Committee Chowk",
       "DG Khan Road",
-      "Jhang Road"
+      "Jhang Road",
+      "Kot Addu",
+      "Muzaffargarh Bazar",
+      "Muzaffargarh City",
+      "Shah Jamal Road"
     ],
     "Nankana Sahib": [
+      "Bucheki",
+      "Gurdwara Road",
       "Mangtanwala Road",
+      "Nankana Sahib Bazar",
       "Nankana Sahib Bypass",
+      "Nankana Sahib City",
       "New Nankana Sahib City",
-      "Shahkot Road"
+      "Sangla Hill",
+      "Shahkot Road",
+      "Warburton"
     ],
     "Narowal": [
       "Circular Road",
@@ -2612,18 +3406,99 @@ export const PK_GEO: PkGeo = {
       "Hasilpur to Vehari Road",
       "Liaquatpura",
       "Madina Colony",
+      "Mailsi",
       "Mailsi - Vehari Road",
       "Mian Channu Road",
       "Multan Vehari Road",
       "Peoples Colony",
       "Sharqi Colony",
       "Wahdat Colony"
+    ],
+    "Gujar Khan": [
+      "Bewal Road",
+      "Commercial Area",
+      "GT Road Gujar Khan",
+      "Gujar Khan City",
+      "Jhelum Road",
+      "Mandra Road",
+      "Sohawa Road"
+    ],
+    "Layyah": [
+      "Chowk Azam",
+      "Fatehpur",
+      "Karor Lal Esan",
+      "Layyah Bazar",
+      "Layyah Bypass",
+      "Layyah City",
+      "Multan Road Layyah"
+    ],
+    "Mianwali": [
+      "Isa Khel",
+      "Kalabagh",
+      "Mianwali Bazar",
+      "Mianwali City",
+      "Mochh",
+      "Piplan",
+      "Sargodha Road Mianwali"
+    ],
+    "Murree": [
+      "Bhurban",
+      "Changla Gali",
+      "GPO Chowk",
+      "Ghora Gali",
+      "Kashmir Point",
+      "Mall Road Murree",
+      "Murree City",
+      "Nathia Gali",
+      "Patriata",
+      "Pindi Point"
+    ],
+    "Rajanpur": [
+      "DG Khan Road",
+      "Fazilpur",
+      "Indus Highway",
+      "Jampur",
+      "Jampur Bazar",
+      "Rajanpur Bazar",
+      "Rajanpur City",
+      "Rojhan",
+      "Rojhan Mazari"
+    ],
+    "Taxila": [
+      "Faisal Hills",
+      "Heavy Industries Taxila",
+      "Islamabad Highway Taxila",
+      "Taxila Cantt",
+      "Taxila City",
+      "Wah Cantt",
+      "Wah Garden"
+    ],
+    "Toba Tek Singh": [
+      "Gojra Road TTS",
+      "Kamalia Road",
+      "Pirmahal",
+      "Rajana",
+      "Toba Tek Singh Bazar",
+      "Toba Tek Singh City"
+    ],
+    "Wazirabad": [
+      "Alipur Chattha Road",
+      "GT Road Wazirabad",
+      "Gujranwala Road Wazirabad",
+      "Sialkot Road Wazirabad",
+      "Wazirabad Bazar",
+      "Wazirabad City"
     ]
   },
   "Sindh": {
     "Ghotki": [
       "Daharki",
-      "Mirpur Mathelo"
+      "Daharki Bazar",
+      "Ghotki Bazar",
+      "Ghotki City",
+      "Khanpur Road Ghotki",
+      "Mirpur Mathelo",
+      "Ubauro"
     ],
     "Hyderabad": [
       "Abdullah Garden",
@@ -2747,7 +3622,13 @@ export const PK_GEO: PkGeo = {
       "Zafar Housing Scheme"
     ],
     "Jacobabad": [
-      "Jacobabad Air Port"
+      "Garhi Khairo",
+      "Jacobabad Air Port",
+      "Jacobabad Bazar",
+      "Jacobabad City",
+      "Kandhkot Road",
+      "Main Bazar Jacobabad",
+      "Thull"
     ],
     "Jamshoro": [
       "Cadet College Petaro Road",
@@ -2892,8 +3773,15 @@ export const PK_GEO: PkGeo = {
       "Zamzama"
     ],
     "Khairpur": [
+      "Gambat",
+      "Khairpur Bazar",
+      "Khairpur City",
       "Khairpur Green Residency",
-      "Khairpur Road"
+      "Khairpur Road",
+      "Kot Diji",
+      "Nara Canal Road",
+      "Sobhodero",
+      "Thari Mirwah"
     ],
     "Larkana": [
       "Airport Road",
@@ -3001,7 +3889,14 @@ export const PK_GEO: PkGeo = {
       "Taj Colony"
     ],
     "Sanghar": [
-      "Nawabshah Road"
+      "Jam Nawaz Ali",
+      "Khipro",
+      "Nawabshah Road",
+      "Sanghar Bazar",
+      "Sanghar City",
+      "Shahdadpur",
+      "Sinjhoro",
+      "Tando Adam"
     ],
     "Sukkur": [
       "Airport Road",
@@ -3042,11 +3937,119 @@ export const PK_GEO: PkGeo = {
       "Zeeshan Royal Residency"
     ],
     "Tando Allahyar": [
-      "Hyderabad - Mirpurkhas Road"
+      "Chamber",
+      "Hyderabad - Mirpurkhas Road",
+      "Jhando Mari",
+      "Nasarpur",
+      "Tando Allahyar Bazar",
+      "Tando Allahyar City"
     ],
     "Thatta": [
       "Dhabeji",
-      "Ghulamullah Road"
+      "Ghulamullah Road",
+      "Keti Bandar",
+      "Makli",
+      "Mirpur Sakro",
+      "Sujawal Road",
+      "Thatta Bazar",
+      "Thatta City"
+    ],
+    "Badin": [
+      "Badin Bazar",
+      "Badin City",
+      "Golarchi",
+      "Matli",
+      "Shaheed Fazil Rahu Road",
+      "Talhar",
+      "Tando Bago"
+    ],
+    "Dadu": [
+      "Dadu Bazar",
+      "Dadu City",
+      "Johi",
+      "KN Shah",
+      "Mehar",
+      "Sehwan Sharif"
+    ],
+    "Kashmore": [
+      "Kandhkot",
+      "Kandhkot Bazar",
+      "Kashmore Bazar",
+      "Kashmore City",
+      "Tangwani",
+      "Guddu"
+    ],
+    "Matiari": [
+      "Bhit Shah",
+      "Hala",
+      "Hala Bazar",
+      "Matiari Bazar",
+      "Matiari City",
+      "Saeedabad"
+    ],
+    "Naushahro Feroze": [
+      "Bhiria City",
+      "Kandiaro",
+      "Mehrabpur",
+      "Moro",
+      "Moro Bazar",
+      "Naushahro Feroze Bazar",
+      "Naushahro Feroze City"
+    ],
+    "Qambar Shahdadkot": [
+      "Nasirabad Road Qambar",
+      "Qambar Bazar",
+      "Qambar City",
+      "Shahdadkot",
+      "Shahdadkot Bazar",
+      "Warah",
+      "Warah Bazar"
+    ],
+    "Shikarpur": [
+      "Garhi Yasin",
+      "Khanpur",
+      "Lakhi",
+      "Lakhi Ghulam Shah",
+      "Shikarpur Bazar",
+      "Shikarpur City",
+      "Sukkur Road Shikarpur"
+    ],
+    "Sujawal": [
+      "Jati",
+      "Mirpur Bathoro",
+      "Shah Bandar",
+      "Sujawal Bazar",
+      "Sujawal City",
+      "Thatta Road Sujawal"
+    ],
+    "Tando Muhammad Khan": [
+      "Bulri Shah Karim",
+      "Tando Ghulam Hyder",
+      "Tando Muhammad Khan Bazar",
+      "Tando Muhammad Khan City",
+      "Hyderabad Road TMK",
+      "Badin Road TMK"
+    ],
+    "Tharparkar / Mithi": [
+      "Chachro",
+      "Chachro Bazar",
+      "Dahli",
+      "Diplo",
+      "Islamkot",
+      "Kaloi",
+      "Mithi Bazar",
+      "Mithi City",
+      "Nagarparkar",
+      "Nangarparkar Road"
+    ],
+    "Umerkot": [
+      "Kunri",
+      "Kunri Bazar",
+      "Pithoro",
+      "Samaro",
+      "Umerkot Bazar",
+      "Umerkot City",
+      "Umerkot Mirpurkhas Road"
     ]
   }
 } as const;
