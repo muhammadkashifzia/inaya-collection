@@ -32,10 +32,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: app/package-lock.json
       - name: Install dependencies
-        run: npm ci
+        run: npm install
       # Pages are prerendered from the live API, so the build needs it up (Deploy Backend may still be running).
       - name: Wait for API
         run: |
