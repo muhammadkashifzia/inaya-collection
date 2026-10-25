@@ -1,7 +1,7 @@
 import { HomeTemplate } from "@/components/templates";
-import { getHome, getSite } from "@/lib/data";
+import { getHome } from "@/lib/data";
 
 export default async function HomePage() {
-  const [site, home] = await Promise.all([getSite(), getHome()]);
-  return <HomeTemplate site={site} home={home} />;
+  const home = await getHome();
+  return <HomeTemplate home={home} />;
 }

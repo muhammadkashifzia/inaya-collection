@@ -45,6 +45,7 @@ interface Draft {
   id?: number;
   type: HomeSectionType;
   title: string;
+  subtitle: string;
   slides: SlideDraft[];
   looks: LookDraft[];
   category_id: string;
@@ -59,6 +60,7 @@ const emptyLook = (): LookDraft => ({ image: "", image_url: "", products: [] });
 const emptyDraft = (sortOrder: number): Draft => ({
   type: "featured",
   title: "",
+  subtitle: "",
   slides: [emptySlide()],
   looks: [emptyLook()],
   category_id: "",
@@ -71,6 +73,7 @@ const toDraft = (s: HomeSection): Draft => ({
   id: s.id,
   type: s.type,
   title: s.title,
+  subtitle: s.subtitle ?? "",
   slides: s.slides?.map((sl) => ({
     image: sl.image ?? "",
     image_url: sl.image_url ?? "",
@@ -168,6 +171,7 @@ export default function HomeSections() {
   const toBody = (s: Draft | HomeSection) => ({
     type: s.type,
     title: s.title,
+    subtitle: ("subtitle" in s ? s.subtitle : "") || null,
     slides: s.type === "banner_image" && "slides" in s && Array.isArray(s.slides)
       ? s.slides.filter((sl) => sl.image).map((sl) => ({ image: sl.image, text: sl.text || null, link: sl.link || null }))
       : null,
@@ -359,6 +363,7 @@ export default function HomeSections() {
             <Notice tone="error">{formError && !Object.keys(formError.errors).length ? formError.message : null}</Notice>
             <SelectInput label="Section type" value={draft.type} onChange={(e) => setDraft({ ...draft, type: e.target.value as HomeSectionType })} options={TYPES.map((t) => ({ value: t.value, label: t.label }))} hint={TYPES.find((t) => t.value === draft.type)?.hint} />
             <TextInput label="Heading" required value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} error={formError?.field("title")} maxLength={255} />
+            <TextInput label="Subtitle / Description" value={draft.subtitle} onChange={(e) => setDraft({ ...draft, subtitle: e.target.value })} error={formError?.field("subtitle")} maxLength={500} hint="Optional text shown below the heading on the website" />
 
             {/* ── Banner image slides ── */}
             {draft.type === "banner_image" && (

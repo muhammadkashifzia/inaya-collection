@@ -39,6 +39,7 @@ class HomeController extends Controller
                             'id' => $section->id,
                             'type' => $section->type,
                             'title' => $section->title,
+                            'subtitle' => $section->subtitle,
                             ...$this->sectionPayload($section, $topCategories),
                         ];
                     } catch (\Throwable $e) {
@@ -89,7 +90,6 @@ class HomeController extends Controller
             ],
             HomeSectionType::Reviews => [],
             HomeSectionType::BannerImage => [
-                'subtitle' => $section->subtitle,
                 'button_text' => $section->button_text,
                 'button_link' => $section->button_link,
                 'image' => $section->image ? Storage::disk('public')->url($section->image) : null,

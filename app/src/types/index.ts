@@ -140,14 +140,14 @@ export interface ImageBannerItem {
 }
 
 export type HomeSection =
-  | { id: number; type: "category_grid"; title: string; categories: Collection[] }
-  | { id: number; type: "category_tabs"; title: string; tabs: { category: Collection; total: number; products: Product[] }[] }
-  | { id: number; type: "featured" | "best_sellers" | "latest" | "discounted"; title: string; products: Product[] }
-  | { id: number; type: "category"; title: string; category: Collection | null; products: Product[] }
+  | { id: number; type: "category_grid"; title: string; subtitle: string | null; categories: Collection[] }
+  | { id: number; type: "category_tabs"; title: string; subtitle: string | null; tabs: { category: Collection; total: number; products: Product[] }[] }
+  | { id: number; type: "featured" | "best_sellers" | "latest" | "discounted"; title: string; subtitle: string | null; products: Product[] }
+  | { id: number; type: "category"; title: string; subtitle: string | null; category: Collection | null; products: Product[] }
   | { id: number; type: "banner_image"; title: string; subtitle: string | null; button_text: string | null; button_link: string | null; image: string | null; slides: { image: string | null; text: string | null; link: string | null }[] }
-  | { id: number; type: "shop_the_look"; title: string; looks: { image: string; products: Product[] }[] }
-  | { id: number; type: "image_banners"; title: string; items: ImageBannerItem[] }
-  | { id: number; type: "reviews"; title: string };
+  | { id: number; type: "shop_the_look"; title: string; subtitle: string | null; looks: { image: string; products: Product[] }[] }
+  | { id: number; type: "image_banners"; title: string; subtitle: string | null; items: ImageBannerItem[] }
+  | { id: number; type: "reviews"; title: string; subtitle: string | null };
 
 export interface HomeData {
   banners: Banner[];

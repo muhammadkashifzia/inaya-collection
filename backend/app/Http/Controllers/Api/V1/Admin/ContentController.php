@@ -145,9 +145,8 @@ class ContentController extends Controller
         $data['product_limit'] ??= 8;
         $data['sort_order'] ??= 0;
 
-        // Null out banner-specific fields for non-banner types.
+        // Null out banner-specific fields for non-banner types (subtitle is kept for all types).
         if (! $isBanner) {
-            $data['subtitle'] = null;
             $data['button_text'] = null;
             $data['button_link'] = null;
             $data['image'] = null;

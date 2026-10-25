@@ -9,6 +9,7 @@ import { ProductGrid } from "./ProductGrid";
 
 interface CollectionTabsProps {
   title: string;
+  subtitle?: string | null;
   tabs: { category: Collection; total: number; products: Product[] }[];
 }
 
@@ -16,7 +17,7 @@ interface CollectionTabsProps {
  * Collection products section with category tabs on the right side of the heading.
  * "All" tab shows merged products; individual tabs filter by category with load-more.
  */
-export function CollectionTabs({ title, tabs }: CollectionTabsProps) {
+export function CollectionTabs({ title, subtitle, tabs }: CollectionTabsProps) {
   const [activeTab, setActiveTab] = useState<number>(tabs[0].category.id);
 
   // Merge all tab products for the "All" view
@@ -93,7 +94,7 @@ export function CollectionTabs({ title, tabs }: CollectionTabsProps) {
   return (
     <section className="py-8 md:py-10">
       <Container>
-        <SectionHeader title={title} action={categoryTabs} />
+        <SectionHeader title={title} subtitle={subtitle ?? undefined} action={categoryTabs} />
         <ProductGrid products={displayProducts} emptyText="New designs are coming soon." />
 
         {hasMore && (

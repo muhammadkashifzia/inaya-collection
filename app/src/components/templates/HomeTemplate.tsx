@@ -1,13 +1,11 @@
-import { BannerSection, CollectionTabs, FeaturedTabs, HeroBanner, ProductRail, ShopByCollection, ShopTheLook, WinterCollections } from "@/components/organisms";
-import type { HomeData, HomeSection, SiteConfig } from "@/types";
+import { BannerSection, CollectionTabs, HeroBanner, ProductRail, ShopByCollection, ShopTheLook, WinterCollections } from "@/components/organisms";
+import type { HomeData, HomeSection } from "@/types";
 
 /**
  * Homepage, rendered entirely from GET /api/v1/home. Section order, titles
  * and visibility are managed in the admin dashboard (Home sections).
  */
-export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData }) {
-  const tabsSection = home.sections.find((s) => s.type === "category_tabs");
-
+export function HomeTemplate({ home }: { home: HomeData }) {
   return (
     <>
       {home.banners.length > 0 && <HeroBanner banners={home.banners} />}
@@ -20,17 +18,8 @@ export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData 
             </div>
           );
         }
-        // Skip category_tabs here — it's rendered separately as FeaturedTabs below
-        if (section.type === "category_tabs") return null;
         return <Section key={section.id} section={section} />;
       })}
-      {tabsSection?.type === "category_tabs" && (
-        <FeaturedTabs
-          title="Best Sellers"
-          description={`With impeccable artistry and authentic designs, ${site.name} has something for everyone.`}
-          tabs={tabsSection.tabs.filter((t) => t.products.length > 0)}
-        />
-      )}
     </>
   );
 }
@@ -40,7 +29,7 @@ function Section({ section }: { section: HomeSection }) {
     case "category_grid":
       return section.categories.length ? <ShopByCollection title={section.title} collections={section.categories} /> : null;
     case "category_tabs":
-      return <CollectionTabs title={section.title} tabs={section.tabs.filter((t) => t.products.length > 0)} />;
+      return <CollectionTabs title={section.title} subtitle={section.subtitle} tabs={section.tabs.filter((t) => t.products.length > 0)} />;
     case "category":
       return (
         <ProductRail
