@@ -30,7 +30,7 @@ class CachePublicApiResponse
         if ($cached !== null) {
             return response()->json($cached['body'], $cached['status'])
                 ->header('X-Cache', 'HIT')
-                ->header('Cache-Control', "public, max-age={$ttl}, s-maxage={$ttl}");
+                ->header('Cache-Control', 'no-store');
         }
 
         /** @var Response $response */
@@ -43,7 +43,7 @@ class CachePublicApiResponse
             ], $ttl);
 
             $response->header('X-Cache', 'MISS');
-            $response->header('Cache-Control', "public, max-age={$ttl}, s-maxage={$ttl}");
+            $response->header('Cache-Control', 'no-store');
         }
 
         return $response;

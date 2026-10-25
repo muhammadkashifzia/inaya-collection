@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Container } from "@/components/atoms";
 import { SectionHeader } from "@/components/molecules";
 import type { Collection, Product } from "@/types";
@@ -10,13 +13,15 @@ interface FeaturedTabsProps {
 }
 
 /**
- * Featured products section — merges products from all collections
- * into a single grid. No category tabs.
+ * Featured products section with category tabs on the right side of the heading.
+ * "All" tab shows merged products from every collection; individual tabs filter.
  */
 export function FeaturedTabs({ title, description, tabs }: FeaturedTabsProps) {
+  const [activeTab, setActiveTab] = useState<number>(tabs[0].category.id);
+
   if (!tabs.length) return null;
 
-  // Merge all tab products into one list, deduplicated by id
+  // Merge all tab products for the "All" view
   const seen = new Set<number>();
   const allProducts: Product[] = [];
   for (const tab of tabs) {
@@ -30,20 +35,36 @@ export function FeaturedTabs({ title, description, tabs }: FeaturedTabsProps) {
 
   if (!allProducts.length) return null;
 
+  const displayProducts = tabs.find((t) => t.category.id === activeTab)?.products ?? allProducts;
+
+  const categoryTabs = (
+    <div role="tablist" className="flex flex-wrap items-center gap-6">
+      {tabs.map((tab) => (
+        <button
+          key={tab.category.id}
+          type="button"
+          role="tab"
+          aria-selected={activeTab === tab.category.id}
+          onClick={() => setActiveTab(tab.category.id)}
+          className={`pb-1 text-[14px] tracking-wide transition-colors ${
+            activeTab === tab.category.id
+              ? "border-b-2 border-ink font-semibold text-ink"
+              : "text-muted hover:text-ink"
+          }`}
+        >
+          {tab.category.shortTitle || tab.category.title}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <section className="py-8 md:py-10">
       <Container>
-        <div className="mb-8 md:mb-10">
-          <SectionHeader title={title} />
-          {description && (
-            <p className="mt-2 text-center text-[15px] leading-relaxed text-muted">
-              {description}
-            </p>
-          )}
-        </div>
+        <SectionHeader title={title} subtitle={description} action={categoryTabs} />
 
         <ProductGrid
-          products={allProducts}
+          products={displayProducts}
           emptyText="New designs are coming soon."
         />
       </Container>

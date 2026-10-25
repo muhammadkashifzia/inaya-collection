@@ -13,11 +13,13 @@ interface CollectionTabsProps {
 }
 
 /**
- * Featured products section — combines products from all collections
- * into a single grid without tabs. Products are deduplicated by id.
+ * Collection products section with category tabs on the right side of the heading.
+ * "All" tab shows merged products; individual tabs filter by category with load-more.
  */
 export function CollectionTabs({ title, tabs }: CollectionTabsProps) {
-  // Merge all tab products into one list, deduplicated by id
+  const [activeTab, setActiveTab] = useState<number>(tabs[0].category.id);
+
+  // Merge all tab products for the "All" view
   const seen = new Set<number>();
   const initialProducts: Product[] = [];
   for (const tab of tabs) {
@@ -34,9 +36,11 @@ export function CollectionTabs({ title, tabs }: CollectionTabsProps) {
   const [loadedAll, setLoadedAll] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const allProducts = [...initialProducts, ...extraProducts];
+  const allMergedProducts = [...initialProducts, ...extraProducts];
   const totalProducts = tabs.reduce((sum, t) => sum + t.total, 0);
-  const hasMore = !loadedAll && totalProducts > allProducts.length;
+  const hasMore = !loadedAll && totalProducts > allMergedProducts.length;
+
+  const displayProducts = tabs.find((t) => t.category.id === activeTab)?.products ?? allMergedProducts;
 
   function loadMore() {
     const nextPage = currentPage + 1;
@@ -48,7 +52,7 @@ export function CollectionTabs({ title, tabs }: CollectionTabsProps) {
           sort: "featured",
         });
 
-        const existingIds = new Set(allProducts.map((p) => p.id));
+        const existingIds = new Set(allMergedProducts.map((p) => p.id));
         const newProducts = result.data.filter((p) => !existingIds.has(p.id));
 
         setExtraProducts((prev) => [...prev, ...newProducts]);
@@ -63,13 +67,34 @@ export function CollectionTabs({ title, tabs }: CollectionTabsProps) {
     });
   }
 
-  if (!allProducts.length) return null;
+  if (!initialProducts.length) return null;
+
+  const categoryTabs = (
+    <div role="tablist" className="flex flex-wrap items-center gap-6">
+      {tabs.map((tab) => (
+        <button
+          key={tab.category.id}
+          type="button"
+          role="tab"
+          aria-selected={activeTab === tab.category.id}
+          onClick={() => setActiveTab(tab.category.id)}
+          className={`pb-1 text-[14px] tracking-wide transition-colors ${
+            activeTab === tab.category.id
+              ? "border-b-2 border-ink font-semibold text-ink"
+              : "text-muted hover:text-ink"
+          }`}
+        >
+          {tab.category.shortTitle || tab.category.title}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <section className="py-8 md:py-10">
       <Container>
-        <SectionHeader title={title} />
-        <ProductGrid products={allProducts} emptyText="New designs are coming soon." />
+        <SectionHeader title={title} action={categoryTabs} />
+        <ProductGrid products={displayProducts} emptyText="New designs are coming soon." />
 
         {hasMore && (
           <div className="mt-8 flex justify-center">

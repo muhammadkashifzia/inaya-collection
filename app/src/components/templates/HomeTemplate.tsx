@@ -11,22 +11,20 @@ export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData 
   return (
     <>
       {home.banners.length > 0 && <HeroBanner banners={home.banners} />}
-      {home.sections
-        .filter((s) => s.type !== "category_tabs")
-        .map((section) => {
-          if (section.type === "category_grid") {
-            return (
-              <div key={section.id}>
-                <Section section={section} />
-                <WinterCollections banners={home.collectionStrip} />
-              </div>
-            );
-          }
-          return <Section key={section.id} section={section} />;
-        })}
+      {home.sections.map((section) => {
+        if (section.type === "category_grid") {
+          return (
+            <div key={section.id}>
+              <Section section={section} />
+              <WinterCollections banners={home.collectionStrip} />
+            </div>
+          );
+        }
+        return <Section key={section.id} section={section} />;
+      })}
       {tabsSection?.type === "category_tabs" && (
         <FeaturedTabs
-          title={tabsSection.title}
+          title="Best Sellers"
           description={`With impeccable artistry and authentic designs, ${site.name} has something for everyone.`}
           tabs={tabsSection.tabs.filter((t) => t.products.length > 0)}
         />
@@ -47,6 +45,7 @@ function Section({ section }: { section: HomeSection }) {
           title={section.title}
           products={section.products}
           href={section.category ? `/collections/${section.category.slug}` : undefined}
+          category={section.category?.shortTitle || section.category?.title}
         />
       );
     case "featured":
