@@ -112,8 +112,8 @@ function Slide({ banner }: { banner: Banner }) {
 function SlideContent({ banner, active = true }: { banner: Banner; active?: boolean }) {
   return (
     <>
-      <AppImage src={banner.mobileImage ?? banner.image} alt="" fill preload sizes="100vw" className="object-cover md:hidden" />
-      <AppImage src={banner.image} alt="" fill preload sizes="100vw" className="hidden object-cover md:block" />
+      <AppImage src={banner.mobileImage ?? banner.image} alt="" fill preload={active} sizes="100vw" className="object-cover md:hidden" />
+      <AppImage src={banner.image} alt="" fill preload={active} sizes="100vw" className="hidden object-cover md:block" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10 md:bg-gradient-to-r md:from-black/70 md:via-black/30 md:to-transparent" aria-hidden="true" />
       <Container className="absolute inset-0 flex flex-col items-start justify-end pb-14 text-left text-white md:justify-center md:pb-0">
         <h1
