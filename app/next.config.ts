@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const apiUrl = new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000");
 const isLocalApi = ["localhost", "127.0.0.1", "::1"].includes(apiUrl.hostname);
 
+// Deploy trigger: 2026-10-25
 const nextConfig: NextConfig = {
   // Self-contained server (.next/standalone/server.js) for cPanel Passenger deploys.
   output: "standalone",
