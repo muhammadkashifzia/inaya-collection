@@ -22,15 +22,23 @@ export function CouponForm() {
     );
   }
 
+  const handleApply = async () => {
+    if (!code.trim()) return;
+    const message = await applyCoupon(code.trim());
+    setError(message);
+    if (!message) setCode("");
+  };
+
   return (
-    <form
+    <div
       className="space-y-1"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        if (!code.trim()) return;
-        const message = await applyCoupon(code.trim());
-        setError(message);
-        if (!message) setCode("");
+      role="group"
+      aria-label="Discount code"
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          void handleApply();
+        }
       }}
     >
       <label htmlFor="coupon" className="text-xs font-semibold uppercase tracking-widest">Discount code</label>
@@ -44,11 +52,11 @@ export function CouponForm() {
           aria-describedby={error ? "coupon-error" : undefined}
           className="h-10 flex-1 border border-line bg-white px-3 text-sm uppercase"
         />
-        <button type="submit" disabled={cartBusy} className="h-10 bg-ink px-4 text-xs font-semibold uppercase tracking-widest text-white disabled:opacity-60">
+        <button type="button" onClick={() => void handleApply()} disabled={cartBusy} className="h-10 bg-ink px-4 text-xs font-semibold uppercase tracking-widest text-white disabled:opacity-60">
           Apply
         </button>
       </div>
       {error && <p id="coupon-error" role="alert" className="text-xs font-semibold text-error">{error}</p>}
-    </form>
+    </div>
   );
 }
