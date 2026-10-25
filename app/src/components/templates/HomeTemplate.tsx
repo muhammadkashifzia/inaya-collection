@@ -20,6 +20,8 @@ export function HomeTemplate({ site, home }: { site: SiteConfig; home: HomeData 
             </div>
           );
         }
+        // Skip category_tabs here — it's rendered separately as FeaturedTabs below
+        if (section.type === "category_tabs") return null;
         return <Section key={section.id} section={section} />;
       })}
       {tabsSection?.type === "category_tabs" && (
