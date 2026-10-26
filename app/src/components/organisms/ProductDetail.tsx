@@ -167,7 +167,7 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
         {product.description && (
           <div>
             <h2 className="mb-2 text-sm font-semibold uppercase tracking-widest">Description</h2>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-ink/80">{product.description}</p>
+            <div className="whitespace-pre-line text-sm leading-relaxed text-ink/80" dangerouslySetInnerHTML={{ __html: product.description }} />
           </div>
         )}
         {product.details.length > 0 && (
