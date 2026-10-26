@@ -119,12 +119,13 @@ export function mapHome(json: Raw): HomeData {
   const sections: HomeSection[] = (json.sections ?? []).map((s: Raw): HomeSection => {
     switch (s.type) {
       case "category_grid":
-        return { id: s.id, type: s.type, title: s.title, categories: (s.categories ?? []).map(mapCollection) };
+        return { id: s.id, type: s.type, title: s.title, subtitle: s.subtitle ?? null, categories: (s.categories ?? []).map(mapCollection) };
       case "category_tabs":
         return {
           id: s.id,
           type: s.type,
           title: s.title,
+          subtitle: s.subtitle ?? null,
           tabs: (s.tabs ?? []).map((t: Raw) => ({
             category: mapCollection(t.category),
             total: num(t.total),
@@ -136,16 +137,18 @@ export function mapHome(json: Raw): HomeData {
           id: s.id,
           type: s.type,
           title: s.title,
+          subtitle: s.subtitle ?? null,
           category: s.category ? mapCollection(s.category) : null,
           products: (s.products ?? []).map(mapProduct),
         };
       case "reviews":
-        return { id: s.id, type: s.type, title: s.title };
+        return { id: s.id, type: s.type, title: s.title, subtitle: s.subtitle ?? null };
       case "shop_the_look":
         return {
           id: s.id,
           type: s.type,
           title: s.title,
+          subtitle: s.subtitle ?? null,
           looks: (s.looks ?? []).map((l: Raw) => ({
             image: l.image ?? "",
             products: (l.products ?? []).map(mapProduct),
@@ -167,7 +170,7 @@ export function mapHome(json: Raw): HomeData {
           })),
         };
       default:
-        return { id: s.id, type: s.type, title: s.title, products: (s.products ?? []).map(mapProduct) };
+        return { id: s.id, type: s.type, title: s.title, subtitle: s.subtitle ?? null, products: (s.products ?? []).map(mapProduct) };
     }
   });
 
