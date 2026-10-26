@@ -65,8 +65,8 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2 lg:gap-14">
-      <div className="flex flex-col-reverse gap-2 sm:gap-3 md:flex-row">
+    <div className="grid gap-6 overflow-hidden lg:grid-cols-2 lg:gap-14">
+      <div className="flex min-w-0 flex-col-reverse gap-2 sm:gap-3 md:flex-row">
         <ul className="flex gap-2 overflow-x-auto no-scrollbar sm:gap-3 md:flex-col md:overflow-visible" aria-label="Product images">
           {images.map((src, i) => (
             <li key={src ?? i}>
