@@ -105,11 +105,47 @@ async function request<T>(method: string, path: string, body?: unknown, retried 
   return json as T;
 }
 
+/** Trigger a file download from an API endpoint that returns a binary response. */
+async function download(path: string, query?: Query, filename?: string): Promise<void> {
+  await ensureCsrf();
+  const headers: Record<string, string> = { Accept: "application/octet-stream" };
+  const xsrf = readCookie("XSRF-TOKEN");
+  if (xsrf) headers["X-XSRF-TOKEN"] = xsrf;
+
+  const res = await fetch(`${API_URL}/api/v1${path}${toQuery(query)}`, {
+    method: "GET",
+    headers,
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    throw new ApiError((json.message as string) || `Export failed (${res.status}).`, res.status, json.errors ?? {});
+  }
+
+  const blob = await res.blob();
+  const name = filename ?? res.headers.get("Content-Disposition")?.match(/filename="?(.+?)"?$/)?.[1] ?? "download";
+  saveBlob(blob, name);
+}
+
+/** Save a Blob as a file download in the browser. */
+export function saveBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 export const http = {
   get: <T>(path: string, query?: Query) => request<T>("GET", `${path}${toQuery(query)}`),
   post: <T>(path: string, body?: unknown) => request<T>("POST", path, body ?? {}),
   put: <T>(path: string, body?: unknown) => request<T>("PUT", path, body ?? {}),
   patch: <T>(path: string, body?: unknown) => request<T>("PATCH", path, body ?? {}),
   delete: <T = void>(path: string) => request<T>("DELETE", path),
+  download: (path: string, query?: Query, filename?: string) => download(path, query, filename),
   ensureCsrf,
 };
