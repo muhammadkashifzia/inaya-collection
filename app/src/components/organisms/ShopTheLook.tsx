@@ -47,29 +47,31 @@ export function ShopTheLook({ title, subtitle, looks }: ShopTheLookProps) {
   return (
     <section className="relative py-10 md:py-14 overflow-hidden">
       {/* ── Decorative corner ornaments ── */}
-      <svg aria-hidden="true" className="pointer-events-none absolute left-0 top-0 h-36 w-36 text-brand/[0.06] sm:h-48 sm:w-48 md:h-64 md:w-64" viewBox="0 0 200 200" fill="none">
-        <path d="M0 0c30 50 60 80 100 100C60 80 30 50 0 0Z" fill="currentColor" />
-        <path d="M0 0c20 60 50 100 120 130C50 100 20 60 0 0Z" fill="currentColor" opacity="0.5" />
-        <circle cx="12" cy="12" r="4" fill="currentColor" opacity="0.7" />
-        <circle cx="32" cy="5" r="2.5" fill="currentColor" opacity="0.5" />
-        <circle cx="5" cy="35" r="2" fill="currentColor" opacity="0.4" />
-        <path d="M0 60C25 55 45 40 60 0" stroke="currentColor" strokeWidth="0.8" opacity="0.4" />
-        <path d="M60 0C55 25 40 45 0 60" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
-        <path d="M8 8c15 5 25 15 35 35" stroke="currentColor" strokeWidth="0.6" opacity="0.35" fill="none" />
-        <ellipse cx="50" cy="15" rx="6" ry="3" fill="currentColor" opacity="0.15" transform="rotate(-20 50 15)" />
-        <ellipse cx="15" cy="55" rx="5" ry="2.5" fill="currentColor" opacity="0.12" transform="rotate(70 15 55)" />
+      <svg aria-hidden="true" className="pointer-events-none absolute -left-4 -top-4 h-44 w-44 sm:h-56 sm:w-56 md:h-72 md:w-72" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0 C40 10, 70 40, 80 80 C60 60, 30 30, 0 0Z" fill="#0b1d36" fillOpacity="0.04" />
+        <path d="M0 0 C20 30, 40 60, 50 100 C30 70, 10 35, 0 0Z" fill="#0b1d36" fillOpacity="0.03" />
+        <path d="M5 70 Q30 60 55 30 Q45 55 15 75Z" fill="#0b1d36" fillOpacity="0.025" />
+        <path d="M10 10 C30 15, 50 35, 60 60" stroke="#0b1d36" strokeOpacity="0.08" strokeWidth="1" fill="none" />
+        <path d="M0 50 C20 45, 35 30, 50 0" stroke="#0b1d36" strokeOpacity="0.06" strokeWidth="0.75" fill="none" />
+        <path d="M0 80 C30 70, 55 50, 80 0" stroke="#0b1d36" strokeOpacity="0.05" strokeWidth="0.5" fill="none" strokeDasharray="4 6" />
+        <circle cx="15" cy="15" r="3" fill="#0b1d36" fillOpacity="0.08" />
+        <circle cx="40" cy="8" r="2" fill="#0b1d36" fillOpacity="0.06" />
+        <circle cx="8" cy="42" r="2" fill="#0b1d36" fillOpacity="0.06" />
+        <circle cx="55" cy="20" r="1.5" fill="#0b1d36" fillOpacity="0.05" />
+        <circle cx="22" cy="58" r="1.5" fill="#0b1d36" fillOpacity="0.05" />
       </svg>
-      <svg aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 h-36 w-36 text-brand/[0.06] sm:h-48 sm:w-48 md:h-64 md:w-64" viewBox="0 0 200 200" fill="none">
-        <path d="M200 200c-30-50-60-80-100-100 40 20 70 50 100 100Z" fill="currentColor" />
-        <path d="M200 200c-20-60-50-100-120-130 70 30 100 70 120 130Z" fill="currentColor" opacity="0.5" />
-        <circle cx="188" cy="188" r="4" fill="currentColor" opacity="0.7" />
-        <circle cx="168" cy="195" r="2.5" fill="currentColor" opacity="0.5" />
-        <circle cx="195" cy="165" r="2" fill="currentColor" opacity="0.4" />
-        <path d="M200 140c-25 5-45 20-60 60" stroke="currentColor" strokeWidth="0.8" opacity="0.4" />
-        <path d="M140 200c5-25 20-45 60-60" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
-        <path d="M192 192c-15-5-25-15-35-35" stroke="currentColor" strokeWidth="0.6" opacity="0.35" fill="none" />
-        <ellipse cx="150" cy="185" rx="6" ry="3" fill="currentColor" opacity="0.15" transform="rotate(160 150 185)" />
-        <ellipse cx="185" cy="145" rx="5" ry="2.5" fill="currentColor" opacity="0.12" transform="rotate(-110 185 145)" />
+      <svg aria-hidden="true" className="pointer-events-none absolute -bottom-4 -right-4 h-44 w-44 sm:h-56 sm:w-56 md:h-72 md:w-72" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M200 200 C160 190, 130 160, 120 120 C140 140, 170 170, 200 200Z" fill="#0b1d36" fillOpacity="0.04" />
+        <path d="M200 200 C180 170, 160 140, 150 100 C170 130, 190 165, 200 200Z" fill="#0b1d36" fillOpacity="0.03" />
+        <path d="M195 130 Q170 140 145 170 Q155 145 185 125Z" fill="#0b1d36" fillOpacity="0.025" />
+        <path d="M190 190 C170 185, 150 165, 140 140" stroke="#0b1d36" strokeOpacity="0.08" strokeWidth="1" fill="none" />
+        <path d="M200 150 C180 155, 165 170, 150 200" stroke="#0b1d36" strokeOpacity="0.06" strokeWidth="0.75" fill="none" />
+        <path d="M200 120 C170 130, 145 150, 120 200" stroke="#0b1d36" strokeOpacity="0.05" strokeWidth="0.5" fill="none" strokeDasharray="4 6" />
+        <circle cx="185" cy="185" r="3" fill="#0b1d36" fillOpacity="0.08" />
+        <circle cx="160" cy="192" r="2" fill="#0b1d36" fillOpacity="0.06" />
+        <circle cx="192" cy="158" r="2" fill="#0b1d36" fillOpacity="0.06" />
+        <circle cx="145" cy="180" r="1.5" fill="#0b1d36" fillOpacity="0.05" />
+        <circle cx="178" cy="142" r="1.5" fill="#0b1d36" fillOpacity="0.05" />
       </svg>
 
       <Container>
