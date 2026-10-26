@@ -14,7 +14,7 @@ export class ApiUnavailableError extends Error {}
 
 /**
  * GET a JSON endpoint. Returns null on 404; throws on other failures.
- * Retries up to 3 times on 429 (rate-limit) with exponential back-off.
+ * Retries up to 3 times on 429 (rate-limit) with short back-off.
  */
 async function getJson<T = unknown>(path: string): Promise<T | null> {
   const maxRetries = 3;
@@ -27,8 +27,8 @@ async function getJson<T = unknown>(path: string): Promise<T | null> {
     }
     if (res.status === 404) return null;
     if (res.status === 429 && attempt < maxRetries) {
-      const retryAfter = Number(res.headers.get("Retry-After")) || 2 ** attempt;
-      await new Promise((r) => setTimeout(r, retryAfter * 1000));
+      const delay = Math.min(Number(res.headers.get("Retry-After")) || 1, 2) * 1000;
+      await new Promise((r) => setTimeout(r, delay));
       continue;
     }
     if (!res.ok) throw new Error(`API GET ${path} failed with ${res.status}`);
