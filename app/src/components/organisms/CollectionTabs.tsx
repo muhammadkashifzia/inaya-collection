@@ -94,7 +94,7 @@ export function CollectionTabs({ title, subtitle, tabs }: CollectionTabsProps) {
   return (
     <section className="py-6 md:py-10">
       <Container>
-        <SectionHeader title={title} subtitle={subtitle ?? undefined} action={categoryTabs} />
+        <SectionHeader title={title} subtitle={subtitle ?? undefined} action={categoryTabs} center={false} />
         <ProductGrid products={displayProducts} emptyText="New designs are coming soon." />
 
         {hasMore && (
