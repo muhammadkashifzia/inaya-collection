@@ -7,7 +7,7 @@ import { ProductGrid } from "./ProductGrid";
 export function ProductRail({ title, products, href, category }: { title: string; products: Product[]; href?: string; category?: string }) {
   if (!products.length) return null;
   return (
-    <section className="py-8 md:py-10">
+    <section className="py-6 md:py-10">
       <Container>
         <SectionHeader
           title={title}

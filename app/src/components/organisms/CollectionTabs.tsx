@@ -71,7 +71,7 @@ export function CollectionTabs({ title, subtitle, tabs }: CollectionTabsProps) {
   if (!initialProducts.length) return null;
 
   const categoryTabs = (
-    <div role="tablist" className="flex flex-wrap items-center gap-6">
+    <div role="tablist" className="flex items-center gap-4 md:gap-6 md:flex-wrap">
       {tabs.map((tab) => (
         <button
           key={tab.category.id}
@@ -79,7 +79,7 @@ export function CollectionTabs({ title, subtitle, tabs }: CollectionTabsProps) {
           role="tab"
           aria-selected={activeTab === tab.category.id}
           onClick={() => setActiveTab(tab.category.id)}
-          className={`pb-1 text-[14px] tracking-wide transition-colors ${
+          className={`shrink-0 pb-1 text-[13px] md:text-[14px] tracking-wide transition-colors ${
             activeTab === tab.category.id
               ? "border-b-2 border-ink font-semibold text-ink"
               : "text-muted hover:text-ink"
@@ -92,18 +92,18 @@ export function CollectionTabs({ title, subtitle, tabs }: CollectionTabsProps) {
   );
 
   return (
-    <section className="py-8 md:py-10">
+    <section className="py-6 md:py-10">
       <Container>
         <SectionHeader title={title} subtitle={subtitle ?? undefined} action={categoryTabs} />
         <ProductGrid products={displayProducts} emptyText="New designs are coming soon." />
 
         {hasMore && (
-          <div className="mt-8 flex justify-center">
+          <div className="mt-6 flex justify-center md:mt-8">
             <button
               type="button"
               onClick={loadMore}
               disabled={isPending}
-              className="inline-flex items-center gap-2 border border-[#111] bg-transparent px-8 py-3 text-[13px] font-semibold uppercase tracking-[0.1em] text-[#111] transition-colors hover:bg-[#111] hover:text-white disabled:opacity-50"
+              className="inline-flex w-full max-w-xs items-center justify-center gap-2 border border-[#111] bg-transparent px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-[#111] transition-colors hover:bg-[#111] hover:text-white disabled:opacity-50 sm:w-auto sm:px-8 sm:py-3 sm:text-[13px]"
             >
               {isPending ? (
                 <>

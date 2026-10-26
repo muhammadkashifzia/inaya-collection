@@ -118,7 +118,7 @@ function SlideContent({ banner, active = true }: { banner: Banner; active?: bool
       <Container className="absolute inset-0 flex flex-col items-start justify-end pb-14 text-left text-white md:justify-center md:pb-0">
         <h1
           className={cn(
-            "max-w-xl font-heading text-4xl font-semibold leading-tight md:text-6xl transition-all duration-700 ease-out",
+            "max-w-xl font-heading text-3xl font-semibold leading-tight sm:text-4xl md:text-6xl transition-all duration-700 ease-out",
             active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
           )}
         >
@@ -127,7 +127,7 @@ function SlideContent({ banner, active = true }: { banner: Banner; active?: bool
         {banner.subtitle && (
           <p
             className={cn(
-              "mt-4 max-w-md text-sm text-white/85 md:text-base transition-all duration-700 ease-out delay-150",
+              "mt-3 max-w-[85%] text-[13px] leading-relaxed text-white/85 sm:max-w-md sm:text-sm md:mt-4 md:text-base transition-all duration-700 ease-out delay-150",
               active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
             )}
           >
@@ -137,7 +137,7 @@ function SlideContent({ banner, active = true }: { banner: Banner; active?: bool
         {banner.buttons.length > 0 && (
           <div
             className={cn(
-              "mt-8 grid w-full max-w-xl grid-cols-2 gap-3 md:flex md:w-auto md:flex-wrap transition-all duration-700 ease-out delay-300",
+              "mt-6 flex w-full max-w-xl flex-wrap gap-2.5 sm:gap-3 md:mt-8 md:w-auto transition-all duration-700 ease-out delay-300",
               active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
             )}
           >

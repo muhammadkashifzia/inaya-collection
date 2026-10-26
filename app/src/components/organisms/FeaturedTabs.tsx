@@ -38,7 +38,7 @@ export function FeaturedTabs({ title, description, tabs }: FeaturedTabsProps) {
   const displayProducts = tabs.find((t) => t.category.id === activeTab)?.products ?? allProducts;
 
   const categoryTabs = (
-    <div role="tablist" className="flex flex-wrap items-center gap-6">
+    <div role="tablist" className="flex items-center gap-4 md:gap-6 md:flex-wrap">
       {tabs.map((tab) => (
         <button
           key={tab.category.id}
@@ -46,7 +46,7 @@ export function FeaturedTabs({ title, description, tabs }: FeaturedTabsProps) {
           role="tab"
           aria-selected={activeTab === tab.category.id}
           onClick={() => setActiveTab(tab.category.id)}
-          className={`pb-1 text-[14px] tracking-wide transition-colors ${
+          className={`shrink-0 pb-1 text-[13px] md:text-[14px] tracking-wide transition-colors ${
             activeTab === tab.category.id
               ? "border-b-2 border-ink font-semibold text-ink"
               : "text-muted hover:text-ink"
@@ -59,7 +59,7 @@ export function FeaturedTabs({ title, description, tabs }: FeaturedTabsProps) {
   );
 
   return (
-    <section className="py-8 md:py-10">
+    <section className="py-6 md:py-10">
       <Container>
         <SectionHeader title={title} subtitle={description} action={categoryTabs} />
 

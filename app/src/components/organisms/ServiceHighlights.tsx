@@ -70,7 +70,7 @@ export function ServiceHighlights({ freeShippingThreshold }: { freeShippingThres
 
   return (
     <section aria-label="Our services" className="border-t border-line bg-[#f7f7f7]">
-      <Container className="grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
+      <Container className="grid gap-5 py-7 sm:grid-cols-2 sm:gap-6 sm:py-8 lg:grid-cols-4 lg:py-10">
         {items.map((item) => (
           <div key={item.title} className="flex items-start gap-4">
             <span className="shrink-0 text-ink">{item.icon}</span>

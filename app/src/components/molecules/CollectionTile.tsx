@@ -25,7 +25,7 @@ export function CollectionTile({ collection }: { collection: Collection }) {
       {/* Large faded rank number peeking out from behind the tile */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-4 left-0 select-none font-heading text-[90px] font-black leading-none text-black/[0.06] md:text-[140px]"
+        className="pointer-events-none absolute bottom-2 left-0 select-none font-heading text-[60px] font-black leading-none text-black/[0.06] sm:text-[90px] md:text-[140px]"
       >
         {collection.rank || ""}
       </span>
@@ -44,12 +44,12 @@ export function CollectionTile({ collection }: { collection: Collection }) {
         <span className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/75 via-black/25 to-transparent" aria-hidden="true" />
 
         {badge && (
-          <span className="absolute bottom-12 left-3 rounded-[3px] bg-white px-2 py-1 text-[10px] font-semibold uppercase leading-none tracking-wide text-ink md:bottom-14 md:text-[11px]">
+          <span className="absolute bottom-10 left-2 rounded-[3px] bg-white px-1.5 py-0.5 text-[9px] font-semibold uppercase leading-none tracking-wide text-ink sm:bottom-12 sm:left-3 sm:px-2 sm:py-1 sm:text-[10px] md:bottom-14 md:text-[11px]">
             {badge}
           </span>
         )}
 
-        <span className="absolute inset-x-0 bottom-0 px-3 pb-3 text-center text-sm font-bold uppercase tracking-wide text-white md:pb-4 md:text-lg">
+        <span className="absolute inset-x-0 bottom-0 px-2 pb-2 text-center text-xs font-bold uppercase tracking-wide text-white sm:px-3 sm:pb-3 sm:text-sm md:pb-4 md:text-lg">
           {label}
           <span className="sr-only"> collection</span>
         </span>
