@@ -5,7 +5,7 @@ type Level = 1 | 2 | 3 | 4;
 
 const styles: Record<Level, string> = {
   1: "text-2xl sm:text-3xl md:text-5xl",
-  2: "text-xl sm:text-2xl md:text-3xl",
+  2: "text-xl sm:text-2xl md:text-[32px]",
   3: "text-base sm:text-lg md:text-xl",
   4: "text-sm sm:text-base",
 };
@@ -23,7 +23,7 @@ export function Heading({ level = 2, as, align = "left", className, children }: 
   return (
     <Tag
       className={cn(
-        "font-heading font-semibold tracking-wide text-ink",
+        "font-heading font-medium tracking-wide text-ink",
         styles[level],
         align === "center" && "text-center",
         className,
