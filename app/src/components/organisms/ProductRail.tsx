@@ -13,8 +13,8 @@ export function ProductRail({ title, subtitle, products, href, category, center 
         <ProductGrid products={products} />
         {href && (
           <div className="mt-6 flex justify-center md:mt-8">
-            <ButtonLink href={href} variant="outline" size="sm">
-              {category || "View all"}
+            <ButtonLink href={href} variant="outline" size="md">
+              View More
             </ButtonLink>
           </div>
         )}

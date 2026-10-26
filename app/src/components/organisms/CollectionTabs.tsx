@@ -103,7 +103,7 @@ export function CollectionTabs({ title, subtitle, tabs }: CollectionTabsProps) {
               type="button"
               onClick={loadMore}
               disabled={isPending}
-              className="inline-flex w-full max-w-xs items-center justify-center gap-2 border border-[#111] bg-transparent px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-[#111] transition-colors hover:bg-[#111] hover:text-white disabled:opacity-50 sm:w-auto sm:px-8 sm:py-3 sm:text-[13px]"
+              className="inline-flex items-center justify-center gap-2 border border-ink bg-transparent px-5 py-2.5 text-sm font-semibold uppercase tracking-wider text-ink transition-colors hover:bg-ink hover:text-white disabled:opacity-50"
             >
               {isPending ? (
                 <>
