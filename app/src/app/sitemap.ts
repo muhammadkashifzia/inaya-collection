@@ -4,12 +4,18 @@ import { siteUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
+  const now = new Date();
   const [collections, products, pages] = await Promise.all([getCollections(), getAllProductSlugs(), getContentPages()]);
 
   return [
-    { url: `${base}/`, changeFrequency: "daily", priority: 1 },
-    { url: `${base}/collections/all`, changeFrequency: "daily", priority: 0.8 },
-    ...collections.map((c) => ({ url: `${base}/collections/${c.slug}`, changeFrequency: "daily" as const, priority: 0.8 })),
+    { url: `${base}/`, lastModified: now, changeFrequency: "daily", priority: 1 },
+    { url: `${base}/collections/all`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    ...collections.map((c) => ({
+      url: `${base}/collections/${c.slug}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    })),
     ...products.map((p) => ({
       url: `${base}/products/${p.slug}`,
       lastModified: p.updatedAt ? new Date(p.updatedAt) : undefined,

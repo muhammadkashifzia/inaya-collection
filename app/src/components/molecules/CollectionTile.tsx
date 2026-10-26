@@ -36,7 +36,7 @@ export function CollectionTile({ collection }: { collection: Collection }) {
       >
         <AppImage
           src={collection.image}
-          alt=""
+          alt={`${collection.title} collection`}
           fill
           sizes="(min-width: 1024px) 25vw, 50vw"
           className="object-cover object-top transition-transform duration-700 group-hover:scale-105"

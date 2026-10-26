@@ -6,8 +6,9 @@ import { ProductGridSkeleton } from "@/components/organisms";
 import { CollectionTemplate } from "@/components/templates";
 import { parseCatalogParams } from "@/lib/catalog-params";
 import { getCollection, getCollections, getFacets, getProducts } from "@/lib/data";
+import { breadcrumbJsonLd, collectionJsonLd, jsonLdString } from "@/lib/seo";
 
-const ALL = { title: "All Products", description: "Browse every unstitched suit in our range.", metaTitle: null, metaDescription: null };
+const ALL = { title: "All Products", description: "Browse every unstitched suit in our range.", metaTitle: null, metaDescription: null, image: null as string | null };
 
 export async function generateStaticParams() {
   const collections = await getCollections();
@@ -26,6 +27,12 @@ export async function generateMetadata({ params }: PageProps<"/collections/[slug
     title: c.metaTitle ?? c.title,
     description: c.metaDescription ?? c.description ?? undefined,
     alternates: { canonical: `/collections/${slug}` },
+    openGraph: {
+      type: "website",
+      title: c.metaTitle ?? c.title,
+      description: c.metaDescription ?? c.description ?? undefined,
+      ...(c.image ? { images: [c.image] } : {}),
+    },
   };
 }
 
@@ -37,15 +44,21 @@ async function CollectionContent({ params, searchParams }: PageProps<"/collectio
   const { query, queryString } = parseCatalogParams(sp, slug);
   const [result, facets] = await Promise.all([getProducts(query), getFacets()]);
 
+  const breadcrumbs = [{ name: "Home", href: "/" }, { name: collection.title }];
+
   return (
-    <CollectionTemplate
-      title={collection.title}
-      description={collection.description}
-      basePath={`/collections/${slug}`}
-      query={queryString}
-      result={result}
-      facets={facets}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbJsonLd(breadcrumbs)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(collectionJsonLd(collection.title, slug, result.data)) }} />
+      <CollectionTemplate
+        title={collection.title}
+        description={collection.description}
+        basePath={`/collections/${slug}`}
+        query={queryString}
+        result={result}
+        facets={facets}
+      />
+    </>
   );
 }
 

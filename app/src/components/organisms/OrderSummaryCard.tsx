@@ -67,7 +67,7 @@ export function OrderSummaryCard({ order }: { order: Order }) {
           {order.items.map((item) => (
             <li key={item.id} className="flex items-center gap-3 py-3 sm:gap-4">
               <div className="relative h-16 w-12 shrink-0 overflow-hidden bg-cream sm:h-20 sm:w-16">
-                <AppImage src={item.image} alt="" fill sizes="64px" className="object-cover" />
+                <AppImage src={item.image} alt={item.name} fill sizes="64px" className="object-cover" />
               </div>
               <div className="flex-1 text-sm">
                 <p className="font-medium">{item.name}</p>

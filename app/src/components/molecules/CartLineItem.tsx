@@ -14,7 +14,7 @@ export function CartLineItem({ item, onNavigate, issue }: { item: CartLine; onNa
   return (
     <li className="flex gap-3 py-3 sm:gap-4 sm:py-4">
       <div className="relative h-20 w-16 shrink-0 overflow-hidden bg-cream sm:h-24 sm:w-20">
-        <AppImage src={item.image} alt="" fill sizes="80px" className="object-cover" />
+        <AppImage src={item.image} alt={item.name} fill sizes="80px" className="object-cover" />
       </div>
       <div className="flex flex-1 flex-col gap-1.5 sm:gap-2">
         <Link href={`/products/${item.slug}`} onClick={onNavigate} className="text-xs leading-snug hover:text-brand sm:text-sm">

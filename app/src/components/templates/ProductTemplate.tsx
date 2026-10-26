@@ -32,6 +32,13 @@ export function ProductTemplate({ product, related, maxQuantity }: ProductTempla
           <ProductGrid products={related} />
         </section>
       )}
+      {product.categorySlug && (
+        <nav className="mt-12 text-center" aria-label="Collection navigation">
+          <Link href={`/collections/${product.categorySlug}`} className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-ink hover:text-brand">
+            ← Browse all {product.categoryName}
+          </Link>
+        </nav>
+      )}
     </Container>
   );
 }

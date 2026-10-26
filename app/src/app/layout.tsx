@@ -19,6 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: site.seo.defaultTitle || `${site.name} | ${site.tagline}`, template: `%s | ${site.name}` },
     description: site.seo.defaultDescription || site.about,
     openGraph: { siteName: site.name, type: "website", images: site.seo.ogImage ? [site.seo.ogImage] : undefined },
+    twitter: {
+      card: "summary_large_image",
+      title: site.seo.defaultTitle || `${site.name} | ${site.tagline}`,
+      description: site.seo.defaultDescription || site.about,
+      ...(site.seo.ogImage ? { images: [site.seo.ogImage] } : {}),
+    },
     alternates: { canonical: "/" },
     applicationName: site.name,
     appleWebApp: { capable: true, title: site.name, statusBarStyle: "default" },
@@ -44,6 +50,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const site = await getSite();
   return (
     <html lang="en" className={`${body.variable} ${display.variable}`}>
+      <head>
+        {/* Preconnect to API origin for faster image/data loading (LCP improvement) */}
+        <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"} />
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"} crossOrigin="anonymous" />
+        {/* Preconnect to Google Fonts (used by next/font) */}
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+      </head>
       <body className="min-h-screen" suppressHydrationWarning>
         <ToastProvider>
           <StoreProvider>

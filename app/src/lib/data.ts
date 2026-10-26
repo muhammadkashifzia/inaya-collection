@@ -136,3 +136,15 @@ export async function getAllProductSlugs(): Promise<{ slug: string; updatedAt: s
   } while (page <= lastPage && page <= 50);
   return slugs;
 }
+
+
+/** Review summary (average + count) for a product. Used for AggregateRating JSON-LD. */
+export async function getReviewSummary(slug: string): Promise<{ average: number | null; count: number }> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("products", `product:${slug}`);
+  const json = await getJson<{
+    summary: { average: number | null; count: number };
+  }>(`/products/${encodeURIComponent(slug)}/reviews?page=1`);
+  return json?.summary ?? { average: null, count: 0 };
+}
