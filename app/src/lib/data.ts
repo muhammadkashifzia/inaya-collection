@@ -14,17 +14,27 @@ export class ApiUnavailableError extends Error {}
 
 /**
  * GET a JSON endpoint. Returns null on 404; throws on other failures.
+ * Retries up to 3 times on 429 (rate-limit) with exponential back-off.
  */
 async function getJson<T = unknown>(path: string): Promise<T | null> {
-  let res: Response;
-  try {
-    res = await fetch(`${API_URL}/api/v1${path}`, { headers: { Accept: "application/json" } });
-  } catch (error) {
-    throw new ApiUnavailableError(`Could not reach the API at ${API_URL}: ${(error as Error).message}`);
+  const maxRetries = 3;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    let res: Response;
+    try {
+      res = await fetch(`${API_URL}/api/v1${path}`, { headers: { Accept: "application/json" } });
+    } catch (error) {
+      throw new ApiUnavailableError(`Could not reach the API at ${API_URL}: ${(error as Error).message}`);
+    }
+    if (res.status === 404) return null;
+    if (res.status === 429 && attempt < maxRetries) {
+      const retryAfter = Number(res.headers.get("Retry-After")) || 2 ** attempt;
+      await new Promise((r) => setTimeout(r, retryAfter * 1000));
+      continue;
+    }
+    if (!res.ok) throw new Error(`API GET ${path} failed with ${res.status}`);
+    return (await res.json()) as T;
   }
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`API GET ${path} failed with ${res.status}`);
-  return (await res.json()) as T;
+  throw new Error(`API GET ${path} failed after ${maxRetries} retries (429)`);
 }
 
 export async function getSite(): Promise<SiteConfig> {
