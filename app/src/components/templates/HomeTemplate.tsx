@@ -39,15 +39,23 @@ function Section({ section }: { section: HomeSection }) {
           category={section.category?.shortTitle || section.category?.title}
         />
       );
-    case "featured":
     case "best_sellers":
+      return (
+        <ProductRail
+          title={section.title}
+          products={section.products}
+          center={false}
+          href="/collections/all?sort=popularity"
+        />
+      );
+    case "featured":
     case "latest":
     case "discounted":
       return (
         <ProductRail
           title={section.title}
           products={section.products}
-          href={`/collections/all?sort=${section.type === "best_sellers" ? "popularity" : section.type === "latest" ? "latest" : "featured"}${section.type === "discounted" ? "&on_sale=1" : ""}`}
+          href={`/collections/all?sort=${section.type === "latest" ? "latest" : "featured"}${section.type === "discounted" ? "&on_sale=1" : ""}`}
         />
       );
     case "reviews":
