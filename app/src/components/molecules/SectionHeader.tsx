@@ -21,17 +21,18 @@ export function SectionHeader({ title, subtitle, action, center = true }: { titl
               center && "mx-auto",
             )}>{subtitle}</p>
           )}
+          <span className={cn(
+            "mt-3 block h-[2px] w-16 rounded-full bg-ink",
+            center && "mx-auto",
+          )} aria-hidden="true" />
         </div>
         {action && (
           <div className={cn(
             "shrink-0",
-            center
-              ? "-mx-4 overflow-x-auto px-4 no-scrollbar md:mx-0 md:px-0 md:overflow-visible"
-              : "-mx-4 overflow-x-auto px-4 no-scrollbar md:mx-0 md:px-0 md:overflow-visible",
+            "-mx-4 overflow-x-auto px-4 no-scrollbar md:mx-0 md:px-0 md:overflow-visible",
           )}>{action}</div>
         )}
       </div>
-      <span className="mt-3 block h-px w-full bg-ink/10" aria-hidden="true" />
     </div>
   );
 }

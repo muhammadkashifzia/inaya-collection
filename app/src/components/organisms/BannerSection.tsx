@@ -10,11 +10,12 @@ interface BannerSlide {
 
 interface BannerSectionProps {
   title: string;
+  subtitle?: string;
   slides: BannerSlide[];
 }
 
 /** Horizontal scrollable banner strip with text overlay on each image. */
-export function BannerSection({ title, slides }: BannerSectionProps) {
+export function BannerSection({ title, subtitle, slides }: BannerSectionProps) {
   const validSlides = slides.filter((s) => s.image);
   if (validSlides.length === 0) return null;
 
@@ -56,7 +57,7 @@ export function BannerSection({ title, slides }: BannerSectionProps) {
   return (
     <section className="py-6 md:py-10">
       <Container>
-        {title && <SectionHeader title={title} />}
+        {title && <SectionHeader title={title} subtitle={subtitle} />}
         <MobileSlider>{cards}</MobileSlider>
       </Container>
     </section>

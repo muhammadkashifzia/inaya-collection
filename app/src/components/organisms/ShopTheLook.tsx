@@ -15,6 +15,7 @@ interface Look {
 
 interface ShopTheLookProps {
   title: string;
+  subtitle?: string;
   looks: Look[];
 }
 
@@ -24,7 +25,7 @@ interface ShopTheLookProps {
  * Mobile: only the lifestyle image as a swipeable slider with "View Product" overlay.
  * Arrows cycle looks; dots cycle products (desktop only).
  */
-export function ShopTheLook({ title, looks }: ShopTheLookProps) {
+export function ShopTheLook({ title, subtitle, looks }: ShopTheLookProps) {
   const validLooks = looks.filter((l) => l.image && l.products.length > 0);
   const [lookIdx, setLookIdx] = useState(0);
   const [prodIdx, setProdIdx] = useState(0);
@@ -46,7 +47,7 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
   return (
     <section className="py-10 md:py-14">
       <Container>
-        <SectionHeader title={title} />
+        <SectionHeader title={title} subtitle={subtitle} />
 
         <div className="relative">
           {/* Prev / Next look arrows */}

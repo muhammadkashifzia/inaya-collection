@@ -9,6 +9,7 @@ use App\Http\Resources\CmsPageResource;
 use App\Models\Banner;
 use App\Models\CmsPage;
 use App\Models\NewsletterSubscription;
+use App\Services\MailchimpService;
 use App\Services\SettingsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -63,14 +64,19 @@ class StorefrontController extends Controller
     /**
      * POST /api/v1/newsletter
      */
-    public function subscribe(Request $request): JsonResponse
+    public function subscribe(Request $request, MailchimpService $mailchimp): JsonResponse
     {
         $validated = $request->validate(['email' => ['required', 'email:rfc', 'max:255']]);
 
+        $email = strtolower($validated['email']);
+
         NewsletterSubscription::query()->updateOrCreate(
-            ['email' => strtolower($validated['email'])],
+            ['email' => $email],
             ['is_subscribed' => true, 'unsubscribed_at' => null],
         );
+
+        // Sync to Mailchimp audience (fire-and-forget — DB is the source of truth)
+        $mailchimp->subscribe($email);
 
         return response()->json(['message' => 'Thanks for subscribing.'], 201);
     }

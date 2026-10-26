@@ -40,4 +40,9 @@ return [
         'revalidation_secret' => env('NEXTJS_REVALIDATION_SECRET'),
     ],
 
+    'mailchimp' => [
+        'api_key' => env('MAILCHIMP_API_KEY', ''),
+        'list_id' => env('MAILCHIMP_LIST_ID', ''),
+    ],
+
 ];
