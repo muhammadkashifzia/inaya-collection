@@ -45,7 +45,33 @@ export function ShopTheLook({ title, subtitle, looks }: ShopTheLookProps) {
   }
 
   return (
-    <section className="py-10 md:py-14">
+    <section className="relative py-10 md:py-14 overflow-hidden">
+      {/* ── Decorative corner ornaments ── */}
+      <svg aria-hidden="true" className="pointer-events-none absolute left-0 top-0 h-36 w-36 text-brand/[0.06] sm:h-48 sm:w-48 md:h-64 md:w-64" viewBox="0 0 200 200" fill="none">
+        <path d="M0 0c30 50 60 80 100 100C60 80 30 50 0 0Z" fill="currentColor" />
+        <path d="M0 0c20 60 50 100 120 130C50 100 20 60 0 0Z" fill="currentColor" opacity="0.5" />
+        <circle cx="12" cy="12" r="4" fill="currentColor" opacity="0.7" />
+        <circle cx="32" cy="5" r="2.5" fill="currentColor" opacity="0.5" />
+        <circle cx="5" cy="35" r="2" fill="currentColor" opacity="0.4" />
+        <path d="M0 60C25 55 45 40 60 0" stroke="currentColor" strokeWidth="0.8" opacity="0.4" />
+        <path d="M60 0C55 25 40 45 0 60" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+        <path d="M8 8c15 5 25 15 35 35" stroke="currentColor" strokeWidth="0.6" opacity="0.35" fill="none" />
+        <ellipse cx="50" cy="15" rx="6" ry="3" fill="currentColor" opacity="0.15" transform="rotate(-20 50 15)" />
+        <ellipse cx="15" cy="55" rx="5" ry="2.5" fill="currentColor" opacity="0.12" transform="rotate(70 15 55)" />
+      </svg>
+      <svg aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 h-36 w-36 text-brand/[0.06] sm:h-48 sm:w-48 md:h-64 md:w-64" viewBox="0 0 200 200" fill="none">
+        <path d="M200 200c-30-50-60-80-100-100 40 20 70 50 100 100Z" fill="currentColor" />
+        <path d="M200 200c-20-60-50-100-120-130 70 30 100 70 120 130Z" fill="currentColor" opacity="0.5" />
+        <circle cx="188" cy="188" r="4" fill="currentColor" opacity="0.7" />
+        <circle cx="168" cy="195" r="2.5" fill="currentColor" opacity="0.5" />
+        <circle cx="195" cy="165" r="2" fill="currentColor" opacity="0.4" />
+        <path d="M200 140c-25 5-45 20-60 60" stroke="currentColor" strokeWidth="0.8" opacity="0.4" />
+        <path d="M140 200c5-25 20-45 60-60" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+        <path d="M192 192c-15-5-25-15-35-35" stroke="currentColor" strokeWidth="0.6" opacity="0.35" fill="none" />
+        <ellipse cx="150" cy="185" rx="6" ry="3" fill="currentColor" opacity="0.15" transform="rotate(160 150 185)" />
+        <ellipse cx="185" cy="145" rx="5" ry="2.5" fill="currentColor" opacity="0.12" transform="rotate(-110 185 145)" />
+      </svg>
+
       <Container>
         <SectionHeader title={title} subtitle={subtitle} />
 
