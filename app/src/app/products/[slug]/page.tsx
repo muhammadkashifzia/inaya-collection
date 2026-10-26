@@ -7,8 +7,10 @@ import { getAllProductSlugs, getProduct, getReviewSummary, getSite } from "@/lib
 import { breadcrumbJsonLd, jsonLdString, productJsonLd } from "@/lib/seo";
 
 export async function generateStaticParams() {
+  // Pre-render only the latest 20 products to avoid 429 rate-limits during build.
+  // The remaining product pages are generated on-demand and cached.
   const slugs = await getAllProductSlugs();
-  return slugs.map(({ slug }) => ({ slug }));
+  return slugs.slice(0, 20).map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/products/[slug]">): Promise<Metadata> {
