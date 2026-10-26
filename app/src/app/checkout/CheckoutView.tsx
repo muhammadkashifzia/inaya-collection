@@ -170,9 +170,9 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
     error && (error.field("cart") ?? error.field("coupon_code") ?? error.field("payment_method") ?? error.field("idempotency_key") ?? (Object.keys(error.errors).length ? "Please check the highlighted fields." : error.message));
 
   return (
-    <Container className="py-10 md:py-14">
-      <Heading level={1} className="mb-8">Checkout</Heading>
-      <form onSubmit={onSubmit} noValidate className="grid gap-10 lg:grid-cols-[1fr_400px]">
+    <Container className="py-8 sm:py-10 md:py-14">
+      <Heading level={1} className="mb-6 sm:mb-8">Checkout</Heading>
+      <form onSubmit={onSubmit} noValidate className="grid gap-8 lg:grid-cols-[1fr_400px] lg:gap-10">
         <div className="space-y-10">
           <FormAlert tone="error">{generalError}</FormAlert>
 
@@ -264,7 +264,7 @@ export function CheckoutView({ shippingMethods, paymentMethods, freeShippingThre
           </section>
         </div>
 
-        <aside className="h-fit space-y-5 bg-cream p-6 lg:sticky lg:top-28" aria-label="Order summary">
+        <aside className="h-fit space-y-4 bg-cream p-4 sm:space-y-5 sm:p-6 lg:sticky lg:top-28" aria-label="Order summary">
           <h2 className="font-heading text-xl font-semibold">Order summary</h2>
           <ul className="space-y-3">
             {(display?.items ?? []).map((item) => (

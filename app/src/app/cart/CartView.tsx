@@ -13,8 +13,8 @@ export function CartView() {
   const blocking = (cart?.issues.length ?? 0) > 0;
 
   return (
-    <Container className="py-12">
-      <Heading level={1} className="mb-8">Your Cart</Heading>
+    <Container className="py-8 sm:py-12">
+      <Heading level={1} className="mb-6 sm:mb-8">Your Cart</Heading>
       {cartError && <p role="alert" className="mb-6 bg-error/10 px-4 py-3 text-sm text-error">{cartError}</p>}
 
       {cart === null ? (
@@ -25,13 +25,13 @@ export function CartView() {
           <ButtonLink href="/collections/all" variant="outline">Continue shopping</ButtonLink>
         </div>
       ) : (
-        <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
+        <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:gap-10">
           <ul className="divide-y divide-line border-y border-line">
             {items.map((item) => (
               <CartLineItem key={item.id} item={item} issue={issueFor(item.id)} />
             ))}
           </ul>
-          <aside className="h-fit space-y-4 bg-cream p-6" aria-label="Order summary">
+          <aside className="h-fit space-y-4 bg-cream p-4 sm:p-6" aria-label="Order summary">
             <h2 className="font-heading text-xl font-semibold">Order summary</h2>
             <CouponForm />
             <CartTotals cart={cart} shippingNote="Shipping is calculated at checkout." />

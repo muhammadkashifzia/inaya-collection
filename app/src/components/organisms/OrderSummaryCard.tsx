@@ -26,7 +26,7 @@ export function OrderSummaryCard({ order }: { order: Order }) {
   const address = order.shippingAddress;
 
   return (
-    <article className="space-y-8 border border-line p-6" aria-label={`Order ${order.number}`}>
+    <article className="space-y-6 border border-line p-4 sm:space-y-8 sm:p-6" aria-label={`Order ${order.number}`}>
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-heading text-xl font-semibold">Order {order.number}</h2>
@@ -38,11 +38,11 @@ export function OrderSummaryCard({ order }: { order: Order }) {
       </header>
 
       {!closed && (
-        <ol className="grid grid-cols-6 gap-2 text-center text-[11px] font-semibold uppercase tracking-wider" aria-label="Order progress">
+        <ol className="flex gap-1 overflow-x-auto no-scrollbar text-center text-[10px] font-semibold uppercase tracking-wider sm:grid sm:grid-cols-6 sm:gap-2 sm:text-[11px]" aria-label="Order progress">
           {STEPS.map((step, i) => (
-            <li key={step} aria-current={i === stepIndex ? "step" : undefined} className="flex flex-col items-center gap-2">
-              <span className={cn("h-1.5 w-full", i <= stepIndex ? "bg-brand" : "bg-cream")} aria-hidden="true" />
-              <span className={i <= stepIndex ? "text-ink" : "text-muted"}>{statusLabel(step)}</span>
+            <li key={step} aria-current={i === stepIndex ? "step" : undefined} className="flex min-w-[70px] shrink-0 flex-col items-center gap-1.5 sm:min-w-0 sm:gap-2">
+              <span className={cn("h-1.5 w-full rounded-full sm:rounded-none", i <= stepIndex ? "bg-brand" : "bg-cream")} aria-hidden="true" />
+              <span className={cn("whitespace-nowrap", i <= stepIndex ? "text-ink" : "text-muted")}>{statusLabel(step)}</span>
             </li>
           ))}
         </ol>
@@ -65,8 +65,8 @@ export function OrderSummaryCard({ order }: { order: Order }) {
       {order.items.length > 0 && (
         <ul className="divide-y divide-line border-y border-line">
           {order.items.map((item) => (
-            <li key={item.id} className="flex items-center gap-4 py-3">
-              <div className="relative h-20 w-16 shrink-0 overflow-hidden bg-cream">
+            <li key={item.id} className="flex items-center gap-3 py-3 sm:gap-4">
+              <div className="relative h-16 w-12 shrink-0 overflow-hidden bg-cream sm:h-20 sm:w-16">
                 <AppImage src={item.image} alt="" fill sizes="64px" className="object-cover" />
               </div>
               <div className="flex-1 text-sm">

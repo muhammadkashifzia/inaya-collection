@@ -65,9 +65,9 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-      <div className="flex flex-col-reverse gap-3 md:flex-row">
-        <ul className="flex gap-3 md:flex-col" aria-label="Product images">
+    <div className="grid gap-6 lg:grid-cols-2 lg:gap-14">
+      <div className="flex flex-col-reverse gap-2 sm:gap-3 md:flex-row">
+        <ul className="flex gap-2 overflow-x-auto no-scrollbar sm:gap-3 md:flex-col md:overflow-visible" aria-label="Product images">
           {images.map((src, i) => (
             <li key={src ?? i}>
               <button
@@ -75,9 +75,9 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
                 onClick={() => setActiveImage(i)}
                 aria-label={`Show image ${i + 1}`}
                 aria-current={i === activeImage}
-                className={cn("relative block h-24 w-20 overflow-hidden border-2", i === activeImage ? "border-ink" : "border-transparent")}
+                className={cn("relative block h-16 w-14 shrink-0 overflow-hidden border-2 sm:h-24 sm:w-20", i === activeImage ? "border-ink" : "border-transparent")}
               >
-                <AppImage src={src} alt="" fill sizes="80px" className="object-cover" />
+                <AppImage src={src} alt="" fill sizes="(min-width: 640px) 80px, 56px" className="object-cover" />
               </button>
             </li>
           ))}
@@ -98,24 +98,24 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
       <div className="flex flex-col gap-5">
         {product.categoryName && <p className="text-xs font-semibold uppercase tracking-widest text-muted">{product.categoryName}</p>}
         <div className="flex items-start justify-between gap-4">
-          <h1 className="font-heading text-2xl font-semibold leading-snug md:text-3xl">{product.title}</h1>
+          <h1 className="font-heading text-xl font-semibold leading-snug sm:text-2xl md:text-3xl">{product.title}</h1>
           <WishlistButton product={product} className="shrink-0 border border-line" />
         </div>
         <Price price={price} compareAtPrice={compareAt} size="lg" />
         <p className="text-xs text-muted">Tax included. Shipping calculated at checkout.</p>
 
-        <dl className="grid grid-cols-3 gap-3 border-y border-line py-4 text-sm">
+        <dl className="grid grid-cols-3 gap-2 border-y border-line py-3 text-sm sm:gap-3 sm:py-4">
           <div>
-            <dt className="text-xs uppercase text-muted">Fabric</dt>
-            <dd className="font-semibold">{product.fabric ?? "—"}</dd>
+            <dt className="text-[10px] uppercase text-muted sm:text-xs">Fabric</dt>
+            <dd className="text-xs font-semibold sm:text-sm">{product.fabric ?? "—"}</dd>
           </div>
           <div>
-            <dt className="text-xs uppercase text-muted">Pieces</dt>
-            <dd className="font-semibold">{product.pieces ? `${product.pieces} Piece` : "—"}</dd>
+            <dt className="text-[10px] uppercase text-muted sm:text-xs">Pieces</dt>
+            <dd className="text-xs font-semibold sm:text-sm">{product.pieces ? `${product.pieces} Piece` : "—"}</dd>
           </div>
           <div>
-            <dt className="text-xs uppercase text-muted">SKU</dt>
-            <dd className="font-semibold">{variant?.sku ?? product.sku}</dd>
+            <dt className="text-[10px] uppercase text-muted sm:text-xs">SKU</dt>
+            <dd className="text-xs font-semibold sm:text-sm">{variant?.sku ?? product.sku}</dd>
           </div>
         </dl>
 

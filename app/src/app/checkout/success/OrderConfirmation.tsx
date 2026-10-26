@@ -40,9 +40,9 @@ export function OrderConfirmation() {
   }, [number, user, authReady]);
 
   return (
-    <Container className="max-w-3xl py-12">
-      <div className="mb-8 text-center">
-        <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+    <Container className="max-w-3xl px-4 py-8 sm:py-12">
+      <div className="mb-6 text-center sm:mb-8">
+        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 sm:mb-4 sm:h-14 sm:w-14">
           <Icon name="check" size={28} />
         </span>
         <Heading level={1} align="center">Thank you for your order</Heading>

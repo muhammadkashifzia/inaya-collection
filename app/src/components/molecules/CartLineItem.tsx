@@ -12,12 +12,12 @@ export function CartLineItem({ item, onNavigate, issue }: { item: CartLine; onNa
   const onSale = item.unitPrice < item.regularPrice;
 
   return (
-    <li className="flex gap-4 py-4">
-      <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-cream">
+    <li className="flex gap-3 py-3 sm:gap-4 sm:py-4">
+      <div className="relative h-20 w-16 shrink-0 overflow-hidden bg-cream sm:h-24 sm:w-20">
         <AppImage src={item.image} alt="" fill sizes="80px" className="object-cover" />
       </div>
-      <div className="flex flex-1 flex-col gap-2">
-        <Link href={`/products/${item.slug}`} onClick={onNavigate} className="text-sm leading-snug hover:text-brand">
+      <div className="flex flex-1 flex-col gap-1.5 sm:gap-2">
+        <Link href={`/products/${item.slug}`} onClick={onNavigate} className="text-xs leading-snug hover:text-brand sm:text-sm">
           {item.name}
           {item.variantName && <span className="block text-xs text-muted">{item.variantName}</span>}
         </Link>
