@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Container } from "@/components/atoms";
 import { ContactPageTemplate, ContentPageTemplate } from "@/components/templates";
 import { getContentPage, getContentPages, getSite } from "@/lib/data";
+import { breadcrumbJsonLd, jsonLdString, webPageJsonLd } from "@/lib/seo";
 import { ContactForm } from "./ContactForm";
 import { TrackOrderForm } from "./TrackOrderForm";
 
@@ -21,19 +22,38 @@ export async function generateMetadata({ params }: PageProps<"/pages/[slug]">): 
 
 async function PageContent({ params }: Pick<PageProps<"/pages/[slug]">, "params">) {
   const { slug } = await params;
-  const page = await getContentPage(slug);
+  const [page, site] = await Promise.all([getContentPage(slug), getSite()]);
   if (!page) notFound();
 
+  const breadcrumbs = [
+    { name: "Home", href: "/" },
+    { name: page.title },
+  ];
+
+  const jsonLd = (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(webPageJsonLd(page, site)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbJsonLd(breadcrumbs)) }} />
+    </>
+  );
+
   if (slug === "contact-us") {
-    const site = await getSite();
     return (
-      <ContactPageTemplate page={page} site={site}>
-        <ContactForm />
-      </ContactPageTemplate>
+      <>
+        {jsonLd}
+        <ContactPageTemplate page={page} site={site}>
+          <ContactForm />
+        </ContactPageTemplate>
+      </>
     );
   }
 
-  return <ContentPageTemplate page={page}>{slug === "track-your-order" && <TrackOrderForm />}</ContentPageTemplate>;
+  return (
+    <>
+      {jsonLd}
+      <ContentPageTemplate page={page}>{slug === "track-your-order" && <TrackOrderForm />}</ContentPageTemplate>
+    </>
+  );
 }
 
 export default function ContentPage({ params }: PageProps<"/pages/[slug]">) {

@@ -22,5 +22,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.3,
     })),
+    // AI discovery endpoints — help search engines & LLMs find structured data
+    { url: `${base}/llms.txt`, changeFrequency: "weekly" as const, priority: 0.2 },
+    { url: `${base}/ai/summary.json`, changeFrequency: "weekly" as const, priority: 0.2 },
+    { url: `${base}/ai/faq.json`, changeFrequency: "weekly" as const, priority: 0.2 },
   ];
 }

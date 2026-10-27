@@ -5,7 +5,8 @@ import { Container } from "@/components/atoms";
 import { ProductGridSkeleton } from "@/components/organisms";
 import { CollectionTemplate } from "@/components/templates";
 import { parseCatalogParams } from "@/lib/catalog-params";
-import { getCollection, getCollections, getFacets, getProducts } from "@/lib/data";
+import { getCollection, getCollections, getFacets, getProducts, getSite } from "@/lib/data";
+import { breadcrumbJsonLd, collectionJsonLd, jsonLdString } from "@/lib/seo";
 
 const ALL = { title: "All Products", description: "Browse every unstitched suit in our range.", metaTitle: null, metaDescription: null };
 
@@ -26,26 +27,37 @@ export async function generateMetadata({ params }: PageProps<"/collections/[slug
     title: c.metaTitle ?? c.title,
     description: c.metaDescription ?? c.description ?? undefined,
     alternates: { canonical: `/collections/${slug}` },
+    openGraph: { type: "website", title: c.metaTitle ?? c.title, description: c.metaDescription ?? c.description ?? undefined },
   };
 }
 
 async function CollectionContent({ params, searchParams }: PageProps<"/collections/[slug]">) {
   const [{ slug }, sp] = await Promise.all([params, searchParams]);
-  const collection = await resolve(slug);
+  const [collection, site] = await Promise.all([resolve(slug), getSite()]);
   if (!collection) notFound();
 
   const { query, queryString } = parseCatalogParams(sp, slug);
   const [result, facets] = await Promise.all([getProducts(query), getFacets()]);
 
+  const breadcrumbs = [
+    { name: "Home", href: "/" },
+    { name: "Collections", href: "/collections/all" },
+    { name: collection.title },
+  ];
+
   return (
-    <CollectionTemplate
-      title={collection.title}
-      description={collection.description}
-      basePath={`/collections/${slug}`}
-      query={queryString}
-      result={result}
-      facets={facets}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbJsonLd(breadcrumbs)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(collectionJsonLd({ ...collection, slug }, site)) }} />
+      <CollectionTemplate
+        title={collection.title}
+        description={collection.description}
+        basePath={`/collections/${slug}`}
+        query={queryString}
+        result={result}
+        facets={facets}
+      />
+    </>
   );
 }
 

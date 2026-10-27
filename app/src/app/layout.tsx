@@ -6,7 +6,7 @@ import { AnnouncementBar, CartDrawer, Footer, Header, MobileTabBar, ServiceHighl
 import { StoreProvider } from "@/context/StoreProvider";
 import { ToastProvider } from "@/context/ToastContext";
 import { getSite } from "@/lib/data";
-import { siteUrl } from "@/lib/seo";
+import { jsonLdString, organizationJsonLd, siteUrl, webSiteJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const body = Jost({ subsets: ["latin"], variable: "--font-body" });
@@ -44,6 +44,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const site = await getSite();
   return (
     <html lang="en" className={`${body.variable} ${display.variable}`}>
+      <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(organizationJsonLd(site)) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(webSiteJsonLd(site)) }} />
+      </head>
       <body className="min-h-screen" suppressHydrationWarning>
         <ToastProvider>
           <StoreProvider>

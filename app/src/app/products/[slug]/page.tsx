@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { Container } from "@/components/atoms";
 import { ProductTemplate } from "@/components/templates";
 import { getAllProductSlugs, getProduct, getSite } from "@/lib/data";
-import { jsonLdString, productJsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, jsonLdString, productJsonLd } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const slugs = await getAllProductSlugs();
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/products/[slug]">
     title: product.metaTitle ?? product.title,
     description: product.metaDescription ?? product.shortDescription ?? product.description ?? undefined,
     alternates: { canonical: `/products/${product.slug}` },
-    openGraph: { type: "website", title: product.title, images: product.images.slice(0, 1) },
+    openGraph: { type: "website", title: product.title, description: product.metaDescription ?? product.shortDescription ?? undefined, images: product.images.slice(0, 1) },
   };
 }
 
@@ -29,10 +29,20 @@ async function ProductContent({ params }: Pick<PageProps<"/products/[slug]">, "p
   const [result, site] = await Promise.all([getProduct(slug), getSite()]);
   if (!result) notFound();
 
+  const { product } = result;
+  const breadcrumbs = [
+    { name: "Home", href: "/" },
+    ...(product.categoryName && product.categorySlug
+      ? [{ name: product.categoryName, href: `/collections/${product.categorySlug}` }]
+      : [{ name: "Products", href: "/collections/all" }]),
+    { name: product.title },
+  ];
+
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(productJsonLd(result.product, site)) }} />
-      <ProductTemplate product={result.product} related={result.related} maxQuantity={site.maxQuantityPerItem} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(productJsonLd(product, site)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbJsonLd(breadcrumbs)) }} />
+      <ProductTemplate product={product} related={result.related} maxQuantity={site.maxQuantityPerItem} />
     </>
   );
 }
