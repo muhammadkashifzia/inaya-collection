@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import { Suspense } from "react";
 import { ServiceWorkerRegister } from "@/components/atoms";
-import { AnnouncementBar, CartDrawer, Footer, Header, MobileTabBar, ServiceHighlights } from "@/components/organisms";
+import { AnnouncementBar, CartDrawer, Footer, Header, MobileTabBar, NewsletterPopup, ServiceHighlights } from "@/components/organisms";
 import { StoreProvider } from "@/context/StoreProvider";
 import { ToastProvider } from "@/context/ToastContext";
 import { getSite } from "@/lib/data";
@@ -66,6 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <MobileTabBar />
           </Suspense>
           <CartDrawer freeShippingThreshold={site.freeShippingThreshold} />
+          <NewsletterPopup />
         </StoreProvider>
         </ToastProvider>
         <ServiceWorkerRegister />

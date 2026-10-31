@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type PointerEvent } from "react";
+import { useCallback, useRef, useState, type PointerEvent } from "react";
 import { AppImage, Icon } from "@/components/atoms";
 import { useStore } from "@/context/StoreProvider";
 import { cn, formatPrice } from "@/lib/format";
 import type { Product } from "@/types";
+import { QuickViewModal } from "./QuickViewModal";
 import { WishlistButton } from "./WishlistButton";
 
 interface ProductCardProps {
@@ -18,7 +19,8 @@ interface ProductCardProps {
  * Product card
  * - 3:4 image slider with prev/next arrows (desktop hover only); hovering
  *   slides to the second image, leaving slides back to the first
- * - Wishlist heart top-left, "Sale" pill top-right
+ * - Wishlist heart top-right, "Sale" pill top-left
+ * - Quick view eye button under the heart, shown on hover only, opens a modal
  * - Desktop: full-width black "Add to cart" bar slides up on hover
  * - Mobile: round black cart-plus button, always visible bottom-right
  *
@@ -26,10 +28,17 @@ interface ProductCardProps {
  * several variants (size/colour) open the product page to choose options.
  */
 export function ProductCard({ product, priority = false }: ProductCardProps) {
-  const { addToCart } = useStore();
+  const { addToCart, isWishlisted } = useStore();
+  const saved = isWishlisted(product.id);
   const router = useRouter();
   const [index, setIndex] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [quickView, setQuickView] = useState(false);
+  const eyeButton = useRef<HTMLButtonElement>(null);
+  const closeQuickView = useCallback(() => {
+    setQuickView(false);
+    eyeButton.current?.focus();
+  }, []);
   const images = product.images.length ? product.images : [null];
   const count = images.length;
   const onSale = product.compareAtPrice !== null && product.compareAtPrice > product.price;
@@ -63,11 +72,38 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
   return (
     <div className="group/card relative h-full">
-      <WishlistButton product={product} className="absolute left-2 top-2 z-[4]" />
+      {/* Action column, top-right: heart always visible, quick view (eye) below it on hover. */}
+      <div className="absolute right-2.5 top-2.5 z-[4] flex flex-col gap-2">
+        <span className="group/action relative flex">
+          <WishlistButton product={product} className="hover:bg-[#111] hover:text-white" />
+          <ActionTooltip label={saved ? "Remove From Wishlist" : "Add To Wishlist"} />
+        </span>
+        <span
+          className={cn(
+            "group/action relative flex transition-[opacity,transform] duration-300",
+            "pointer-events-none translate-x-2 opacity-0",
+            "group-hover/card:pointer-events-auto group-hover/card:translate-x-0 group-hover/card:opacity-100",
+            "group-focus-within/card:pointer-events-auto group-focus-within/card:translate-x-0 group-focus-within/card:opacity-100",
+          )}
+        >
+          <button
+            ref={eyeButton}
+            type="button"
+            onClick={() => setQuickView(true)}
+            aria-label={`Quick view ${product.title}`}
+            aria-haspopup="dialog"
+            className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white text-[#222] shadow-[0_2px_8px_#0000001f] transition-colors duration-200 hover:bg-[#111] hover:text-white focus-visible:outline-2 focus-visible:outline-brand"
+          >
+            <Icon name="eye" size={20} strokeWidth={1.6} />
+          </button>
+          <ActionTooltip label="Quick View" />
+        </span>
+      </div>
+      {quickView && <QuickViewModal product={product} onClose={closeQuickView} />}
 
       <div className="flex h-full flex-col">
         <div
-          className="relative aspect-[3/4] overflow-hidden bg-[#e8e4db]"
+          className="relative aspect-[3/4] overflow-hidden rounded-[10px] bg-[#e8e4db]"
           onPointerEnter={onPointerEnter}
           onPointerLeave={onPointerLeave}
         >
@@ -92,7 +128,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           </Link>
 
           {onSale && (
-            <span className="pointer-events-none absolute right-2 top-2 z-[4] inline-flex min-h-[22px] items-center justify-center rounded-full bg-brand px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.04em] text-white">
+            <span className="pointer-events-none absolute left-2 top-2 z-[4] inline-flex min-h-[22px] items-center justify-center rounded-full bg-brand px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.04em] text-white">
               Sale
             </span>
           )}
@@ -148,6 +184,25 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </Link>
       </div>
     </div>
+  );
+}
+
+/**
+ * Dark label that slides in to the left of a card action button on hover
+ * (or keyboard focus). Desktop only; the button keeps its own aria-label.
+ */
+function ActionTooltip({ label }: { label: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "pointer-events-none absolute right-[calc(100%+10px)] top-1/2 hidden -translate-y-1/2 translate-x-1 whitespace-nowrap rounded bg-[#111] px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 transition-[opacity,transform] duration-200 md:block",
+        "after:absolute after:left-full after:top-1/2 after:-translate-y-1/2 after:border-[5px] after:border-transparent after:border-l-[#111] after:content-['']",
+        "group-hover/action:translate-x-0 group-hover/action:opacity-100 group-has-[:focus-visible]/action:translate-x-0 group-has-[:focus-visible]/action:opacity-100",
+      )}
+    >
+      {label}
+    </span>
   );
 }
 

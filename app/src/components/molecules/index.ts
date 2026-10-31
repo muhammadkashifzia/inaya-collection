@@ -7,6 +7,7 @@ export { MobileSlider } from "./MobileSlider";
 export { Pagination } from "./Pagination";
 export { ProductCard } from "./ProductCard";
 export { QuantitySelector } from "./QuantitySelector";
+export { QuickViewModal } from "./QuickViewModal";
 export { SectionHeader } from "./SectionHeader";
 export { TrustBadge } from "./TrustBadge";
 export { WishlistButton } from "./WishlistButton";

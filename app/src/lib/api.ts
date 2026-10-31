@@ -228,6 +228,11 @@ export const api = {
     if (query.sort) params.set("sort", query.sort);
     return mapPaginated(await request("GET", `/products?${params}`, { signal }), mapProduct);
   },
+  /** Full product (with variants) for client-side views such as quick view. */
+  async product(slug: string, signal?: AbortSignal): Promise<Product> {
+    const json = await request<{ data: unknown }>("GET", `/products/${encodeURIComponent(slug)}`, { signal });
+    return mapProduct(json.data);
+  },
 
   // ----- Cart
   cart: async (shippingMethod?: string) =>

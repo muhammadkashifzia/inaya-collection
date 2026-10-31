@@ -17,7 +17,7 @@ export function WishlistButton({ product, className }: { product: Product; class
       aria-label={saved ? `Remove ${product.title} from wishlist` : `Add ${product.title} to wishlist`}
       onClick={() => void toggleWishlist(product)}
       className={cn(
-        "inline-flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-[0_2px_8px_#0000001f] transition-colors focus-visible:outline-2 focus-visible:outline-brand",
+        "inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white shadow-[0_2px_8px_#0000001f] transition-colors focus-visible:outline-2 focus-visible:outline-brand",
         saved ? "text-[#e31c23]" : "text-[#222]",
         className,
       )}

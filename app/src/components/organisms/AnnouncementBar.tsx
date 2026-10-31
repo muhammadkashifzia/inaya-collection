@@ -1,30 +1,62 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
+/**
+ * Continuous marquee ticker inspired by Shopify's marquee-track pattern.
+ * All announcement messages scroll right-to-left in a seamless infinite loop.
+ * The strip is duplicated so the second copy slides in as the first slides out.
+ * Pauses on hover or keyboard focus.
+ */
 export function AnnouncementBar({ messages }: { messages: string[] }) {
-  const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (messages.length < 2 || paused) return;
-    const id = window.setInterval(() => setIndex((i) => (i + 1) % messages.length), 4000);
-    return () => window.clearInterval(id);
-  }, [messages.length, paused]);
 
   if (!messages.length) return null;
 
+  // Scale duration to content length so short/long lists both feel readable.
+  const duration = Math.max(16, messages.length * 4);
+
+  const separator = (
+    <span aria-hidden="true" className="mx-4 text-[10px] opacity-60">
+      ✦
+    </span>
+  );
+
+  const strip = messages.map((msg, i) => (
+    <span key={i} className="inline-flex items-center whitespace-nowrap">
+      {i > 0 && separator}
+      {msg}
+    </span>
+  ));
+
+  const playState = paused ? "paused" : "running";
+
   return (
     <div
-      className="bg-brand text-white"
+      className="overflow-hidden bg-brand text-white"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <p className="mx-auto max-w-7xl px-4 py-2 text-center text-xs font-medium uppercase tracking-widest" aria-live="polite">
-        {messages[index]}
-      </p>
+      <div className="marquee-track relative flex py-2.5" aria-live="polite">
+        <div
+          className="marquee-track--element flex shrink-0 animate-marquee items-center text-xs font-medium uppercase tracking-widest"
+          style={{ animationDuration: `${duration}s`, animationPlayState: playState }}
+        >
+          {strip}
+          {separator}
+        </div>
+        {/* Duplicate for seamless loop */}
+        <div
+          aria-hidden="true"
+          className="marquee-track--element flex shrink-0 animate-marquee items-center text-xs font-medium uppercase tracking-widest"
+          style={{ animationDuration: `${duration}s`, animationPlayState: playState }}
+        >
+          {strip}
+          {separator}
+        </div>
+      </div>
     </div>
   );
 }
