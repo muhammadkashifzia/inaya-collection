@@ -74,8 +74,8 @@ function ReviewForm({ slug, onDone }: { slug: string; onDone: (message: string) 
   const fieldErrors = error ? ["name", "email", "rating", "title", "body"].some((f) => error.field(f)) : false;
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5 border border-line p-6" aria-label="Write a review">
-      <h3 className="font-heading text-lg font-semibold">Write a review</h3>
+    <form onSubmit={onSubmit} className="space-y-4 border border-line p-4 sm:space-y-5 sm:p-6" aria-label="Write a review">
+      <h3 className="font-heading text-base font-semibold sm:text-lg">Write a review</h3>
       <FormAlert tone="error">{error ? (fieldErrors ? "Please fix the highlighted fields." : error.message) : null}</FormAlert>
       <RatingInput value={values.rating} onChange={(v) => set("rating", v)} error={error?.field("rating")} />
       <div className="grid gap-5 md:grid-cols-2">
@@ -108,13 +108,13 @@ function ReviewForm({ slug, onDone }: { slug: string; onDone: (message: string) 
 
 function ReviewItem({ review }: { review: ProductReview }) {
   return (
-    <li className="py-6">
+    <li className="py-4 sm:py-6">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <Stars rating={review.rating} className="text-sm" />
-        {review.title && <p className="font-semibold">{review.title}</p>}
+        {review.title && <p className="text-[13px] font-semibold sm:text-base">{review.title}</p>}
       </div>
-      <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-ink/80">{review.body}</p>
-      <p className="mt-3 text-xs text-muted">
+      <p className="mt-1.5 whitespace-pre-line text-[13px] leading-relaxed text-ink/80 sm:mt-2 sm:text-sm">{review.body}</p>
+      <p className="mt-2 text-[11px] text-muted sm:mt-3 sm:text-xs">
         <span className="font-semibold text-ink">{review.name}</span>
         {review.isVerifiedBuyer && <span className="ms-2 text-emerald-700">✓ Verified buyer</span>}
         {review.createdAt && <span className="ms-2">· {formatDate(review.createdAt)}</span>}
@@ -165,14 +165,14 @@ export function ProductReviews({ slug }: { slug: string }) {
   const summary = data?.summary;
 
   return (
-    <section className="mt-20" aria-label="Customer reviews" id="reviews">
+    <section className="mt-12 sm:mt-16 md:mt-20" aria-label="Customer reviews" id="reviews">
       <SectionHeader title="Customer reviews" />
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <div className="grid gap-8 sm:gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         <div className="space-y-5">
           {summary && summary.count > 0 ? (
             <div>
-              <p className="flex items-baseline gap-3">
-                <span className="font-heading text-4xl font-semibold">{summary.average?.toFixed(1)}</span>
+              <p className="flex items-baseline gap-2 sm:gap-3">
+                <span className="font-heading text-3xl font-semibold sm:text-4xl">{summary.average?.toFixed(1)}</span>
                 <Stars rating={summary.average ?? 0} />
               </p>
               <p className="mt-1 text-sm text-muted">Based on {summary.count} review{summary.count === 1 ? "" : "s"}</p>

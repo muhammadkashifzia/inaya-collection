@@ -12,8 +12,8 @@ interface ProductTemplateProps {
 
 export function ProductTemplate({ product, related, maxQuantity }: ProductTemplateProps) {
   return (
-    <Container className="py-8 md:py-12">
-      <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted">
+    <Container className="py-6 sm:py-8 md:py-12">
+      <nav aria-label="Breadcrumb" className="mb-4 text-[11px] text-muted sm:mb-6 sm:text-xs">
         <Link href="/" className="hover:text-ink">Home</Link>
         {product.categorySlug && (
           <>
@@ -27,7 +27,7 @@ export function ProductTemplate({ product, related, maxQuantity }: ProductTempla
       <ProductDetail product={product} maxQuantity={maxQuantity} />
       <ProductReviews slug={product.slug} />
       {related.length > 0 && (
-        <section className="mt-20">
+        <section className="mt-12 sm:mt-16 md:mt-20">
           <SectionHeader title="You may also like" />
           <ProductGrid products={related} />
         </section>

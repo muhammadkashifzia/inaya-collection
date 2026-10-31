@@ -1,11 +1,14 @@
-import { Link } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
 import FilterBar, { FilterSelect } from "@/components/admin/FilterBar";
 import PageHeader from "@/components/admin/PageHeader";
 import Pagination from "@/components/admin/Pagination";
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/admin/StatusBadge";
+import { DeleteAction, EditAction, ViewAction } from "@/components/admin/TableActions";
 import PageMeta from "@/components/common/PageMeta";
 import { useApi } from "@/hooks/useApi";
 import { useListQuery } from "@/hooks/useListQuery";
@@ -17,8 +20,22 @@ const dateInput =
   "h-11 rounded-lg border border-gray-300 bg-transparent px-3 text-sm shadow-theme-xs focus:border-brand-300 focus:outline-hidden dark:border-gray-700 dark:text-white/90";
 
 export default function OrderList() {
+  const navigate = useNavigate();
   const { values, page, set } = useListQuery(["q", "status", "payment_status", "from", "to"] as const);
   const { data, error, loading, reload } = useApi(() => http.get<Paginated<Order>>("/admin/orders", { ...values, page, per_page: 20 }), [values, page]);
+  const [confirmOrder, setConfirmOrder] = useState<Order | null>(null);
+
+  async function onConfirmDelete() {
+    if (!confirmOrder) return;
+    try {
+      await http.delete(`/admin/orders/${confirmOrder.id}`);
+      reload();
+    } catch {
+      // handled silently
+    } finally {
+      setConfirmOrder(null);
+    }
+  }
 
   return (
     <>
@@ -66,6 +83,11 @@ export default function OrderList() {
                       <OrderStatusBadge status={o.status} />
                       <PaymentStatusBadge status={o.payment_status} />
                     </div>
+                    <div className="mt-3 flex justify-end gap-1">
+                      <ViewAction onClick={() => void navigate(`/orders/${o.number}`)} />
+                      <EditAction onClick={() => void navigate(`/orders/${o.number}`)} />
+                      <DeleteAction onClick={() => setConfirmOrder(o)} />
+                    </div>
                   </div>
                 )}
                 columns={[
@@ -86,6 +108,18 @@ export default function OrderList() {
                   { key: "status", header: "Status", cell: (o) => <OrderStatusBadge status={o.status} /> },
                   { key: "payment", header: "Payment", cell: (o) => <PaymentStatusBadge status={o.payment_status} /> },
                   { key: "total", header: "Total", align: "end", cell: (o) => <span className="font-semibold">{money(o.grand_total)}</span> },
+                  {
+                    key: "actions",
+                    header: "Action",
+                    align: "end",
+                    cell: (o) => (
+                      <div className="flex items-center justify-end gap-1">
+                        <ViewAction onClick={() => void navigate(`/orders/${o.number}`)} />
+                        <EditAction onClick={() => void navigate(`/orders/${o.number}`)} />
+                        <DeleteAction onClick={() => setConfirmOrder(o)} />
+                      </div>
+                    ),
+                  },
                 ]}
               />
               <Pagination meta={data.meta} onPage={(p) => set("page", p)} />
@@ -93,6 +127,16 @@ export default function OrderList() {
           )}
         </DataState>
       </Card>
+
+      <ConfirmDialog
+        open={confirmOrder !== null}
+        title="Delete order"
+        message={`Are you sure you want to delete order ${confirmOrder?.number ?? ""}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={onConfirmDelete}
+        onCancel={() => setConfirmOrder(null)}
+      />
     </>
   );
 }

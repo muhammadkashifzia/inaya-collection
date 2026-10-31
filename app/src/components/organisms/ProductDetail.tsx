@@ -65,9 +65,9 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2 lg:gap-14">
-      <div className="flex flex-col-reverse gap-3 md:flex-row">
-        <ul className="flex gap-3 md:flex-col" aria-label="Product images">
+    <div className="grid gap-6 lg:grid-cols-2 lg:gap-14">
+      <div className="flex flex-col-reverse gap-2.5 sm:gap-3 md:flex-row">
+        <ul className="no-scrollbar flex gap-2 overflow-x-auto sm:gap-3 md:flex-col md:overflow-x-visible" aria-label="Product images">
           {images.map((src, i) => (
             <li key={src ?? i}>
               <button
@@ -75,7 +75,7 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
                 onClick={() => setActiveImage(i)}
                 aria-label={`Show image ${i + 1}`}
                 aria-current={i === activeImage}
-                className={cn("relative block h-24 w-20 overflow-hidden border-2", i === activeImage ? "border-ink" : "border-transparent")}
+                className={cn("relative block h-16 w-14 shrink-0 overflow-hidden border-2 sm:h-20 sm:w-16 md:h-24 md:w-20", i === activeImage ? "border-ink" : "border-transparent")}
               >
                 <AppImage src={src} alt="" fill sizes="80px" className="object-cover" />
               </button>
@@ -95,27 +95,27 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-5">
-        {product.categoryName && <p className="text-xs font-semibold uppercase tracking-widest text-muted">{product.categoryName}</p>}
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="font-heading text-2xl font-semibold leading-snug md:text-3xl">{product.title}</h1>
+      <div className="flex flex-col gap-4 sm:gap-5">
+        {product.categoryName && <p className="text-[11px] font-semibold uppercase tracking-widest text-muted sm:text-xs">{product.categoryName}</p>}
+        <div className="flex items-start justify-between gap-3 sm:gap-4">
+          <h1 className="font-heading text-xl font-semibold leading-snug sm:text-2xl md:text-3xl">{product.title}</h1>
           <WishlistButton product={product} className="shrink-0 border border-line" />
         </div>
         <Price price={price} compareAtPrice={compareAt} size="lg" />
-        <p className="text-xs text-muted">Tax included. Shipping calculated at checkout.</p>
+        <p className="text-[11px] text-muted sm:text-xs">Tax included. Shipping calculated at checkout.</p>
 
-        <dl className="grid grid-cols-3 gap-3 border-y border-line py-4 text-sm">
+        <dl className="grid grid-cols-3 gap-2 border-y border-line py-3 text-[13px] sm:gap-3 sm:py-4 sm:text-sm">
           <div>
-            <dt className="text-xs uppercase text-muted">Fabric</dt>
+            <dt className="text-[10px] uppercase text-muted sm:text-xs">Fabric</dt>
             <dd className="font-semibold">{product.fabric ?? "—"}</dd>
           </div>
           <div>
-            <dt className="text-xs uppercase text-muted">Pieces</dt>
+            <dt className="text-[10px] uppercase text-muted sm:text-xs">Pieces</dt>
             <dd className="font-semibold">{product.pieces ? `${product.pieces} Piece` : "—"}</dd>
           </div>
           <div>
-            <dt className="text-xs uppercase text-muted">SKU</dt>
-            <dd className="font-semibold">{variant?.sku ?? product.sku}</dd>
+            <dt className="text-[10px] uppercase text-muted sm:text-xs">SKU</dt>
+            <dd className="truncate font-semibold">{variant?.sku ?? product.sku}</dd>
           </div>
         </dl>
 
@@ -149,15 +149,15 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
             </fieldset>
           ))}
 
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <QuantitySelector value={qty} onChange={setQty} max={maxQuantity} disabled={!available} />
-          <p className={cn("flex items-center gap-1 text-sm font-semibold", available ? "text-emerald-700" : "text-error")} aria-live="polite">
+          <p className={cn("flex items-center gap-1 text-[13px] font-semibold sm:text-sm", available ? "text-emerald-700" : "text-error")} aria-live="polite">
             <Icon name={available ? "check" : "close"} size={16} />
             {!variant ? "Select options" : available ? (variant.lowStock ? "Only a few left" : "In stock") : "Sold out"}
           </p>
         </div>
 
-        <div className="grid gap-3">
+        <div className="grid gap-2.5 sm:gap-3">
           <AddToCartButton variantId={variant?.id ?? null} available={available} quantity={qty} size="lg" />
           <Button size="lg" disabled={!available || buying} onClick={buyNow} fullWidth aria-busy={buying}>
             {buying ? "Please wait…" : "Buy it now"}
@@ -166,14 +166,14 @@ export function ProductDetail({ product, maxQuantity }: ProductDetailProps) {
 
         {product.description && (
           <div>
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-widest">Description</h2>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-ink/80">{product.description}</p>
+            <h2 className="mb-1.5 text-[13px] font-semibold uppercase tracking-widest sm:mb-2 sm:text-sm">Description</h2>
+            <p className="whitespace-pre-line text-[13px] leading-relaxed text-ink/80 sm:text-sm">{product.description}</p>
           </div>
         )}
         {product.details.length > 0 && (
           <div>
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-widest">What&apos;s included</h2>
-            <ul className="list-disc space-y-1 pl-5 text-sm text-ink/80">
+            <h2 className="mb-1.5 text-[13px] font-semibold uppercase tracking-widest sm:mb-2 sm:text-sm">What&apos;s included</h2>
+            <ul className="list-disc space-y-1 pl-5 text-[13px] text-ink/80 sm:text-sm">
               {product.details.map((d) => (
                 <li key={d}>{d}</li>
               ))}
