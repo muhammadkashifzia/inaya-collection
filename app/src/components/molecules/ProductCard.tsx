@@ -71,7 +71,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
   }
 
   return (
-    <div className="group/card relative h-full">
+    <div className="group/card relative h-full" data-sp-title={product.title} data-sp-image={product.images[0] ?? undefined}>
       {/* Action column, top-right: heart always visible, quick view (eye) below it on hover. */}
       <div className="absolute right-2.5 top-2.5 z-[4] flex flex-col gap-2">
         <span className="group/action relative flex">

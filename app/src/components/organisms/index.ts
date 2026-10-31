@@ -10,6 +10,7 @@ export { HeroBanner } from "./HeroBanner";
 export { MobileTabBar } from "./MobileTabBar";
 export { NewsletterPopup } from "./NewsletterPopup";
 export { ProductDetail } from "./ProductDetail";
+export { SocialProofToast } from "./SocialProofToast";
 export { ProductGrid, ProductGridSkeleton } from "./ProductGrid";
 export { ProductRail } from "./ProductRail";
 export { ProductReviews } from "./ProductReviews";
