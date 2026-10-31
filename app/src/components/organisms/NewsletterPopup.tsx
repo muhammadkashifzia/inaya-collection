@@ -105,7 +105,7 @@ export function NewsletterPopup() {
   if (!open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center sm:p-4">
       {/* Backdrop */}
       <button type="button" aria-label="Close" tabIndex={-1} onClick={dismiss} className="absolute inset-0 bg-black/50" />
 
@@ -116,14 +116,14 @@ export function NewsletterPopup() {
         aria-modal="true"
         aria-label="Newsletter signup"
         tabIndex={-1}
-        className="relative grid w-full max-w-[720px] overflow-hidden rounded-xl bg-white shadow-2xl outline-none md:grid-cols-2"
+        className="relative grid max-h-[90vh] w-full overflow-hidden rounded-t-2xl bg-white shadow-2xl outline-none sm:max-w-[720px] sm:rounded-xl md:grid-cols-2"
       >
         {/* Close button */}
         <button
           type="button"
           aria-label="Close"
           onClick={dismiss}
-          className="absolute right-3 top-3 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-muted transition-colors hover:bg-gray-100 hover:text-ink"
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white/80 text-muted transition-colors hover:bg-gray-100 hover:text-ink sm:h-8 sm:w-8 sm:bg-transparent"
         >
           <Icon name="close" size={18} />
         </button>
@@ -139,12 +139,12 @@ export function NewsletterPopup() {
         </div>
 
         {/* Right: Content */}
-        <div className="flex flex-col justify-center gap-5 px-6 py-10 md:px-8">
+        <div className="flex flex-col justify-center gap-4 px-5 py-7 sm:gap-5 sm:px-6 sm:py-10 md:px-8">
           <div>
-            <h2 className="font-heading text-2xl font-bold leading-tight text-ink md:text-[28px]">
+            <h2 className="font-heading text-xl font-bold leading-tight text-ink sm:text-2xl md:text-[28px]">
               Sign Up—Big Save!
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted">
+            <p className="mt-1.5 text-[13px] leading-relaxed text-muted sm:mt-2 sm:text-sm">
               Sign up for 10% off your first purchase and free shipping. Updates information on Sales and Offers.
             </p>
           </div>
@@ -161,7 +161,7 @@ export function NewsletterPopup() {
                 placeholder="Enter your email address …"
                 aria-invalid={!!error}
                 aria-describedby={error ? "popup-email-error" : undefined}
-                className={`h-12 w-full rounded-full border px-5 text-sm outline-none transition-colors placeholder:text-muted/60 focus:border-ink ${error ? "border-error" : "border-line"}`}
+                className={`h-11 w-full rounded-full border px-5 text-sm outline-none transition-colors placeholder:text-muted/60 focus:border-ink sm:h-12 ${error ? "border-error" : "border-line"}`}
               />
               {error && (
                 <p id="popup-email-error" role="alert" className="mt-1.5 px-2 text-xs font-medium text-error">
@@ -172,7 +172,7 @@ export function NewsletterPopup() {
             <button
               type="submit"
               disabled={busy}
-              className="h-12 cursor-pointer rounded-full bg-ink text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-ink/85 disabled:opacity-60"
+              className="h-11 cursor-pointer rounded-full bg-ink text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-ink/85 disabled:opacity-60 sm:h-12"
             >
               {busy ? "Subscribing…" : "Subscribe"}
             </button>
@@ -183,7 +183,7 @@ export function NewsletterPopup() {
           <button
             type="button"
             onClick={dismiss}
-            className="cursor-pointer self-start text-sm font-semibold text-ink underline underline-offset-4 transition-colors hover:text-brand"
+            className="cursor-pointer self-start text-[13px] font-semibold text-ink underline underline-offset-4 transition-colors hover:text-brand sm:text-sm"
           >
             No, Thanks! Don&apos;t Show Again
           </button>

@@ -140,7 +140,7 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
           : "Add to cart";
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6">
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4 md:p-6">
       <button type="button" aria-label="Close quick view" tabIndex={-1} onClick={onClose} className="absolute inset-0 bg-black/50" />
 
       <div
@@ -149,7 +149,7 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
         aria-modal="true"
         aria-labelledby={`quick-view-${product.id}`}
         tabIndex={-1}
-        className="relative grid max-h-[92vh] w-full max-w-[1000px] overflow-y-auto rounded-xl bg-white shadow-2xl outline-none md:h-[min(88vh,620px)] md:grid-cols-2 md:overflow-hidden"
+        className="relative grid max-h-[95vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl outline-none sm:max-h-[92vh] sm:max-w-[1000px] sm:rounded-xl md:h-[min(88vh,620px)] md:grid-cols-2 md:overflow-hidden"
       >
         {/* Wrapper keeps the button out of the grid flow (IconButton sets `relative`). */}
         <div className="absolute right-2 top-2 z-[5] rounded-full bg-white/90 md:bg-transparent">
@@ -157,7 +157,7 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
         </div>
 
         {/* Gallery */}
-        <div className="relative aspect-[4/5] overflow-hidden bg-[#e8e4db] md:aspect-auto md:h-full">
+        <div className="relative aspect-[3/3.5] overflow-hidden bg-[#e8e4db] sm:aspect-[4/5] md:aspect-auto md:h-full">
           <div
             className="flex h-full transition-transform duration-[450ms] ease-out will-change-transform"
             style={{ transform: `translateX(-${current * 100}%)` }}
@@ -183,8 +183,8 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
         </div>
 
         {/* Details */}
-        <div className="flex flex-col gap-4 p-5 md:overflow-y-auto md:p-8">
-          <h2 id={`quick-view-${product.id}`} className="pr-8 font-heading text-2xl font-semibold leading-snug md:text-[28px]">
+        <div className="flex flex-col gap-3 p-4 sm:gap-4 sm:p-5 md:overflow-y-auto md:p-8">
+          <h2 id={`quick-view-${product.id}`} className="pr-8 font-heading text-lg font-semibold leading-snug sm:text-2xl md:text-[28px]">
             {product.title}
           </h2>
 
@@ -236,12 +236,12 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
             </p>
           )}
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <QuantitySelector value={qty} onChange={setQty} disabled={!available} />
             <Button
               variant="secondary"
               size="md"
-              className="min-w-40 flex-1"
+              className="min-w-0 flex-1 text-[13px] sm:min-w-40 sm:text-sm"
               disabled={!available || variantId === null || busy !== null}
               aria-busy={busy === "cart"}
               onClick={() => void add("cart")}
@@ -284,8 +284,8 @@ function GalleryButton({ dir, onClick }: { dir: "prev" | "next"; onClick: () => 
       onClick={onClick}
       aria-label={dir === "prev" ? "Previous image" : "Next image"}
       className={cn(
-        "absolute top-1/2 z-[3] -mt-[22px] flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#111] shadow-[0_4px_14px_#1111112e] transition-shadow hover:shadow-[0_6px_18px_#1111113d] focus-visible:outline-2 focus-visible:outline-brand",
-        dir === "prev" ? "left-4" : "right-4",
+        "absolute top-1/2 z-[3] -mt-[18px] flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#111] shadow-[0_4px_14px_#1111112e] transition-shadow hover:shadow-[0_6px_18px_#1111113d] focus-visible:outline-2 focus-visible:outline-brand sm:-mt-[22px] sm:h-11 sm:w-11",
+        dir === "prev" ? "left-2.5 sm:left-4" : "right-2.5 sm:right-4",
       )}
     >
       <Icon name={dir === "prev" ? "chevronLeft" : "chevronRight"} size={18} strokeWidth={1.8} />
