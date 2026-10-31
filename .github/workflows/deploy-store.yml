@@ -73,6 +73,8 @@ jobs:
           process.env.API_URL = process.env.API_URL || '$API_URL';
           process.env.NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || '$STORE_URL';
           process.env.REVALIDATION_SECRET = process.env.REVALIDATION_SECRET || '${{ secrets.REVALIDATION_SECRET }}';
+          process.env.MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY || '${{ secrets.MAILCHIMP_API_KEY }}';
+          process.env.MAILCHIMP_AUDIENCE_ID = process.env.MAILCHIMP_AUDIENCE_ID || '${{ secrets.MAILCHIMP_AUDIENCE_ID }}';
           require('./server.js');
           EOF
 
@@ -106,6 +108,8 @@ jobs:
               echo "SetEnv API_URL $API_URL"
               echo "SetEnv NEXT_PUBLIC_SITE_URL $STORE_URL"
               echo "SetEnv REVALIDATION_SECRET ${{ secrets.REVALIDATION_SECRET }}"
+              echo "SetEnv MAILCHIMP_API_KEY ${{ secrets.MAILCHIMP_API_KEY }}"
+              echo "SetEnv MAILCHIMP_AUDIENCE_ID ${{ secrets.MAILCHIMP_AUDIENCE_ID }}"
               echo "Options -Indexes"
             } > "$RUNNER_TEMP/ht/.htaccess"
             cp_upload "$RUNNER_TEMP/ht/.htaccess" "$REMOTE_DIR"
