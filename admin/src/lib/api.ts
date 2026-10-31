@@ -112,4 +112,38 @@ export const http = {
   patch: <T>(path: string, body?: unknown) => request<T>("PATCH", path, body ?? {}),
   delete: <T = void>(path: string) => request<T>("DELETE", path),
   ensureCsrf,
+  /** Download a file from the API and trigger a browser save dialog. */
+  async download(path: string, query?: Query, filename?: string): Promise<void> {
+    await ensureCsrf();
+    const xsrf = readCookie("XSRF-TOKEN");
+    const headers: Record<string, string> = { Accept: "application/octet-stream" };
+    if (xsrf) headers["X-XSRF-TOKEN"] = xsrf;
+
+    const res = await fetch(`${API_URL}/api/v1${path}${toQuery(query)}`, {
+      method: "GET",
+      headers,
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      throw new ApiError((json.message as string) || `Download failed (${res.status}).`, res.status);
+    }
+
+    const blob = await res.blob();
+    const name = filename ?? res.headers.get("Content-Disposition")?.match(/filename="?([^"]+)"?/)?.[1] ?? "download";
+    saveBlob(blob, name);
+  },
 };
+
+/** Trigger a browser download for an in-memory Blob. */
+export function saveBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
