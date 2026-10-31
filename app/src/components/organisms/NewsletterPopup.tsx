@@ -1,15 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "@/components/atoms";
 import { useToast } from "@/context/ToastContext";
-import { api, ApiError } from "@/lib/api";
 
 const STORAGE_KEY = "newsletter-popup-dismissed";
 /** Show the popup 3 seconds after first paint. */
 const DELAY_MS = 3000;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /**
  * Welcome newsletter popup shown once per visitor.
@@ -20,6 +19,8 @@ export function NewsletterPopup() {
   const toast = useToast();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [touched, setTouched] = useState(false);
   const [busy, setBusy] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
 
@@ -55,16 +56,47 @@ export function NewsletterPopup() {
     }
   }
 
+  function validate(value: string): string | null {
+    const trimmed = value.trim();
+    if (!trimmed) return "Email address is required.";
+    if (!EMAIL_RE.test(trimmed)) return "Please enter a valid email address.";
+    return null;
+  }
+
+  function handleChange(value: string) {
+    setEmail(value);
+    // Clear error as soon as the user fixes it.
+    if (touched) setError(validate(value));
+  }
+
+  function handleBlur() {
+    setTouched(true);
+    setError(validate(email));
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const err = validate(email);
+    setTouched(true);
+    setError(err);
+    if (err) return;
+
     setBusy(true);
     try {
-      const res = await api.subscribe(email.trim());
-      toast.success("Subscribed!", res.message ?? "You're on the list!");
-      dismiss();
-    } catch (error) {
-      const message = error instanceof ApiError ? (error.field("email") ?? error.message) : "Please try again.";
-      toast.error("Subscription Failed", message);
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Subscribed!", data.message ?? "You're on the list!");
+        dismiss();
+      } else {
+        setError(data.message ?? "Please try again.");
+      }
+    } catch {
+      setError("Could not reach the server. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -97,13 +129,12 @@ export function NewsletterPopup() {
         </button>
 
         {/* Left: Image */}
-        <div className="relative hidden aspect-[3/4] md:block">
-          <Image
+        <div className="relative hidden aspect-[3/4] bg-[#f0b4b4] md:block">
+          {/* Replace /images/newsletter-popup.jpg with your promotional image */}
+          <img
             src="/images/newsletter-popup.jpg"
             alt="Sign up for exclusive offers"
-            fill
-            sizes="360px"
-            className="object-cover"
+            className="h-full w-full object-cover"
           />
         </div>
 
@@ -118,16 +149,26 @@ export function NewsletterPopup() {
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="flex flex-col gap-3">
-            <input
-              type="email"
-              required
-              maxLength={255}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address …"
-              className="h-12 rounded-full border border-line px-5 text-sm outline-none transition-colors placeholder:text-muted/60 focus:border-ink"
-            />
+          <form onSubmit={onSubmit} className="flex flex-col gap-1.5" noValidate>
+            <div>
+              <input
+                type="email"
+                required
+                maxLength={255}
+                value={email}
+                onChange={(e) => handleChange(e.target.value)}
+                onBlur={handleBlur}
+                placeholder="Enter your email address …"
+                aria-invalid={!!error}
+                aria-describedby={error ? "popup-email-error" : undefined}
+                className={`h-12 w-full rounded-full border px-5 text-sm outline-none transition-colors placeholder:text-muted/60 focus:border-ink ${error ? "border-error" : "border-line"}`}
+              />
+              {error && (
+                <p id="popup-email-error" role="alert" className="mt-1.5 px-2 text-xs font-medium text-error">
+                  {error}
+                </p>
+              )}
+            </div>
             <button
               type="submit"
               disabled={busy}
