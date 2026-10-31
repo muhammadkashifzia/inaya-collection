@@ -24,7 +24,7 @@ export function ProductGrid({ products, emptyText = "No products found.", traili
   );
 }
 
-const gridClass = "grid grid-cols-2 items-start gap-x-3 gap-y-3.5 md:grid-cols-4 md:gap-[18px]";
+const gridClass = "grid grid-cols-2 items-start gap-x-2 gap-y-3 sm:gap-x-3 sm:gap-y-3.5 md:grid-cols-4 md:gap-[18px]";
 
 export function ProductGridSkeleton({ count = 4 }: { count?: number }) {
   return (

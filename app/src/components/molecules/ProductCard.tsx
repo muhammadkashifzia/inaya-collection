@@ -168,10 +168,10 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </div>
 
         <Link href={href} className="block text-inherit">
-          <span className="block pb-0.5 pt-3 text-[15px] font-semibold leading-[1.4] text-[#1a1a1a] group-hover/card:text-brand">
+          <span className="block pb-0.5 pt-2.5 text-[13px] font-semibold leading-[1.4] text-[#1a1a1a] group-hover/card:text-brand sm:pt-3 sm:text-[15px]">
             {product.title}
           </span>
-          <span className="flex items-baseline gap-[0.45rem] text-[0.9rem] font-bold text-[#111]">
+          <span className="flex items-baseline gap-[0.35rem] text-[0.8rem] font-bold text-[#111] sm:gap-[0.45rem] sm:text-[0.9rem]">
             {onSale && (
               <s className="font-medium text-[#888]">
                 <span className="sr-only">Regular price </span>

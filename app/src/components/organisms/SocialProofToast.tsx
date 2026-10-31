@@ -156,7 +156,7 @@ export function SocialProofToast() {
             alt=""
             fill
             sizes="56px"
-            className="object-cover"
+            className="object-cover object-top"
             unoptimized
           />
         </div>

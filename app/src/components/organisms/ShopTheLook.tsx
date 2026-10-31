@@ -44,7 +44,7 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
   }
 
   return (
-    <section className="py-10 md:py-14">
+    <section className="py-8 sm:py-10 md:py-14">
       <Container>
         <SectionHeader title={title} />
 
@@ -56,7 +56,7 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
                 type="button"
                 onClick={() => goLook(-1)}
                 aria-label="Previous look"
-                className="absolute left-0 top-1/2 z-10 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:bg-cream md:-left-4"
+                className="absolute left-2 top-1/2 z-10 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white/90 text-ink transition-colors hover:bg-cream sm:left-0 sm:h-11 sm:w-11 sm:bg-white md:-left-4"
               >
                 <Icon name="chevronLeft" size={20} />
               </button>
@@ -64,7 +64,7 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
                 type="button"
                 onClick={() => goLook(1)}
                 aria-label="Next look"
-                className="absolute right-0 top-1/2 z-10 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:bg-cream md:-right-4"
+                className="absolute right-2 top-1/2 z-10 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white/90 text-ink transition-colors hover:bg-cream sm:right-0 sm:h-11 sm:w-11 sm:bg-white md:-right-4"
               >
                 <Icon name="chevronRight" size={20} />
               </button>
@@ -73,7 +73,7 @@ export function ShopTheLook({ title, looks }: ShopTheLookProps) {
 
           {/* ── Mobile: lifestyle image only + View Product button ── */}
           <div className="md:hidden">
-            <div className="relative aspect-[3/4] overflow-hidden bg-cream">
+            <div className="relative aspect-[3/4] overflow-hidden bg-cream sm:aspect-[4/5]">
               <AppImage
                 src={look.image}
                 alt={`${title} look ${lookIdx + 1}`}

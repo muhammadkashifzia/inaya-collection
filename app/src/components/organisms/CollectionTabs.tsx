@@ -71,7 +71,7 @@ export function CollectionTabs({ title, subtitle, tabs }: CollectionTabsProps) {
   if (!initialProducts.length) return null;
 
   const categoryTabs = (
-    <div role="tablist" className="flex flex-wrap items-center gap-6">
+    <div role="tablist" className="no-scrollbar -mx-4 flex items-center gap-4 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:gap-6 sm:overflow-visible sm:px-0">
       {tabs.map((tab) => (
         <button
           key={tab.category.id}
@@ -79,7 +79,7 @@ export function CollectionTabs({ title, subtitle, tabs }: CollectionTabsProps) {
           role="tab"
           aria-selected={activeTab === tab.category.id}
           onClick={() => setActiveTab(tab.category.id)}
-          className={`pb-1 text-[14px] tracking-wide transition-colors ${
+          className={`shrink-0 whitespace-nowrap pb-1 text-[13px] tracking-wide transition-colors sm:text-[14px] ${
             activeTab === tab.category.id
               ? "border-b-2 border-ink font-semibold text-ink"
               : "text-muted hover:text-ink"
@@ -92,7 +92,7 @@ export function CollectionTabs({ title, subtitle, tabs }: CollectionTabsProps) {
   );
 
   return (
-    <section className="py-8 md:py-10">
+    <section className="py-6 sm:py-8 md:py-10">
       <Container>
         <SectionHeader title={title} subtitle={subtitle ?? undefined} action={categoryTabs} />
         <ProductGrid products={displayProducts} emptyText="New designs are coming soon." />

@@ -45,7 +45,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   return (
     <section className="group relative isolate overflow-hidden bg-ink">
       {/* Slides */}
-      <div className="relative h-[70vh] min-h-[420px] md:h-[600px]">
+      <div className="relative h-[55vh] min-h-[360px] sm:h-[65vh] sm:min-h-[420px] md:h-[600px]">
         {banners.map((banner, i) => (
           <div
             key={banner.id}
@@ -101,7 +101,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
 function Slide({ banner }: { banner: Banner }) {
   return (
     <section className="relative isolate overflow-hidden bg-ink">
-      <div className="relative h-[70vh] min-h-[420px] md:h-[600px]">
+      <div className="relative h-[55vh] min-h-[360px] sm:h-[65vh] sm:min-h-[420px] md:h-[600px]">
         <SlideContent banner={banner} />
       </div>
     </section>
@@ -115,10 +115,10 @@ function SlideContent({ banner, active = true }: { banner: Banner; active?: bool
       <AppImage src={banner.mobileImage ?? banner.image} alt="" fill preload={active} sizes="100vw" className="object-cover md:hidden" />
       <AppImage src={banner.image} alt="" fill preload={active} sizes="100vw" className="hidden object-cover md:block" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10 md:bg-gradient-to-r md:from-black/70 md:via-black/30 md:to-transparent" aria-hidden="true" />
-      <Container className="absolute inset-0 flex flex-col items-start justify-end pb-14 text-left text-white md:justify-center md:pb-0">
+      <Container className="absolute inset-0 flex flex-col items-start justify-end pb-10 text-left text-white sm:pb-14 md:justify-center md:pb-0">
         <h1
           className={cn(
-            "max-w-xl font-heading text-4xl font-semibold leading-tight md:text-6xl transition-all duration-700 ease-out",
+            "max-w-xl font-heading text-[28px] font-semibold leading-tight sm:text-4xl md:text-6xl transition-all duration-700 ease-out",
             active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
           )}
         >
@@ -127,7 +127,7 @@ function SlideContent({ banner, active = true }: { banner: Banner; active?: bool
         {banner.subtitle && (
           <p
             className={cn(
-              "mt-4 max-w-md text-sm text-white/85 md:text-base transition-all duration-700 ease-out delay-150",
+              "mt-3 max-w-md text-[13px] text-white/85 sm:mt-4 sm:text-sm md:text-base transition-all duration-700 ease-out delay-150",
               active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
             )}
           >
@@ -137,7 +137,7 @@ function SlideContent({ banner, active = true }: { banner: Banner; active?: bool
         {banner.buttons.length > 0 && (
           <div
             className={cn(
-              "mt-8 grid w-full max-w-xl grid-cols-2 gap-3 md:flex md:w-auto md:flex-wrap transition-all duration-700 ease-out delay-300",
+              "mt-5 grid w-full max-w-xl grid-cols-2 gap-2.5 sm:mt-8 sm:gap-3 md:flex md:w-auto md:flex-wrap transition-all duration-700 ease-out delay-300",
               active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
             )}
           >

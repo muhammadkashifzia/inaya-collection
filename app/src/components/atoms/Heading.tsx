@@ -4,10 +4,10 @@ import { cn } from "@/lib/format";
 type Level = 1 | 2 | 3 | 4;
 
 const styles: Record<Level, string> = {
-  1: "text-3xl md:text-5xl",
-  2: "text-2xl md:text-3xl",
-  3: "text-lg md:text-xl",
-  4: "text-base",
+  1: "text-2xl sm:text-3xl md:text-5xl",
+  2: "text-xl sm:text-2xl md:text-3xl",
+  3: "text-base sm:text-lg md:text-xl",
+  4: "text-sm sm:text-base",
 };
 
 interface HeadingProps {
