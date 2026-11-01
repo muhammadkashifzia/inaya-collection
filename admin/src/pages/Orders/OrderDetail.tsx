@@ -147,13 +147,13 @@ export default function OrderDetail() {
       />
       <DataState loading={loading} error={error} onRetry={reload} hasData={Boolean(order)}>
         {order && (
-          <div className="grid grid-cols-12 gap-6">
-            <div className="col-span-12 space-y-6 xl:col-span-8">
+          <div className="grid grid-cols-12 gap-4 sm:gap-6">
+            <div className="col-span-12 space-y-4 sm:space-y-6 xl:col-span-8">
               <Card title={`Items (${order.items?.length ?? 0})`} bodyClassName="p-0">
                 <ul className="divide-y divide-gray-100 dark:divide-gray-800">
                   {order.items?.map((item) => (
-                    <li key={item.id} className="flex items-center gap-4 px-5 py-4">
-                      <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">{item.image && <img src={item.image} alt="" className="h-full w-full object-cover" />}</div>
+                    <li key={item.id} className="flex flex-wrap items-center gap-3 px-4 py-3 sm:flex-nowrap sm:gap-4 sm:px-5 sm:py-4">
+                      <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:size-16 dark:bg-white/5">{item.image && <img src={item.image} alt="" className="h-full w-full object-cover" />}</div>
                       <div className="min-w-0 flex-1 text-sm">
                         {item.product_id ? (
                           <Link to={`/products/${item.product_id}`} className="font-medium text-gray-800 hover:text-brand-500 dark:text-white/90">{item.name}</Link>
@@ -164,15 +164,18 @@ export default function OrderDetail() {
                           {item.sku}
                           {item.variant_name && ` · ${item.variant_name}`}
                         </p>
+                        <p className="mt-0.5 text-theme-xs text-gray-500 sm:hidden">
+                          {item.quantity} × {money(item.unit_price)}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-500">
+                      <p className="hidden text-sm text-gray-500 sm:block">
                         {item.quantity} × {money(item.unit_price)}
                       </p>
-                      <p className="w-28 text-end text-sm font-semibold">{money(item.line_total)}</p>
+                      <p className="ms-auto text-sm font-semibold sm:w-28 sm:text-end">{money(item.line_total)}</p>
                     </li>
                   ))}
                 </ul>
-                <dl className="space-y-2 border-t border-gray-100 px-5 py-4 text-sm dark:border-gray-800">
+                <dl className="space-y-2 border-t border-gray-100 px-4 py-3 text-sm sm:px-5 sm:py-4 dark:border-gray-800">
                   <div className="flex justify-between"><dt className="text-gray-500">Subtotal</dt><dd>{money(order.subtotal)}</dd></div>
                   {order.discount_total > 0 && <div className="flex justify-between text-success-600"><dt>Discount {order.coupon_code && `(${order.coupon_code})`}</dt><dd>−{money(order.discount_total)}</dd></div>}
                   <div className="flex justify-between"><dt className="text-gray-500">Shipping ({order.shipping_method})</dt><dd>{order.shipping_total ? money(order.shipping_total) : "Free"}</dd></div>
@@ -198,7 +201,7 @@ export default function OrderDetail() {
               </Card>
             </div>
 
-            <div className="col-span-12 space-y-6 xl:col-span-4">
+            <div className="col-span-12 space-y-4 sm:space-y-6 xl:col-span-4">
               <Card title="Update status">
                 {transitions.length === 0 ? (
                   <p className="text-sm text-gray-500">This order is {ORDER_STATUS_LABEL[order.status].toLowerCase()}. No further changes are possible.</p>
