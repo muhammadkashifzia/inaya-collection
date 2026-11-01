@@ -87,3 +87,56 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(staleWhileRevalidate(request));
   }
 });
+
+/* ── Push Notifications ── */
+
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+
+  let payload;
+  try {
+    payload = event.data.json();
+  } catch {
+    payload = { title: "Anaya Collection", body: event.data.text() };
+  }
+
+  const title = payload.title || "Anaya Collection Admin";
+  const options = {
+    body: payload.body || "",
+    icon: "/pwa-192.png",
+    badge: "/pwa-192.png",
+    tag: payload.tag || "admin-notification",
+    data: { url: payload.url || "/" },
+    actions: payload.actions || [],
+    vibrate: [200, 100, 200],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(title, options).then(() => {
+      // Update badge count on the app icon
+      if ("setAppBadge" in navigator) {
+        const count = payload.badge_count ?? 1;
+        navigator.setAppBadge(count).catch(() => {});
+      }
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const url = event.notification.data?.url || "/";
+
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      // If an admin window is already open, focus it and navigate
+      for (const client of clients) {
+        if (client.url.includes(self.location.origin) && "focus" in client) {
+          return client.focus().then((c) => c.navigate(url));
+        }
+      }
+      // Otherwise open a new window
+      return self.clients.openWindow(url);
+    }),
+  );
+});

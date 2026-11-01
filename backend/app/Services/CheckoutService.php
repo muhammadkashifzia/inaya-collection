@@ -32,6 +32,7 @@ class CheckoutService
         private PaymentManager $payments,
         private SettingsService $settings,
         private OrderMailer $mailer,
+        private AdminNotifier $notifier,
     ) {}
 
     /**
@@ -195,6 +196,12 @@ class CheckoutService
         $cart->forceFill(['coupon_code' => null])->save();
 
         $this->mailer->sendForStatus($order, OrderStatus::Pending);
+
+        try {
+            $this->notifier->orderPlaced($order);
+        } catch (\Throwable) {
+            // Notification failure must not break checkout.
+        }
 
         return $order->load(['items', 'payments', 'statusHistory']);
     }

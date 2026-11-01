@@ -46,4 +46,9 @@ return [
         'pickup_address_code' => env('POSTEX_PICKUP_ADDRESS_CODE'),
     ],
 
+    'webpush' => [
+        'vapid_public_key' => env('VAPID_PUBLIC_KEY'),
+        'vapid_private_key' => env('VAPID_PRIVATE_KEY'),
+    ],
+
 ];

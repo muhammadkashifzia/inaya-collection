@@ -182,5 +182,16 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::put('settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
             Route::post('settings/logo', [Admin\SettingsController::class, 'uploadLogo'])->name('settings.logo');
         });
+
+        // ── Notifications & push subscriptions (any authenticated admin) ──
+        Route::get('notifications', [Admin\AdminNotificationController::class, 'index'])->name('notifications.index');
+        Route::get('notifications/counts', [Admin\AdminNotificationController::class, 'countsEndpoint'])->name('notifications.counts');
+        Route::patch('notifications/{adminNotification}/read', [Admin\AdminNotificationController::class, 'markRead'])->name('notifications.read');
+        Route::patch('notifications/read-all', [Admin\AdminNotificationController::class, 'markAllRead'])->name('notifications.read-all');
+        Route::patch('notifications/read-type', [Admin\AdminNotificationController::class, 'markTypeRead'])->name('notifications.read-type');
+
+        Route::get('push/vapid-key', [Admin\PushSubscriptionController::class, 'vapidKey'])->name('push.vapid');
+        Route::post('push/subscribe', [Admin\PushSubscriptionController::class, 'store'])->name('push.subscribe');
+        Route::post('push/unsubscribe', [Admin\PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
     });
 });

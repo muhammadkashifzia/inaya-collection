@@ -1,4 +1,5 @@
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
+import NotificationDropdown from "@/components/header/NotificationDropdown";
 import UserDropdown from "@/components/header/UserDropdown";
 import { useSidebar } from "@/context/SidebarContext";
 import { Link } from "react-router";
@@ -51,6 +52,8 @@ const AppHeader: React.FC = () => {
         {/* Right: desktop controls */}
         <div className="ms-auto hidden items-center gap-3 xl:flex">
           <ThemeToggleButton />
+
+          <NotificationDropdown />
 
           <a
             href={STOREFRONT_URL}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Mail\ContactMessageMail;
 use App\Models\ContactMessage;
+use App\Services\AdminNotifier;
 use App\Services\SettingsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ use Throwable;
  */
 class ContactController extends Controller
 {
-    public function __invoke(Request $request, SettingsService $settings): JsonResponse
+    public function __invoke(Request $request, SettingsService $settings, AdminNotifier $notifier): JsonResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:120'],
@@ -51,6 +52,12 @@ class ContactController extends Controller
             } catch (Throwable $e) {
                 report($e);
             }
+        }
+
+        try {
+            $notifier->messageReceived($contactMessage);
+        } catch (Throwable) {
+            // Notification failure must not break form submission.
         }
 
         return response()->json(['message' => 'Thanks for reaching out. We will get back to you soon.'], 201);

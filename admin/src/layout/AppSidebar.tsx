@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationContext";
 import { useSidebar } from "@/context/SidebarContext";
 import type { PermissionKey } from "@/types/api";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -30,6 +31,8 @@ type NavItem = {
   new?: boolean;
   target?: string;
   permission?: PermissionKey;
+  /** Dot badge key: "orders" or "messages" — looked up from notification counts. */
+  dotBadge?: "orders" | "messages";
   subItems?: {
     name: string;
     key?: string;
@@ -43,7 +46,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { icon: <GridIcon fontSize={24} />, name: "Dashboard", path: "/", permission: "view-dashboard" },
-  { icon: <CartIcon fontSize={24} />, name: "Orders", path: "/orders", permission: "manage-orders" },
+  { icon: <CartIcon fontSize={24} />, name: "Orders", path: "/orders", permission: "manage-orders", dotBadge: "orders" },
   {
     icon: <BoxCubeIcon fontSize={24} />,
     name: "Products",
@@ -59,7 +62,7 @@ const navItems: NavItem[] = [
   { icon: <StackIcon fontSize={24} />, name: "Inventory", path: "/inventory", permission: "manage-inventory" },
   { icon: <GroupIcon fontSize={24} />, name: "Users", path: "/customers", permission: "view-customers" },
   { icon: <DollarLineIcon fontSize={24} />, name: "Coupons", path: "/coupons", permission: "manage-coupons" },
-  { icon: <MailIcon fontSize={24} />, name: "Messages", path: "/messages", permission: "manage-messages" },
+  { icon: <MailIcon fontSize={24} />, name: "Messages", path: "/messages", permission: "manage-messages", dotBadge: "messages" },
 ];
 
 const othersItems: NavItem[] = [
@@ -86,6 +89,7 @@ const AppSidebar: React.FC = () => {
   const isCollapsed = !isExpanded && !isHovered && !isMobileOpen;
   const { t } = useTranslation();
   const { can, user, logout } = useAuth();
+  const { counts } = useNotifications();
   const navigate = useNavigate();
   const location = useLocation();
   const allowed = (items: NavItem[]): NavItem[] =>
@@ -236,19 +240,34 @@ const AppSidebar: React.FC = () => {
                 } ${isCollapsed ? "xl:justify-center xl:px-0" : ""}`}
               >
                 <span
-                  className={`menu-item-icon-size ${
+                  className={`menu-item-icon-size relative ${
                     isActive(nav.path)
                       ? "menu-item-icon-active"
                       : "menu-item-icon-inactive"
                   }`}
                 >
                   {nav.icon}
+                  {/* Collapsed dot badge: show on icon when sidebar is collapsed */}
+                  {nav.dotBadge && isCollapsed && (
+                    (nav.dotBadge === "orders" ? counts.unread_orders : counts.unread_messages) > 0
+                  ) && (
+                    <span className="absolute -inset-e-0.5 -top-0.5 h-2 w-2 rounded-full bg-orange-400" />
+                  )}
                 </span>
                 {(isExpanded || isHovered || isMobileOpen) && (
                   <span className="menu-item-text">
                     {nav.key ? t(`sidebar.items.${nav.key}`) : nav.name}
                   </span>
                 )}
+                {/* Expanded dot badge: show after text when sidebar is expanded */}
+                {nav.dotBadge && (isExpanded || isHovered || isMobileOpen) && (() => {
+                  const count = nav.dotBadge === "orders" ? counts.unread_orders : counts.unread_messages;
+                  return count > 0 ? (
+                    <span className="ms-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-400 px-1.5 text-[11px] font-semibold text-white">
+                      {count > 99 ? "99+" : count}
+                    </span>
+                  ) : null;
+                })()}
               </Link>
             )
           )}
