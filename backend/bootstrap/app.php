@@ -4,6 +4,7 @@ use App\Http\Middleware\CachePublicApiResponse;
 use App\Http\Middleware\EnsureCustomer;
 use App\Http\Middleware\EnsureStaffMember;
 use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\OriginAwareSession;
 use App\Http\Middleware\RevalidateStorefrontCache;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Sanctum SPA cookie auth (session + CSRF) for the storefront and admin.
         $middleware->statefulApi();
         $middleware->throttleApi();
+
+        // Split session cookies by Origin so the admin and store don't share a session.
+        // Must run before EnsureFrontendRequestsAreStateful (which starts the session).
+        $middleware->prependToGroup('api', OriginAwareSession::class);
 
         // API-only app: never redirect guests to a "login" route; API calls get 401 JSON.
         $middleware->redirectGuestsTo(fn (Request $request): ?string => $request->is('api/*') ? null : rtrim((string) config('app.frontend_url'), '/').'/account/login');
