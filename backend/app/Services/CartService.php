@@ -92,14 +92,18 @@ class CartService
         $variant->loadMissing('product');
         $this->assertPurchasable($variant);
 
-        $existing = $cart->items()->where('product_variant_id', $variant->id)->first();
-        $newQuantity = ($existing->quantity ?? 0) + $quantity;
-        $this->assertQuantity($variant, $newQuantity);
+        // Wrap in a transaction with a row lock so concurrent add-to-cart
+        // requests for the same variant read the current quantity atomically.
+        return DB::transaction(function () use ($cart, $variant, $quantity): CartItem {
+            $existing = $cart->items()->where('product_variant_id', $variant->id)->lockForUpdate()->first();
+            $newQuantity = ($existing->quantity ?? 0) + $quantity;
+            $this->assertQuantity($variant, $newQuantity);
 
-        $item = $cart->items()->updateOrCreate(['product_variant_id' => $variant->id], ['quantity' => $newQuantity]);
-        $cart->touch();
+            $item = $cart->items()->updateOrCreate(['product_variant_id' => $variant->id], ['quantity' => $newQuantity]);
+            $cart->touch();
 
-        return $item;
+            return $item;
+        });
     }
 
     /**

@@ -199,8 +199,9 @@ class CheckoutService
 
         try {
             $this->notifier->orderPlaced($order);
-        } catch (\Throwable) {
-            // Notification failure must not break checkout.
+        } catch (\Throwable $e) {
+            // Notification failure must not break checkout, but log it for debugging.
+            report($e);
         }
 
         return $order->load(['items', 'payments', 'statusHistory']);

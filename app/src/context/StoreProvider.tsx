@@ -132,8 +132,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const cartBusyRef = useRef(false);
+  useEffect(() => {
+    cartBusyRef.current = cartBusy;
+  }, [cartBusy]);
+
   const addToCart = useCallback(
     async (variantId: number, quantity = 1) => {
+      // Guard against concurrent add-to-cart calls (e.g. double-clicks that
+      // slip past UI-level disabled state before React re-renders).
+      if (cartBusyRef.current) return false;
       const error = await runCart(() => api.addToCart(variantId, quantity));
       if (error === null) {
         toast.success("Added to Cart", "Item has been added to your bag.");
