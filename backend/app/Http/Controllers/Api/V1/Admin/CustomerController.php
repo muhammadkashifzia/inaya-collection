@@ -68,6 +68,23 @@ class CustomerController extends Controller
         return new UserResource($user->loadCount('orders'));
     }
 
+    public function destroy(Request $request, int $customer): JsonResponse
+    {
+        Gate::authorize(Permission::ManageCustomers->value);
+
+        $user = User::query()->where('role', UserRole::Customer)->findOrFail($customer);
+
+        // Delete related data
+        DB::table('sessions')->where('user_id', $user->id)->delete();
+        $user->tokens()->delete();
+        $user->addresses()->delete();
+        $user->delete();
+
+        Log::info('Customer deleted', ['customer_id' => $user->id, 'admin_id' => $request->user()->id]);
+
+        return response()->json(['message' => 'Customer deleted successfully.']);
+    }
+
     /**
      * @return Builder<User>
      */

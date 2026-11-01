@@ -138,6 +138,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::get('customers', [Admin\CustomerController::class, 'index'])->name('customers.index');
             Route::get('customers/{customer}', [Admin\CustomerController::class, 'show'])->whereNumber('customer')->name('customers.show');
             Route::patch('customers/{customer}/status', [Admin\CustomerController::class, 'updateStatus'])->whereNumber('customer')->name('customers.status');
+            Route::delete('customers/{customer}', [Admin\CustomerController::class, 'destroy'])->whereNumber('customer')->name('customers.destroy');
         });
 
         Route::middleware('can:'.Permission::ManageInventory->value)->group(function (): void {

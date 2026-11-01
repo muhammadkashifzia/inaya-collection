@@ -69,6 +69,25 @@ export function DeleteAction({ onClick, disabled }: { onClick: () => void; disab
   );
 }
 
+export function ToggleActiveAction({ active, onClick, disabled }: { active: boolean; onClick: () => void; disabled?: boolean }) {
+  return (
+    <ActionButton
+      onClick={onClick}
+      title={active ? "Deactivate" : "Activate"}
+      disabled={disabled}
+      className={active ? "text-success-500 hover:bg-error-50 hover:text-error-600 dark:hover:bg-error-500/10" : "text-gray-400 hover:bg-success-50 hover:text-success-600 dark:hover:bg-success-500/10"}
+    >
+      <svg className="size-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        {active ? (
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" />
+        ) : (
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        )}
+      </svg>
+    </ActionButton>
+  );
+}
+
 export function EditLinkAction({ href, className }: { href: string; className?: string }) {
   return (
     <a href={href} title="Edit" className={cn("inline-flex rounded-lg p-1.5 text-brand-500 transition-colors hover:bg-brand-50 dark:hover:bg-brand-500/10", className)}>

@@ -1,24 +1,84 @@
-import { Link } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import Card from "@/components/admin/Card";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import DataState from "@/components/admin/DataState";
 import DataTable from "@/components/admin/DataTable";
 import FilterBar, { FilterSelect } from "@/components/admin/FilterBar";
 import PageHeader from "@/components/admin/PageHeader";
 import Pagination from "@/components/admin/Pagination";
 import { ActiveBadge } from "@/components/admin/StatusBadge";
+import { DeleteAction, EditAction, ToggleActiveAction, ViewAction } from "@/components/admin/TableActions";
 import PageMeta from "@/components/common/PageMeta";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import { useApi } from "@/hooks/useApi";
 import { useListQuery } from "@/hooks/useListQuery";
-import { http } from "@/lib/api";
+import { ApiError, http } from "@/lib/api";
 import { date, money } from "@/lib/format";
 import type { AdminUser, Paginated } from "@/types/api";
 
 export default function CustomerList() {
+  const navigate = useNavigate();
+  const { can } = useAuth();
+  const toast = useToast();
   const { values, page, set } = useListQuery(["q", "is_active"] as const);
   const { data, error, loading, reload } = useApi(
     () => http.get<Paginated<AdminUser>>("/admin/customers", { q: values.q, is_active: values.is_active === "" ? undefined : values.is_active === "1", page, per_page: 20 }),
     [values, page],
   );
+
+  /* ── Delete ── */
+  const [confirmCustomer, setConfirmCustomer] = useState<AdminUser | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  async function onConfirmDelete() {
+    if (!confirmCustomer) return;
+    setDeleting(true);
+    try {
+      await http.delete(`/admin/customers/${confirmCustomer.id}`);
+      toast.success("Customer deleted.");
+      reload();
+    } catch (e) {
+      toast.error(e instanceof ApiError ? e.message : "Could not delete customer.");
+    } finally {
+      setDeleting(false);
+      setConfirmCustomer(null);
+    }
+  }
+
+  /* ── Toggle active/deactivate ── */
+  const [confirmToggle, setConfirmToggle] = useState<AdminUser | null>(null);
+  const [toggling, setToggling] = useState<number | null>(null);
+
+  function handleToggle(c: AdminUser) {
+    if (c.is_active) {
+      setConfirmToggle(c);
+    } else {
+      void doToggle(c, true);
+    }
+  }
+
+  async function doToggle(c: AdminUser, next: boolean) {
+    setToggling(c.id);
+    try {
+      await http.patch(`/admin/customers/${c.id}/status`, { is_active: next });
+      toast.success(next ? "Account reactivated." : "Account deactivated.");
+      reload();
+    } catch (e) {
+      toast.error(e instanceof ApiError ? e.message : "Could not update status.");
+    } finally {
+      setToggling(null);
+    }
+  }
+
+  async function onConfirmDeactivate() {
+    if (!confirmToggle) return;
+    await doToggle(confirmToggle, false);
+    setConfirmToggle(null);
+  }
+
+  const canManage = can("manage-customers");
 
   return (
     <>
@@ -55,6 +115,14 @@ export default function CustomerList() {
                       <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">💰 {money(c.orders_total ?? 0)}</span>
                       <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 px-2.5 py-1 text-theme-xs text-gray-600 dark:border-gray-700 dark:text-gray-400">📅 {date(c.created_at)}</span>
                     </div>
+                    {canManage && (
+                      <div className="mt-3 flex items-center justify-end gap-1 border-t border-gray-100 pt-3 dark:border-gray-800">
+                        <ViewAction onClick={() => void navigate(`/customers/${c.id}`)} />
+                        <EditAction onClick={() => void navigate(`/customers/${c.id}`)} />
+                        <ToggleActiveAction active={c.is_active} onClick={() => handleToggle(c)} disabled={toggling === c.id} />
+                        <DeleteAction onClick={() => setConfirmCustomer(c)} />
+                      </div>
+                    )}
                   </div>
                 )}
                 columns={[
@@ -73,6 +141,23 @@ export default function CustomerList() {
                   { key: "spent", header: "Total spent", cell: (c) => money(c.orders_total ?? 0) },
                   { key: "joined", header: "Joined", cell: (c) => date(c.created_at) },
                   { key: "status", header: "Status", cell: (c) => <ActiveBadge active={c.is_active} on="Active" off="Deactivated" /> },
+                  {
+                    key: "actions",
+                    header: "Action",
+                    align: "end",
+                    cell: (c) => (
+                      <div className="flex items-center justify-end gap-1">
+                        <ViewAction onClick={() => void navigate(`/customers/${c.id}`)} />
+                        <EditAction onClick={() => void navigate(`/customers/${c.id}`)} />
+                        {canManage && (
+                          <>
+                            <ToggleActiveAction active={c.is_active} onClick={() => handleToggle(c)} disabled={toggling === c.id} />
+                            <DeleteAction onClick={() => setConfirmCustomer(c)} />
+                          </>
+                        )}
+                      </div>
+                    ),
+                  },
                 ]}
               />
               <Pagination meta={data.meta} onPage={(p) => set("page", p)} />
@@ -80,6 +165,29 @@ export default function CustomerList() {
           )}
         </DataState>
       </Card>
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={confirmCustomer !== null}
+        title="Delete customer"
+        message={`Are you sure you want to delete "${confirmCustomer?.name ?? ""}"? This will remove their account, addresses, and session data. This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="danger"
+        loading={deleting}
+        onConfirm={() => void onConfirmDelete()}
+        onCancel={() => setConfirmCustomer(null)}
+      />
+
+      {/* Deactivate confirmation */}
+      <ConfirmDialog
+        open={confirmToggle !== null}
+        title={`Deactivate ${confirmToggle?.name ?? ""}?`}
+        message="They will be signed out and unable to log in until reactivated."
+        confirmLabel="Deactivate"
+        variant="danger"
+        onConfirm={() => void onConfirmDeactivate()}
+        onCancel={() => setConfirmToggle(null)}
+      />
     </>
   );
 }
