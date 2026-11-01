@@ -82,7 +82,7 @@ export default function NotificationDropdown() {
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
-        className="absolute -inset-s-13.5 mt-4.25 flex w-87.5 flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg sm:w-90.25 xl:inset-s-auto xl:inset-e-0 dark:border-gray-800 dark:bg-gray-dark"
+        className="fixed inset-x-3 top-16 z-99999 flex max-h-[80vh] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg sm:absolute sm:inset-x-auto sm:top-auto sm:inset-e-0 sm:mt-4.25 sm:w-90.25 dark:border-gray-800 dark:bg-gray-dark"
       >
         {/* Header */}
         <div className="mb-3 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-700">

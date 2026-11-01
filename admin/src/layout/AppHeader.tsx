@@ -49,6 +49,11 @@ const AppHeader: React.FC = () => {
           />
         </Link>
 
+        {/* Right: mobile notification bell */}
+        <div className="ms-auto flex items-center xl:hidden">
+          <NotificationDropdown />
+        </div>
+
         {/* Right: desktop controls */}
         <div className="ms-auto hidden items-center gap-3 xl:flex">
           <ThemeToggleButton />
