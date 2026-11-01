@@ -153,7 +153,7 @@ export default function OrderDetail() {
                 <ul className="divide-y divide-gray-100 dark:divide-gray-800">
                   {order.items?.map((item) => (
                     <li key={item.id} className="flex flex-wrap items-center gap-3 px-4 py-3 sm:flex-nowrap sm:gap-4 sm:px-5 sm:py-4">
-                      <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:size-16 dark:bg-white/5">{item.image && <img src={item.image} alt="" className="h-full w-full object-cover" />}</div>
+                      <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:size-16 dark:bg-white/5">{item.image && <img src={item.image} alt="" className="h-full w-full object-cover object-top" />}</div>
                       <div className="min-w-0 flex-1 text-sm">
                         {item.product_id ? (
                           <Link to={`/products/${item.product_id}`} className="font-medium text-gray-800 hover:text-brand-500 dark:text-white/90">{item.name}</Link>
