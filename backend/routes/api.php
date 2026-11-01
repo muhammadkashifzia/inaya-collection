@@ -66,6 +66,14 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('logout', [CustomerAuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
     });
 
+    // ------------------------------------------------- Customer-only auth endpoints
+    Route::prefix('customer')->name('customer.')->group(function (): void {
+        Route::post('register', [CustomerAuthController::class, 'register'])->middleware('throttle:login')->name('register');
+        Route::post('login', [CustomerAuthController::class, 'login'])->middleware('throttle:login')->name('login');
+        Route::post('logout', [CustomerAuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
+        Route::get('me', [CustomerAuthController::class, 'me'])->middleware(['auth:sanctum', 'active', 'customer'])->name('me');
+    });
+
     // ------------------------------------------------------- Authenticated user (any role)
     Route::middleware(['auth:sanctum', 'active'])->group(function (): void {
         Route::get('me', [AuthController::class, 'me'])->name('me');
@@ -98,6 +106,10 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     });
 
     // ---------------------------------------------------------------- Admin
+    Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', 'active', 'staff'])->group(function (): void {
+        Route::get('me', [AdminAuthController::class, 'me'])->name('me');
+    });
+
     Route::prefix('admin')->name('admin.')->middleware(['auth:sanctum', 'active', 'staff', 'revalidate'])->group(function (): void {
         Route::get('dashboard', Admin\DashboardController::class)->middleware('can:'.Permission::ViewDashboard->value)->name('dashboard');
 
