@@ -130,9 +130,8 @@ export function NewsletterPopup() {
 
         {/* Left: Image */}
         <div className="relative hidden aspect-[3/4] bg-[#f0b4b4] md:block">
-          {/* Replace /images/newsletter-popup.jpg with your promotional image */}
           <img
-            src="/images/newsletter-popup.jpg"
+            src="/clothes/emailsubscription.webp"
             alt="Sign up for exclusive offers"
             className="h-full w-full object-cover"
           />
