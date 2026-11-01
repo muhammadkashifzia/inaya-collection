@@ -91,6 +91,8 @@ self.addEventListener("fetch", (event) => {
 /* ── Push Notifications ── */
 
 self.addEventListener("push", (event) => {
+  console.log("[SW] Push received:", event.data?.text());
+
   if (!event.data) return;
 
   let payload;
@@ -106,37 +108,38 @@ self.addEventListener("push", (event) => {
     icon: "/pwa-192.png",
     badge: "/pwa-192.png",
     tag: payload.tag || "admin-notification",
+    renotify: true,
     data: { url: payload.url || "/" },
-    actions: payload.actions || [],
     vibrate: [200, 100, 200],
   };
 
   event.waitUntil(
     self.registration.showNotification(title, options).then(() => {
-      // Update badge count on the app icon
-      if ("setAppBadge" in navigator) {
+      // Update badge count on the app icon (SW scope uses navigator)
+      if (self.navigator && "setAppBadge" in self.navigator) {
         const count = payload.badge_count ?? 1;
-        navigator.setAppBadge(count).catch(() => {});
+        self.navigator.setAppBadge(count).catch(() => {});
       }
     }),
   );
 });
 
 self.addEventListener("notificationclick", (event) => {
+  console.log("[SW] Notification clicked:", event.notification.data);
   event.notification.close();
 
-  const url = event.notification.data?.url || "/";
+  const urlPath = event.notification.data?.url || "/";
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
       // If an admin window is already open, focus it and navigate
       for (const client of clients) {
-        if (client.url.includes(self.location.origin) && "focus" in client) {
-          return client.focus().then((c) => c.navigate(url));
+        if (new URL(client.url).origin === self.location.origin && "focus" in client) {
+          return client.focus().then((c) => c.navigate(urlPath));
         }
       }
       // Otherwise open a new window
-      return self.clients.openWindow(url);
+      return self.clients.openWindow(urlPath);
     }),
   );
 });

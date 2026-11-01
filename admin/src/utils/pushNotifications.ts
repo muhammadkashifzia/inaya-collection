@@ -7,32 +7,44 @@ import { http } from "@/lib/api";
  */
 export async function subscribeToPush(): Promise<boolean> {
   try {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return false;
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      console.warn("[Push] Not supported in this browser.");
+      return false;
+    }
 
+    console.log("[Push] Waiting for SW ready…");
     const registration = await navigator.serviceWorker.ready;
+    console.log("[Push] SW ready. Checking existing subscription…");
 
     // Check if already subscribed
     const existing = await registration.pushManager.getSubscription();
     if (existing) {
-      // Send to backend in case it was lost
+      console.log("[Push] Already subscribed, syncing with backend…");
       await sendSubscription(existing);
       return true;
     }
 
     // Get VAPID key from backend
+    console.log("[Push] No subscription. Fetching VAPID key…");
     const { public_key } = await http.get<{ public_key: string }>("/admin/push/vapid-key");
-    if (!public_key) return false;
+    if (!public_key) {
+      console.warn("[Push] VAPID key not configured on backend.");
+      return false;
+    }
 
+    console.log("[Push] Subscribing to push…");
     const applicationServerKey = urlBase64ToUint8Array(public_key);
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey,
     });
 
+    console.log("[Push] Subscribed! Sending to backend…");
     await sendSubscription(subscription);
+    console.log("[Push] ✅ Subscription saved on backend.");
     return true;
-  } catch {
-    // Push not supported or permission denied — that's fine.
+  } catch (err) {
+    console.error("[Push] Subscription failed:", err);
     return false;
   }
 }
@@ -50,9 +62,10 @@ export async function unsubscribeFromPush(): Promise<void> {
     if (subscription) {
       await http.post("/admin/push/unsubscribe", { endpoint: subscription.endpoint });
       await subscription.unsubscribe();
+      console.log("[Push] Unsubscribed.");
     }
-  } catch {
-    // Silently ignore.
+  } catch (err) {
+    console.error("[Push] Unsubscribe failed:", err);
   }
 }
 
@@ -61,11 +74,19 @@ export async function unsubscribeFromPush(): Promise<void> {
  * Returns true if permission is granted.
  */
 export async function requestNotificationPermission(): Promise<boolean> {
-  if (!("Notification" in window)) return false;
+  if (!("Notification" in window)) {
+    console.warn("[Push] Notification API not available.");
+    return false;
+  }
   if (Notification.permission === "granted") return true;
-  if (Notification.permission === "denied") return false;
+  if (Notification.permission === "denied") {
+    console.warn("[Push] Notification permission was denied by user.");
+    return false;
+  }
 
+  console.log("[Push] Requesting notification permission…");
   const result = await Notification.requestPermission();
+  console.log("[Push] Permission result:", result);
   return result === "granted";
 }
 
@@ -97,11 +118,16 @@ async function sendSubscription(subscription: PushSubscription): Promise<void> {
   const key = subscription.getKey("p256dh");
   const auth = subscription.getKey("auth");
 
+  if (!key || !auth) {
+    console.error("[Push] Subscription missing p256dh or auth keys.");
+    return;
+  }
+
   await http.post("/admin/push/subscribe", {
     endpoint: subscription.endpoint,
     keys: {
-      p256dh: key ? btoa(String.fromCharCode(...new Uint8Array(key))) : "",
-      auth: auth ? btoa(String.fromCharCode(...new Uint8Array(auth))) : "",
+      p256dh: btoa(String.fromCharCode(...new Uint8Array(key))),
+      auth: btoa(String.fromCharCode(...new Uint8Array(auth))),
     },
   });
 }

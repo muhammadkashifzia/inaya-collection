@@ -21,7 +21,7 @@ class AdminNotifier
         $notification = AdminNotification::query()->create([
             'type' => 'new_order',
             'title' => 'New order received',
-            'body' => "Order {$order->number} — Rs. ".number_format($order->grand_total / 100)." from {$order->customer_name}",
+            'body' => "Order {$order->number} — Rs. ".number_format($order->grand_total)." from {$order->customer_name}",
             'link' => "/orders/{$order->number}",
             'reference_id' => $order->id,
         ]);
