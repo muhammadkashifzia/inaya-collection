@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CachePublicApiResponse;
+use App\Http\Middleware\EnsureCustomer;
 use App\Http\Middleware\EnsureStaffMember;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\RevalidateStorefrontCache;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'staff' => EnsureStaffMember::class,
+            'customer' => EnsureCustomer::class,
             'active' => EnsureUserIsActive::class,
             'cache.api' => CachePublicApiResponse::class,
             'revalidate' => RevalidateStorefrontCache::class,

@@ -6,8 +6,10 @@ use App\Http\Controllers\Api\V1\Account\OrderController as AccountOrderControlle
 use App\Http\Controllers\Api\V1\Account\ProfileController;
 use App\Http\Controllers\Api\V1\Account\WishlistController;
 use App\Http\Controllers\Api\V1\Admin;
+use App\Http\Controllers\Api\V1\AdminAuthController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CartController;
+use App\Http\Controllers\Api\V1\CustomerAuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CheckoutController;
 use App\Http\Controllers\Api\V1\ContactController;
@@ -55,21 +57,22 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     });
     Route::post('checkout', CheckoutController::class)->middleware('throttle:checkout')->name('checkout');
 
-    // ---------------------------------------------------------------- Auth
+    // ---------------------------------------------------------------- Auth (customer / storefront)
     Route::prefix('auth')->name('auth.')->group(function (): void {
-        Route::post('register', [AuthController::class, 'register'])->middleware('throttle:login')->name('register');
-        Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login');
-        Route::post('two-factor-challenge', [AuthController::class, 'twoFactorChallenge'])->middleware('throttle:login')->name('two-factor.challenge');
-        Route::post('two-factor-setup', [AuthController::class, 'twoFactorSetup'])->middleware('throttle:login')->name('two-factor.setup');
-        Route::post('two-factor-setup/confirm', [AuthController::class, 'twoFactorSetupConfirm'])->middleware('throttle:login')->name('two-factor.setup.confirm');
+        Route::post('register', [CustomerAuthController::class, 'register'])->middleware('throttle:login')->name('register');
+        Route::post('login', [CustomerAuthController::class, 'login'])->middleware('throttle:login')->name('login');
         Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:password-reset')->name('password.email');
         Route::post('reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:password-reset')->name('password.update');
-        Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
+        Route::post('logout', [CustomerAuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
+    });
+
+    // ------------------------------------------------------- Authenticated user (any role)
+    Route::middleware(['auth:sanctum', 'active'])->group(function (): void {
+        Route::get('me', [AuthController::class, 'me'])->name('me');
     });
 
     // ------------------------------------------------------- Customer account
-    Route::middleware(['auth:sanctum', 'active'])->group(function (): void {
-        Route::get('me', [AuthController::class, 'me'])->name('me');
+    Route::middleware(['auth:sanctum', 'active', 'customer'])->group(function (): void {
         Route::put('me', [ProfileController::class, 'update'])->name('me.update');
         Route::put('me/email', [ProfileController::class, 'updateEmail'])->middleware('throttle:login')->name('me.email');
         Route::put('me/password', [ProfileController::class, 'updatePassword'])->middleware('throttle:login')->name('me.password');
@@ -83,6 +86,15 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('me/wishlist', [WishlistController::class, 'index'])->name('me.wishlist.index');
         Route::post('me/wishlist', [WishlistController::class, 'store'])->name('me.wishlist.store');
         Route::delete('me/wishlist/{productId}', [WishlistController::class, 'destroy'])->whereNumber('productId')->name('me.wishlist.destroy');
+    });
+
+    // ---------------------------------------------------------------- Admin Auth
+    Route::prefix('admin/auth')->name('admin.auth.')->group(function (): void {
+        Route::post('login', [AdminAuthController::class, 'login'])->middleware('throttle:login')->name('login');
+        Route::post('two-factor-challenge', [AuthController::class, 'twoFactorChallenge'])->middleware('throttle:login')->name('two-factor.challenge');
+        Route::post('two-factor-setup', [AuthController::class, 'twoFactorSetup'])->middleware('throttle:login')->name('two-factor.setup');
+        Route::post('two-factor-setup/confirm', [AuthController::class, 'twoFactorSetupConfirm'])->middleware('throttle:login')->name('two-factor.setup.confirm');
+        Route::post('logout', [AdminAuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
     });
 
     // ---------------------------------------------------------------- Admin

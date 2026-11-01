@@ -106,9 +106,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     (async () => {
       const me = await api.me().catch(() => null);
       if (cancelled) return;
-      setUser(me);
+      // Ignore non-customer sessions (e.g. admin accidentally visiting the store).
+      const isCustomer = !me || !(me as any).role || (me as any).role === "customer";
+      setUser(isCustomer ? me : null);
       setAuthReady(true);
-      await Promise.all([refreshCart(), loadWishlist(me)]);
+      await Promise.all([refreshCart(), loadWishlist(isCustomer ? me : null)]);
     })();
     return () => {
       cancelled = true;
@@ -177,6 +179,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(
     async (email: string, password: string, remember = false) => {
       const signedIn = await api.login(email, password, remember);
+
+      // Backend already rejects non-customers, but guard the frontend as well.
+      if (signedIn && (signedIn as any).role && (signedIn as any).role !== "customer") {
+        await api.logout().catch(() => undefined);
+        throw new Error("This account cannot be used on the store.");
+      }
+
       setUser(signedIn);
       await Promise.all([refreshCart(), loadWishlist(signedIn)]);
       return signedIn;

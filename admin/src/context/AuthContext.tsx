@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string, remember: boolean) => {
-    const res = await http.post<{ data?: AdminUser; two_factor?: "challenge" | "setup" }>("/auth/login", { email, password, remember });
+    const res = await http.post<{ data?: AdminUser; two_factor?: "challenge" | "setup" }>("/admin/auth/login", { email, password, remember });
 
     if (res.two_factor) {
       setTwoFactorState(res.two_factor);
@@ -48,14 +48,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     if (res.data?.role === "customer") {
-      await http.post("/auth/logout").catch(() => undefined);
+      await http.post("/admin/auth/logout").catch(() => undefined);
       throw new ApiError("This account does not have admin access.", 403);
     }
     setUser(await http.get<AdminUser>("/me"));
   }, []);
 
   const logout = useCallback(async () => {
-    await http.post("/auth/logout").catch(() => undefined);
+    await http.post("/admin/auth/logout").catch(() => undefined);
     setUser(null);
     setTwoFactorState(null);
   }, []);
@@ -66,18 +66,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const verifyTwoFactor = useCallback(async (code: string) => {
-    await http.post("/auth/two-factor/verify", { code });
+    await http.post("/admin/auth/two-factor-challenge", { code });
     setTwoFactorState(null);
     setUser(await http.get<AdminUser>("/me"));
   }, []);
 
   const fetchTwoFactorSetup = useCallback(async () => {
-    const res = await http.get<{ secret: string; uri: string }>("/auth/two-factor/setup");
+    const res = await http.get<{ secret: string; uri: string }>("/admin/auth/two-factor-setup");
     return res;
   }, []);
 
   const confirmTwoFactorSetup = useCallback(async (code: string) => {
-    await http.post("/auth/two-factor/confirm-setup", { code });
+    await http.post("/admin/auth/two-factor-setup/confirm", { code });
     setTwoFactorState(null);
     setUser(await http.get<AdminUser>("/me"));
   }, []);
