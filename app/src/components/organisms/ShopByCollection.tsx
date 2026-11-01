@@ -2,11 +2,11 @@ import { Container } from "@/components/atoms";
 import { CollectionTile, SectionHeader } from "@/components/molecules";
 import type { Collection } from "@/types";
 
-export function ShopByCollection({ title, collections }: { title: string; collections: Collection[] }) {
+export function ShopByCollection({ title, subtitle, collections }: { title: string; subtitle?: string | null; collections: Collection[] }) {
   return (
     <section className="py-6 sm:py-8 md:py-10">
       <Container>
-        <SectionHeader title={title} />
+        <SectionHeader title={title} subtitle={subtitle ?? undefined} />
         <div className="grid grid-cols-2 gap-x-1 gap-y-4 sm:gap-y-5 md:gap-x-2 md:gap-y-8 lg:grid-cols-4">
           {collections.map((c) => (
             <CollectionTile key={c.id} collection={c} />

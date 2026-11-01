@@ -7,6 +7,7 @@ export { FeaturedTabs } from "./FeaturedTabs";
 export { Footer } from "./Footer";
 export { Header } from "./Header";
 export { HeroBanner } from "./HeroBanner";
+export { ImageBanners } from "./ImageBanners";
 export { MobileTabBar } from "./MobileTabBar";
 export { NewsletterPopup } from "./NewsletterPopup";
 export { ProductDetail } from "./ProductDetail";

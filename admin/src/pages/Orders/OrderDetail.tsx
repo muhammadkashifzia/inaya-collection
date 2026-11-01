@@ -50,7 +50,7 @@ export default function OrderDetail() {
   const toast = useToast();
   const { data: order, error, loading, reload, setData } = useApi(() => http.get<Order>(`/admin/orders/${encodeURIComponent(number)}`), [number]);
   const [note, setNote] = useState("");
-  const [busy, setBusy] = useState<OrderStatus | "shipment" | null>(null);
+  const [busy, setBusy] = useState<OrderStatus | "shipment" | "postex" | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [shipment, setShipment] = useState<{ carrier: string; tracking_number: string; tracking_url: string } | null>(null);
   const [shipmentError, setShipmentError] = useState<ApiError | null>(null);
@@ -108,6 +108,20 @@ export default function OrderDetail() {
       toast.success("Shipping details saved.");
     } catch (err) {
       setShipmentError(err instanceof ApiError ? err : new ApiError("Could not save.", 0));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function bookPostEx() {
+    setBusy("postex");
+    setActionError(null);
+    try {
+      setData(await http.post<Order>(`/admin/orders/${encodeURIComponent(number)}/book-postex`));
+      toast.success("Order booked with PostEx successfully.");
+    } catch (e) {
+      const msg = e instanceof ApiError ? e.firstMessage : "Could not book with PostEx.";
+      toast.error(msg);
     } finally {
       setBusy(null);
     }
@@ -236,6 +250,29 @@ export default function OrderDetail() {
               </Card>
 
               <Card title="Shipping">
+                {/* PostEx booking */}
+                {!order.shipment?.postex_order_id && !["cancelled", "refunded", "delivered"].includes(order.status) && (
+                  <div className="mb-4 rounded-lg border border-brand-100 bg-brand-50 p-3 dark:border-brand-500/20 dark:bg-brand-500/5">
+                    <p className="mb-2 text-sm text-gray-700 dark:text-gray-300">Book this order with PostEx courier for COD delivery.</p>
+                    <Button variant="primary" size="sm" loading={busy === "postex"} disabled={busy !== null} onClick={() => void bookPostEx()}>
+                      📦 Book with PostEx
+                    </Button>
+                  </div>
+                )}
+                {order.shipment?.postex_order_id && (
+                  <div className="mb-4 rounded-lg border border-success-100 bg-success-50 p-3 dark:border-success-500/20 dark:bg-success-500/5">
+                    <p className="text-sm font-medium text-success-700 dark:text-success-400">✓ Booked with PostEx</p>
+                    <p className="mt-1 text-theme-xs text-gray-600 dark:text-gray-400">
+                      Order ID: {order.shipment.postex_order_id}
+                      {order.shipment.postex_tracking_number && <> · CN: {order.shipment.postex_tracking_number}</>}
+                    </p>
+                    {order.shipment.tracking_url && (
+                      <a href={order.shipment.tracking_url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm font-medium text-brand-500 hover:underline">
+                        Track shipment →
+                      </a>
+                    )}
+                  </div>
+                )}
                 <form onSubmit={saveShipment} className="space-y-4" noValidate>
                   <TextInput label="Courier" value={ship.carrier} onChange={(e) => setShipment({ ...ship, carrier: e.target.value })} placeholder="TCS, Leopards, M&P…" maxLength={60} />
                   <TextInput label="Tracking number" value={ship.tracking_number} onChange={(e) => setShipment({ ...ship, tracking_number: e.target.value })} maxLength={100} />

@@ -8,11 +8,11 @@ import type { ImageBannerItem } from "@/types";
  * drawn over each background image. Scrolls sideways when there are more
  * cards than fit: 1 on phones, 2 on tablets, 4 on desktop.
  */
-export function ImageBanners({ title, items }: { title: string; items: ImageBannerItem[] }) {
+export function ImageBanners({ title, subtitle, items }: { title: string; subtitle?: string | null; items: ImageBannerItem[] }) {
   return (
     <section className="py-8 md:py-12">
       <Container>
-        {title && <SectionHeader title={title} />}
+        {title && <SectionHeader title={title} subtitle={subtitle ?? undefined} />}
         <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-2 [scrollbar-width:none] md:-mx-6 md:gap-4 md:scroll-px-6 md:px-6 [&::-webkit-scrollbar]:hidden">
           {items.map((item, i) => (
             <li key={i} className="shrink-0 basis-[85%] snap-start sm:basis-[calc(50%-0.5rem)] lg:basis-[calc(25%-0.75rem)]">

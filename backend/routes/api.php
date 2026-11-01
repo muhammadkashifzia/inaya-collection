@@ -129,6 +129,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::get('orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');
             Route::patch('orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
             Route::put('orders/{order}/shipment', [Admin\OrderController::class, 'updateShipment'])->name('orders.shipment');
+            Route::post('orders/{order}/book-postex', [Admin\OrderController::class, 'bookPostEx'])->name('orders.book-postex');
+            Route::get('orders/{order}/track-postex', [Admin\OrderController::class, 'trackPostEx'])->name('orders.track-postex');
+            Route::delete('orders/{order}', [Admin\OrderController::class, 'destroy'])->name('orders.destroy');
         });
 
         Route::middleware('can:'.Permission::ViewCustomers->value)->group(function (): void {

@@ -60,7 +60,7 @@ export default function DataTable<T>({
             {rows.map((row) => (
               <TableRow key={rowKey(row)} className="group hover:bg-gray-50/60 dark:hover:bg-white/2">
                 {columns.map((c) => (
-                  <TableCell key={c.key} className={cn("px-4 py-3 text-gray-700 dark:text-gray-300", c.align === "end" ? "text-end" : "text-start", c.className)}>
+                  <TableCell key={c.key} className={cn("px-4 py-3 text-gray-700 break-words dark:text-gray-300", c.align === "end" ? "text-end" : "text-start", c.className)}>
                     {c.cell(row)}
                   </TableCell>
                 ))}

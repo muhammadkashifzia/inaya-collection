@@ -40,4 +40,10 @@ return [
         'revalidation_secret' => env('NEXTJS_REVALIDATION_SECRET'),
     ],
 
+    'postex' => [
+        'api_key' => env('POSTEX_API_KEY'),
+        'base_url' => env('POSTEX_BASE_URL', 'https://api.postex.pk/services/integration/api/order'),
+        'pickup_address_code' => env('POSTEX_PICKUP_ADDRESS_CODE'),
+    ],
+
 ];

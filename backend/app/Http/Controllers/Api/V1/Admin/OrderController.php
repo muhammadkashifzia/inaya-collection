@@ -10,6 +10,7 @@ use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Services\OrderMailer;
 use App\Services\OrderStatusService;
+use App\Services\PostExService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -91,5 +92,57 @@ class OrderController extends Controller
         }
 
         return $this->show($order->refresh());
+    }
+
+    public function bookPostEx(Order $order, PostExService $postEx): OrderResource
+    {
+        if ($order->shipment?->postex_order_id) {
+            abort(422, 'This order has already been booked with PostEx.');
+        }
+
+        if (in_array($order->status, [OrderStatus::Cancelled, OrderStatus::Refunded, OrderStatus::Delivered], true)) {
+            abort(422, "Cannot book a {$order->status->value} order with PostEx.");
+        }
+
+        try {
+            $result = $postEx->createOrder($order);
+        } catch (\RuntimeException $e) {
+            abort(422, $e->getMessage());
+        }
+
+        $trackingUrl = "https://tracking.postex.pk/tracking?tracking_number={$result['trackingNumber']}";
+
+        $order->shipment()->updateOrCreate([], [
+            'carrier' => 'PostEx',
+            'tracking_number' => $result['trackingNumber'],
+            'tracking_url' => $trackingUrl,
+            'postex_order_id' => $result['orderId'],
+            'postex_tracking_number' => $result['trackingNumber'],
+        ]);
+
+        return $this->show($order->refresh());
+    }
+
+    public function trackPostEx(Order $order, PostExService $postEx): \Illuminate\Http\JsonResponse
+    {
+        $trackingNumber = $order->shipment?->postex_tracking_number;
+        if (blank($trackingNumber)) {
+            abort(404, 'No PostEx tracking number found for this order.');
+        }
+
+        $tracking = $postEx->trackOrder($trackingNumber);
+
+        return response()->json(['data' => $tracking]);
+    }
+
+    public function destroy(Order $order): \Illuminate\Http\JsonResponse
+    {
+        $order->items()->delete();
+        $order->statusHistory()->delete();
+        $order->payments()->delete();
+        $order->shipment()->delete();
+        $order->delete();
+
+        return response()->json(null, 204);
     }
 }

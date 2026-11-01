@@ -12,8 +12,8 @@ interface ProductTemplateProps {
 
 export function ProductTemplate({ product, related, maxQuantity }: ProductTemplateProps) {
   return (
-    <Container className="py-6 sm:py-8 md:py-12">
-      <nav aria-label="Breadcrumb" className="mb-4 text-[11px] text-muted sm:mb-6 sm:text-xs">
+    <Container className="py-4 sm:py-8 md:py-12">
+      <nav aria-label="Breadcrumb" className="mb-3 text-[10px] text-muted sm:mb-6 sm:text-xs">
         <Link href="/" className="hover:text-ink">Home</Link>
         {product.categorySlug && (
           <>

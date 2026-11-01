@@ -184,7 +184,7 @@ export interface Order {
   items_count?: number;
   items?: OrderItem[];
   status_history?: { from: OrderStatus | null; to: OrderStatus; note: string | null; by: string | null; at: string }[];
-  shipment?: { carrier: string | null; tracking_number: string | null; tracking_url: string | null; shipped_at: string | null; delivered_at: string | null } | null;
+  shipment?: { carrier: string | null; tracking_number: string | null; tracking_url: string | null; postex_order_id: string | null; postex_tracking_number: string | null; shipped_at: string | null; delivered_at: string | null } | null;
   payments?: { id: number; method: string; status: PaymentStatus; amount: number; provider_reference: string | null; paid_at: string | null; refunded_at: string | null }[];
   allowed_transitions?: OrderStatus[];
   user?: { id: number; name: string; email: string } | null;

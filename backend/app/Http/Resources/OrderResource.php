@@ -63,6 +63,8 @@ class OrderResource extends JsonResource
                 'carrier' => $this->shipment->carrier,
                 'tracking_number' => $this->shipment->tracking_number,
                 'tracking_url' => $this->shipment->tracking_url,
+                'postex_order_id' => $this->shipment->postex_order_id,
+                'postex_tracking_number' => $this->shipment->postex_tracking_number,
                 'shipped_at' => $this->shipment->shipped_at,
                 'delivered_at' => $this->shipment->delivered_at,
             ] : null),

@@ -28,7 +28,7 @@ export default function OrderList() {
   async function onConfirmDelete() {
     if (!confirmOrder) return;
     try {
-      await http.delete(`/admin/orders/${confirmOrder.id}`);
+      await http.delete(`/admin/orders/${confirmOrder.number}`);
       reload();
     } catch {
       // handled silently

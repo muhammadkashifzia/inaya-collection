@@ -105,7 +105,7 @@ export function NewsletterPopup() {
   if (!open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center sm:p-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       {/* Backdrop */}
       <button type="button" aria-label="Close" tabIndex={-1} onClick={dismiss} className="absolute inset-0 bg-black/50" />
 
@@ -116,7 +116,7 @@ export function NewsletterPopup() {
         aria-modal="true"
         aria-label="Newsletter signup"
         tabIndex={-1}
-        className="relative grid max-h-[90vh] w-full overflow-hidden rounded-t-2xl bg-white shadow-2xl outline-none sm:max-w-[720px] sm:rounded-xl md:grid-cols-2"
+        className="relative grid max-h-[90vh] w-full overflow-y-auto rounded-xl bg-white shadow-2xl outline-none sm:max-w-[720px] md:grid-cols-2"
       >
         {/* Close button */}
         <button
