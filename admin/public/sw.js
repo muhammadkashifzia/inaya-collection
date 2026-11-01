@@ -105,8 +105,8 @@ self.addEventListener("push", (event) => {
   const title = payload.title || "Anaya Collection Admin";
   const options = {
     body: payload.body || "",
-    icon: "/pwa-192.png",
-    badge: "/pwa-192.png",
+    icon: payload.icon || "/pwa-192.png",
+    badge: payload.badge || "/favicon.png",
     tag: payload.tag || "admin-notification",
     renotify: true,
     data: { url: payload.url || "/" },

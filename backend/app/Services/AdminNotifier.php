@@ -88,6 +88,8 @@ class AdminNotifier
                 'title' => $notification->title,
                 'body' => $notification->body,
                 'url' => $notification->link,
+                'icon' => $adminUrl.'/pwa-192.png',
+                'badge' => $adminUrl.'/favicon.png',
                 'tag' => $notification->type.'-'.$notification->id,
                 'badge_count' => $unreadCount,
             ], JSON_THROW_ON_ERROR);

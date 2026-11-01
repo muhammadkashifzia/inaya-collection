@@ -78,10 +78,14 @@ class TestPushNotification extends Command
 
             $unreadCount = AdminNotification::query()->whereNull('read_at')->count();
 
+            $adminUrl = rtrim((string) config('app.frontend_url', config('app.url')), '/');
+
             $payload = json_encode([
                 'title' => $notification->title,
                 'body' => $notification->body,
                 'url' => $notification->link,
+                'icon' => $adminUrl.'/pwa-192.png',
+                'badge' => $adminUrl.'/favicon.png',
                 'tag' => 'test-'.$notification->id,
                 'badge_count' => $unreadCount,
             ], JSON_THROW_ON_ERROR);
