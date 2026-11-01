@@ -6,6 +6,7 @@ use App\Models\AdminNotification;
 use App\Models\ContactMessage;
 use App\Models\Order;
 use App\Models\PushSubscription;
+use App\Support\Money;
 use Illuminate\Support\Facades\Log;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
@@ -21,7 +22,7 @@ class AdminNotifier
         $notification = AdminNotification::query()->create([
             'type' => 'new_order',
             'title' => 'New order received',
-            'body' => "Order {$order->number} — Rs. ".number_format($order->grand_total)." from {$order->customer_name}",
+            'body' => "Order {$order->number} — Rs. ".number_format(Money::toMajor($order->grand_total))." from {$order->customer_name}",
             'link' => "/orders/{$order->number}",
             'reference_id' => $order->id,
         ]);

@@ -54,6 +54,9 @@ jobs:
       # The server .env is created once by hand (see backend/.env.example) and never
       # generated or rewritten by CI. Here we only verify it is usable.
       - name: Verify server .env
+        env:
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
         run: |
           auth="Authorization: cpanel $CPANEL_USER:$CPANEL_TOKEN"
           content=$(curl -sS -G -H "$auth" --data-urlencode "dir=$REMOTE_DIR" --data-urlencode "file=.env" \
@@ -82,6 +85,28 @@ jobs:
           if [ -n "$reval_url" ] && [ "$reval_url" != "$want_reval" ]; then
             echo "::warning::NEXTJS_REVALIDATION_URL is '$reval_url' — auto-fixing to $want_reval"
             content=$(printf '%s\n' "$content" | sed "s|^NEXTJS_REVALIDATION_URL=.*|NEXTJS_REVALIDATION_URL=$want_reval|")
+            dirty=true
+          fi
+
+          # --- Auto-fix: ensure VAPID push notification keys are present ---
+          vapid_pub=$(value VAPID_PUBLIC_KEY)
+          vapid_priv=$(value VAPID_PRIVATE_KEY)
+          if [ -z "$vapid_pub" ] || [ -z "$vapid_priv" ]; then
+            echo "::warning::VAPID keys missing — auto-adding for Web Push"
+            if [ -z "$VAPID_PUBLIC_KEY" ] || [ -z "$VAPID_PRIVATE_KEY" ]; then
+              echo "::error::Set VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY as repository secrets."
+              exit 1
+            fi
+            if [ -z "$vapid_pub" ]; then
+              content=$(printf '%s\nVAPID_PUBLIC_KEY=%s' "$content" "$VAPID_PUBLIC_KEY")
+            else
+              content=$(printf '%s\n' "$content" | sed "s|^VAPID_PUBLIC_KEY=.*|VAPID_PUBLIC_KEY=$VAPID_PUBLIC_KEY|")
+            fi
+            if [ -z "$vapid_priv" ]; then
+              content=$(printf '%s\nVAPID_PRIVATE_KEY=%s' "$content" "$VAPID_PRIVATE_KEY")
+            else
+              content=$(printf '%s\n' "$content" | sed "s|^VAPID_PRIVATE_KEY=.*|VAPID_PRIVATE_KEY=$VAPID_PRIVATE_KEY|")
+            fi
             dirty=true
           fi
 
