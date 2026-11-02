@@ -69,7 +69,6 @@ class PostExService
             'orderRefNumber' => $order->number,
             'orderType' => 'Normal',
             'pickupAddressCode' => $this->pickupAddressCode ?? '',
-            'storeAddressCode' => $this->pickupAddressCode ?? '',
             'transactionNotes' => $order->customer_note ?? '',
         ];
 
