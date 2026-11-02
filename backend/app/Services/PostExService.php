@@ -67,7 +67,7 @@ class PostExService
             'items' => (string) $itemCount,
             'orderDetail' => mb_substr($orderDetail, 0, 500),
             'orderRefNumber' => $order->number,
-            'orderType' => 'Normal Delivery',
+            'orderType' => 'Normal',
             'pickupAddressCode' => $this->pickupAddressCode ?? '',
             'storeAddressCode' => $this->pickupAddressCode ?? '',
             'transactionNotes' => $order->customer_note ?? '',
