@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         email_address: email,
-        status: "subscribed",
+        status: "pending",
         tags: ["website-popup"],
       }),
     });
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     const data = await res.json();
 
     if (res.ok) {
-      return NextResponse.json({ message: "You're subscribed! Check your inbox for a welcome email." });
+      return NextResponse.json({ message: "Please check your inbox and confirm your subscription!" });
     }
 
     // Mailchimp returns "Member Exists" when the email is already subscribed.
