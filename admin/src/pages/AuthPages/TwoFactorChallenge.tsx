@@ -5,7 +5,7 @@ import AuthLayout from "./AuthPageLayout";
 export default function TwoFactorChallenge() {
   return (
     <>
-      <PageMeta title="Two-factor authentication | Anaya Collection Admin" description="Enter your authenticator code to continue." />
+      <PageMeta title="Two-factor authentication | Gulmaria Admin" description="Enter your authenticator code to continue." />
       <AuthLayout>
         <TwoFactorForm />
       </AuthLayout>

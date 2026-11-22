@@ -10,7 +10,7 @@ function fakeProduct(overrides: Partial<Product> = {}): Product {
     slug: "black-abaya",
     sku: "BA-001",
     title: "Black Abaya",
-    brand: "Inaya",
+    brand: "Gulmaria",
     categorySlug: "abayas",
     categoryName: "Abayas",
     price: 3500,
@@ -37,7 +37,7 @@ function fakeProduct(overrides: Partial<Product> = {}): Product {
 
 function fakeSite(overrides: Partial<SiteConfig> = {}): SiteConfig {
   return {
-    name: "Inaya Collection",
+    name: "Gulmaria",
     logoType: "text",
     logoUrl: null,
     tagline: "",
@@ -76,13 +76,13 @@ describe("siteUrl", () => {
   });
 
   it("returns env value without trailing slash", () => {
-    process.env.NEXT_PUBLIC_SITE_URL = "https://inaya.pk/";
-    expect(siteUrl()).toBe("https://inaya.pk");
+    process.env.NEXT_PUBLIC_SITE_URL = "https://gulmaria.com/";
+    expect(siteUrl()).toBe("https://gulmaria.com");
   });
 
   it("returns env value as-is if no trailing slash", () => {
-    process.env.NEXT_PUBLIC_SITE_URL = "https://inaya.pk";
-    expect(siteUrl()).toBe("https://inaya.pk");
+    process.env.NEXT_PUBLIC_SITE_URL = "https://gulmaria.com";
+    expect(siteUrl()).toBe("https://gulmaria.com");
   });
 });
 
@@ -91,7 +91,7 @@ describe("siteUrl", () => {
 /* ------------------------------------------------------------------ */
 describe("productJsonLd", () => {
   beforeEach(() => {
-    process.env.NEXT_PUBLIC_SITE_URL = "https://inaya.pk";
+    process.env.NEXT_PUBLIC_SITE_URL = "https://gulmaria.com";
   });
 
   it("generates correct schema.org structure", () => {
@@ -100,7 +100,7 @@ describe("productJsonLd", () => {
     expect(ld["@type"]).toBe("Product");
     expect(ld.name).toBe("Black Abaya");
     expect(ld.sku).toBe("BA-001");
-    expect(ld.url).toBe("https://inaya.pk/products/black-abaya");
+    expect(ld.url).toBe("https://gulmaria.com/products/black-abaya");
   });
 
   it("uses metaDescription as description when available", () => {
@@ -124,13 +124,13 @@ describe("productJsonLd", () => {
   });
 
   it("uses product brand when available", () => {
-    const ld = productJsonLd(fakeProduct({ brand: "Inaya" }), fakeSite());
-    expect(ld.brand).toEqual({ "@type": "Brand", name: "Inaya" });
+    const ld = productJsonLd(fakeProduct({ brand: "Gulmaria" }), fakeSite());
+    expect(ld.brand).toEqual({ "@type": "Brand", name: "Gulmaria" });
   });
 
   it("falls back to site name for brand", () => {
-    const ld = productJsonLd(fakeProduct({ brand: null }), fakeSite({ name: "Inaya Collection" }));
-    expect(ld.brand).toEqual({ "@type": "Brand", name: "Inaya Collection" });
+    const ld = productJsonLd(fakeProduct({ brand: null }), fakeSite({ name: "Gulmaria" }));
+    expect(ld.brand).toEqual({ "@type": "Brand", name: "Gulmaria" });
   });
 
   it("sets InStock availability when product is available", () => {

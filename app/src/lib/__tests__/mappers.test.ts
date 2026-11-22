@@ -59,7 +59,7 @@ describe("mapProduct", () => {
     slug: "black-abaya",
     sku: "BA-001",
     name: "Black Abaya",
-    brand: "Inaya",
+    brand: "Gulmaria",
     category: { slug: "abayas", name: "Abayas" },
     price: 5000,
     sale_price: 3500,
@@ -348,7 +348,7 @@ describe("mapPage", () => {
 describe("mapSettings", () => {
   it("maps store settings correctly", () => {
     const raw = {
-      store: { name: "Inaya", logo_type: "text", tagline: "Tagline", about: "About", email: "e@e.com", phone: "0300" },
+      store: { name: "Gulmaria", logo_type: "text", tagline: "Tagline", about: "About", email: "e@e.com", phone: "0300" },
       localization: { currency_symbol: "Rs." },
       announcements: ["Free shipping!"],
       shipping: { free_shipping_threshold: 500000, methods: [{ code: "standard", name: "Standard", fee: 20000 }] },
@@ -358,10 +358,10 @@ describe("mapSettings", () => {
       trust: [],
       footer: { columns: [], copyright: "© 2024" },
       social: [],
-      seo: { default_title: "Inaya", default_description: "Desc" },
+      seo: { default_title: "Gulmaria", default_description: "Desc" },
     };
     const s = mapSettings(raw);
-    expect(s.name).toBe("Inaya");
+    expect(s.name).toBe("Gulmaria");
     expect(s.logoType).toBe("text");
     expect(s.freeShippingThreshold).toBe(5000); // divided by 100
     expect(s.shippingMethods[0].fee).toBe(200); // divided by 100

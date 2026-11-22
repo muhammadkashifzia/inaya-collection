@@ -27,7 +27,7 @@ class OrderStatusMail extends Mailable
     /**
      * Header logo (white artwork for the navy header), served from public/.
      */
-    public const EMAIL_LOGO_PATH = 'images/email/anaya-collection-logo.png';
+    public const EMAIL_LOGO_PATH = 'images/email/gulmaria-logo.png';
 
     /**
      * @param  array<string, mixed>  $settings  Store settings from SettingsService::all()

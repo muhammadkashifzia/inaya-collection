@@ -74,7 +74,7 @@ export function fakeAdminUser(overrides: Partial<AdminUser> = {}): AdminUser {
   return {
     id: 1,
     name: "Ali Khan",
-    email: "ali@inaya.pk",
+    email: "ali@gulmaria.com",
     phone: "0300-1234567",
     role: "admin",
     is_active: true,

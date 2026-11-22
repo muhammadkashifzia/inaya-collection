@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "Anaya Collection Admin",
-  "short_name": "Anaya Admin",
-  "description": "Manage orders, products and store settings for Anaya Collection.",
+  "name": "Gulmaria Admin",
+  "short_name": "Gulmaria",
+  "description": "Manage orders, products and store settings for Gulmaria.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

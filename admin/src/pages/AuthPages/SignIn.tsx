@@ -5,7 +5,7 @@ import AuthLayout from "./AuthPageLayout";
 export default function SignIn() {
   return (
     <>
-      <PageMeta title="Sign in | Anaya Collection Admin" description="Sign in to the Anaya Collection store admin." />
+      <PageMeta title="Sign in | Gulmaria Admin" description="Sign in to the Gulmaria store admin." />
       <AuthLayout>
         <SignInForm />
       </AuthLayout>

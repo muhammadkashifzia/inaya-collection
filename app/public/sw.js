@@ -1,11 +1,11 @@
-/* Anaya Collection service worker: app-shell caching + offline fallback. */
+/* Gulmaria service worker: app-shell caching + offline fallback. */
 const VERSION = "v1";
 const STATIC_CACHE = `static-${VERSION}`;
 const PAGES_CACHE = `pages-${VERSION}`;
 const ASSETS_CACHE = `assets-${VERSION}`;
 const OFFLINE_URL = "/offline";
 
-const PRECACHE = [OFFLINE_URL, "/icon-192.png", "/icon-512.png", "/anaya-collection-logo.svg"];
+const PRECACHE = [OFFLINE_URL, "/icon-192.png", "/icon-512.png", "/gulmaria-logo.svg"];
 
 // Personal / transactional pages are never cached.
 const NO_CACHE_PATHS = ["/account", "/cart", "/checkout", "/wishlist", "/api"];

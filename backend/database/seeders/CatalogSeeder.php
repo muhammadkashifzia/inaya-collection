@@ -50,7 +50,7 @@ class CatalogSeeder extends Seeder
                     'category_id' => $categoryIds[$row['collection']],
                     'name' => $row['title'],
                     'sku' => 'IC-'.$row['id'],
-                    'brand' => 'Anaya Collection',
+                    'brand' => 'Gulmaria',
                     'short_description' => $row['description'],
                     'description' => $row['description'],
                     'details' => $row['details'],

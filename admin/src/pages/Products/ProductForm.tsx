@@ -43,7 +43,7 @@ const empty: FormState = {
   name: "",
   slug: "",
   sku: "",
-  brand: "Anaya Collection",
+  brand: "Gulmaria",
   short_description: "",
   description: "",
   details: "",
@@ -214,7 +214,7 @@ export default function ProductForm() {
 
   return (
     <>
-      <PageMeta title={`${isNew ? "Add product" : (p?.name ?? "Product")} | Anaya Collection Admin`} description="Edit product details." />
+      <PageMeta title={`${isNew ? "Add product" : (p?.name ?? "Product")} | Gulmaria Admin`} description="Edit product details." />
       <PageHeader
         title={isNew ? "Add product" : (p?.name ?? "Edit product")}
         back={{ to: "/products", label: "Products" }}

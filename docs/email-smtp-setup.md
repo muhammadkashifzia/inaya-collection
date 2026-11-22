@@ -40,8 +40,8 @@ MAIL_HOST=127.0.0.1
 MAIL_PORT=1025
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
-MAIL_FROM_ADDRESS="orders@anaya.local"
-MAIL_FROM_NAME="Anaya Collection"
+MAIL_FROM_ADDRESS="orders@gulmaria.local"
+MAIL_FROM_NAME="Gulmaria"
 ```
 
 Open Mailpit at `http://localhost:8025`. After changing `.env`, run `php artisan config:clear`.
@@ -53,13 +53,13 @@ Open Mailpit at `http://localhost:8025`. After changing `.env`, run `php artisan
 ### Step 1: Create an email account
 
 1. Go to cPanel → **Email Accounts** → **Create**.
-2. Create an address such as `orders@anaya.eastlogic.com` (or one on your main domain).
+2. Create an address such as `orders@gulmaria.com` (or one on your main domain).
 3. Set a strong password and save it somewhere safe.
 4. Open **Connect Devices** for that account to see the **Outgoing server** host and port. It's usually `mail.eastlogic.com`, with ports 465 (SSL) and 587 (TLS).
 
 ### Step 2: Update the server `.env`
 
-In cPanel → **File Manager**, edit `/home/eastlogic/anaya-api.eastlogic.com/.env`.
+In cPanel → **File Manager**, edit `/home/eastlogic/api.gulmaria.com/.env`.
 
 **Option A: Port 465 (SSL), recommended**
 
@@ -68,11 +68,11 @@ MAIL_MAILER=smtp
 MAIL_SCHEME=smtps
 MAIL_HOST=mail.eastlogic.com
 MAIL_PORT=465
-MAIL_USERNAME=orders@anaya.eastlogic.com
+MAIL_USERNAME=orders@gulmaria.com
 MAIL_PASSWORD="your-email-password"
-MAIL_FROM_ADDRESS="orders@anaya.eastlogic.com"
-MAIL_FROM_NAME="Anaya Collection"
-MAIL_EHLO_DOMAIN=anaya-api.eastlogic.com
+MAIL_FROM_ADDRESS="orders@gulmaria.com"
+MAIL_FROM_NAME="Gulmaria"
+MAIL_EHLO_DOMAIN=api.gulmaria.com
 ```
 
 **Option B: Port 587 (STARTTLS)**
@@ -82,17 +82,17 @@ MAIL_MAILER=smtp
 MAIL_SCHEME=smtp
 MAIL_HOST=mail.eastlogic.com
 MAIL_PORT=587
-MAIL_USERNAME=orders@anaya.eastlogic.com
+MAIL_USERNAME=orders@gulmaria.com
 MAIL_PASSWORD="your-email-password"
-MAIL_FROM_ADDRESS="orders@anaya.eastlogic.com"
-MAIL_FROM_NAME="Anaya Collection"
+MAIL_FROM_ADDRESS="orders@gulmaria.com"
+MAIL_FROM_NAME="Gulmaria"
 ```
 
 Also check these URLs, because the email links and images are built from them:
 
 ```env
-APP_URL=https://anaya-api.eastlogic.com
-FRONTEND_URL=https://anaya.eastlogic.com
+APP_URL=https://api.gulmaria.com
+FRONTEND_URL=https://gulmaria.com
 ```
 
 > **Important**
@@ -108,7 +108,7 @@ Live runs `config:cache`, so the new `.env` values won't apply until the cache r
 - Or, if you have cPanel **Terminal** access:
 
   ```bash
-  cd ~/anaya-api.eastlogic.com
+  cd ~/api.gulmaria.com
   php artisan config:clear && php artisan config:cache
   ```
 
@@ -120,7 +120,7 @@ Live runs `config:cache`, so the new `.env` values won't apply until the cache r
    ```
    Name:  _dmarc
    Type:  TXT
-   Value: v=DMARC1; p=none; rua=mailto:orders@anaya.eastlogic.com
+   Value: v=DMARC1; p=none; rua=mailto:orders@gulmaria.com
    ```
 
 3. The `MAIL_FROM_ADDRESS` domain must match the domain that has SPF and DKIM set up.
@@ -152,7 +152,7 @@ MAIL_PORT=465
 MAIL_USERNAME=yourstore@gmail.com
 MAIL_PASSWORD="abcd efgh ijkl mnop"
 MAIL_FROM_ADDRESS="yourstore@gmail.com"
-MAIL_FROM_NAME="Anaya Collection"
+MAIL_FROM_NAME="Gulmaria"
 ```
 
 Gmail allows roughly 500 emails a day, which is fine for a small store. For more volume, use a transactional provider such as Brevo, Mailgun, Amazon SES or Postmark. Those only need different SMTP host and credentials; no code changes are required.
@@ -164,7 +164,7 @@ Gmail allows roughly 500 emails a day, which is fine for a small store. For more
 **Quick test (via Terminal):**
 
 ```bash
-php artisan tinker --execute 'Mail::raw("SMTP test from Anaya", fn ($m) => $m->to("you@example.com")->subject("SMTP test"));'
+php artisan tinker --execute 'Mail::raw("SMTP test from Gulmaria", fn ($m) => $m->to("you@example.com")->subject("SMTP test"));'
 ```
 
 If this arrives, SMTP is working.
@@ -182,7 +182,7 @@ If this arrives, SMTP is working.
 
 ## 5. Troubleshooting
 
-All errors are written to `storage/logs/laravel.log` (in cPanel File Manager: `anaya-api.eastlogic.com/storage/logs/`).
+All errors are written to `storage/logs/laravel.log` (in cPanel File Manager: `api.gulmaria.com/storage/logs/`).
 
 | Problem | Fix |
 |---|---|

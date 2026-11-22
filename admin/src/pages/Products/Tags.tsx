@@ -78,7 +78,7 @@ export default function Tags() {
 
   return (
     <>
-      <PageMeta title="Tags | Anaya Collection Admin" description="Labels used to group and filter products." />
+      <PageMeta title="Tags | Gulmaria Admin" description="Labels used to group and filter products." />
       <PageHeader title="Tags" description="Labels such as New Arrival or Winter 2026. Assign them from the product form." actions={<Button onClick={() => open()}>+ Add tag</Button>} />
       <Card bodyClassName="p-4 md:p-5">
         <FilterBar search={values.q} onSearch={(q) => set("q", q)} placeholder="Search tags" />

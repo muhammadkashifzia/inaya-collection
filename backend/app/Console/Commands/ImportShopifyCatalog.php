@@ -143,7 +143,7 @@ class ImportShopifyCatalog extends Command
                 'category_id' => $categoryId,
                 'name' => $row['title'],
                 'sku' => $product->sku ?? $this->uniqueProductSku($row),
-                'brand' => 'Anaya Collection',
+                'brand' => 'Gulmaria',
                 'short_description' => Str::limit($summary, 500),
                 'description' => $description,
                 'details' => $details,

@@ -130,7 +130,7 @@ export default function DesignCategories() {
 
   return (
     <>
-      <PageMeta title="Design Categories | Anaya Collection Admin" description="Manage design categories for products." />
+      <PageMeta title="Design Categories | Gulmaria Admin" description="Manage design categories for products." />
       <PageHeader title="Design Categories" description="Organize products by design type." actions={<Button onClick={() => open()}>+ Add design category</Button>} />
       <Card bodyClassName="p-0">
         <DataState loading={loading} error={error} onRetry={reload} hasData={Boolean(data)} empty={data?.length === 0} emptyTitle="No design categories yet.">

@@ -91,7 +91,7 @@ class StoreContentSeeder extends Seeder
         CmsPage::query()->firstOrCreate(['slug' => 'about-us'], [
             'title' => 'About Us',
             'sections' => [
-                ['heading' => null, 'body' => 'Anaya Collection offers quality unstitched fabrics for every season, delivered across Pakistan.'],
+                ['heading' => null, 'body' => 'Gulmaria offers quality unstitched fabrics for every season, delivered across Pakistan.'],
             ],
             'is_published' => true,
         ]);

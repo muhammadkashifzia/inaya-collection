@@ -306,7 +306,7 @@ export default function HomeSections() {
 
   return (
     <>
-      <PageMeta title="Homepage sections | Anaya Collection Admin" description="Choose what appears on the homepage." />
+      <PageMeta title="Homepage sections | Gulmaria Admin" description="Choose what appears on the homepage." />
       <PageHeader
         title="Homepage sections"
         description="Sections appear on the homepage in this order, below the hero banner."

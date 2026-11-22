@@ -51,7 +51,7 @@ export default function Settings() {
 
   return (
     <>
-      <PageMeta title="Settings | Anaya Collection Admin" description="Store configuration." />
+      <PageMeta title="Settings | Gulmaria Admin" description="Store configuration." />
       <PageHeader
         title="Settings"
         description="Store details, shipping, payments, storefront content and your account. Store changes reach the website within about a minute."
@@ -114,7 +114,7 @@ export default function Settings() {
                           { value: "image", label: "Logo image" },
                           { value: "text", label: "Store name (text)" },
                         ]}
-                        hint={s.store.logo_type === "image" && !s.store.logo_url ? "No logo uploaded yet, so the built-in Anaya logo is shown." : undefined}
+                        hint={s.store.logo_type === "image" && !s.store.logo_url ? "No logo uploaded yet, so the built-in Gulmaria logo is shown." : undefined}
                       />
                       <ImageUpload
                         label="Logo image"

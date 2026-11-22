@@ -32,7 +32,7 @@ export default function MessageList() {
 
   return (
     <>
-      <PageMeta title="Messages | Anaya Collection Admin" description="Contact form submissions from the storefront." />
+      <PageMeta title="Messages | Gulmaria Admin" description="Contact form submissions from the storefront." />
       <PageHeader title="Messages" description={description} />
       <Card bodyClassName="p-4 md:p-5">
         <FilterBar search={values.q} onSearch={(q) => set("q", q)} placeholder="Name, email, phone or text">

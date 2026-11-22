@@ -20,7 +20,7 @@ interface ProductImportModalProps {
 
 const SAMPLE_CSV = [
   "Handle,Title,Product SKU,Category,Status,Brand,Fabric,Pieces,Price,Sale Price,Featured,Low Stock Threshold,Short Description,Description,Details,Tags,SEO Title,SEO Description,Published At,Variant SKU,Variant Name,Option1 Name,Option1 Value,Option2 Name,Option2 Value,Option3 Name,Option3 Value,Variant Price,Variant Sale Price,Variant Stock,Variant Active,Image URLs",
-  'noor-khaddar-3-piece,Noor Khaddar 3 Piece,NOOR-01,winter,active,Anaya,Khaddar,3,3999,3299,FALSE,5,Warm printed khaddar suit,,Printed shirt | Dyed trouser,"New Arrival, Winter",,,,NOOR-01-S,,Size,S,,,,,,,10,TRUE,',
+  'noor-khaddar-3-piece,Noor Khaddar 3 Piece,NOOR-01,winter,active,Gulmaria,Khaddar,3,3999,3299,FALSE,5,Warm printed khaddar suit,,Printed shirt | Dyed trouser,"New Arrival, Winter",,,,NOOR-01-S,,Size,S,,,,,,,10,TRUE,',
   "noor-khaddar-3-piece,,,,,,,,,,,,,,,,,,,NOOR-01-M,,Size,M,,,,,,,8,TRUE,",
   "noor-khaddar-3-piece,,,,,,,,,,,,,,,,,,,NOOR-01-L,,Size,L,,,,,4199,,5,TRUE,",
 ].join("\r\n");

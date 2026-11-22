@@ -105,7 +105,7 @@ export default function Attributes() {
 
   return (
     <>
-      <PageMeta title="Attributes | Anaya Collection Admin" description="Variant attributes such as color and size." />
+      <PageMeta title="Attributes | Gulmaria Admin" description="Variant attributes such as color and size." />
       <PageHeader
         title="Attributes"
         description="Options such as Color or Size. Their values are suggested when you add product variants."

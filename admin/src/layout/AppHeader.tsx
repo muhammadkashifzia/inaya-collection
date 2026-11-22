@@ -41,10 +41,10 @@ const AppHeader: React.FC = () => {
         </button>
 
         {/* Center: logo (mobile only, absolutely centered) */}
-        <Link to="/" className="absolute inset-x-0 flex justify-center xl:hidden" aria-label="Anaya Collection">
+        <Link to="/" className="absolute inset-x-0 flex justify-center xl:hidden" aria-label="Gulmaria">
           <img
-            src="/images/logo/anaya-collection-logo.svg"
-            alt="Anaya Collection"
+            src="/images/logo/gulmaria-logo.svg"
+            alt="Gulmaria"
             className="h-14 w-auto"
           />
         </Link>

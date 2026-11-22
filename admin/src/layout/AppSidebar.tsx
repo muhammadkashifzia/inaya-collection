@@ -364,12 +364,12 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         ) : (
-          <Link to="/" className="flex items-center gap-3" aria-label="Anaya Collection admin home">
+          <Link to="/" className="flex items-center gap-3" aria-label="Gulmaria admin home">
             {isExpanded || isHovered ? (
               <span className="flex flex-col items-start gap-1">
                 <img
-                  src="/images/logo/anaya-collection-logo.png"
-                  alt="Anaya Collection"
+                  src="/images/logo/gulmaria-logo.svg"
+                  alt="Gulmaria"
                   width={600}
                   height={258}
                   className="h-16 w-auto"
@@ -378,8 +378,8 @@ const AppSidebar: React.FC = () => {
               </span>
             ) : (
               <img
-                src="/images/logo/anaya-collection-icon.png"
-                alt="Anaya Collection"
+                src="/images/logo/gulmaria-icon.svg"
+                alt="Gulmaria"
                 width={36}
                 height={36}
                 className="size-9 shrink-0 rounded-lg"

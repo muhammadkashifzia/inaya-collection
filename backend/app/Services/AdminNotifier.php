@@ -76,7 +76,7 @@ class AdminNotifier
 
             $webPush = new WebPush([
                 'VAPID' => [
-                    'subject' => $adminUrl ?: 'mailto:admin@anayacollection.com',
+                    'subject' => $adminUrl ?: 'mailto:admin@gulmaria.com',
                     'publicKey' => $vapidPublic,
                     'privateKey' => $vapidPrivate,
                 ],

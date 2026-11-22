@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getSite } from "@/lib/data";
 
-const FALLBACK_NAME = "Anaya Collection";
+const FALLBACK_NAME = "Gulmaria";
 
 /** Web app manifest (served at /manifest.webmanifest) so the store can be installed as a PWA. */
 export default async function manifest(): Promise<MetadataRoute.Manifest> {

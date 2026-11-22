@@ -83,7 +83,7 @@ export function fakeProduct(overrides: Partial<Product> = {}): Product {
     slug: "black-abaya",
     sku: "BA-001",
     title: "Black Abaya",
-    brand: "Inaya",
+    brand: "Gulmaria",
     categorySlug: "abayas",
     categoryName: "Abayas",
     price: 3500,
@@ -186,12 +186,12 @@ export function fakeOrder(overrides: Partial<Order> = {}): Order {
 
 export function fakeSiteConfig(overrides: Partial<SiteConfig> = {}): SiteConfig {
   return {
-    name: "Inaya Collection",
+    name: "Gulmaria",
     logoType: "text",
     logoUrl: null,
     tagline: "Fashion for all",
     about: "About us text",
-    email: "info@inaya.pk",
+    email: "info@gulmaria.com",
     phone: "0300-1234567",
     whatsapp: null,
     address: null,
@@ -205,9 +205,9 @@ export function fakeSiteConfig(overrides: Partial<SiteConfig> = {}): SiteConfig 
     maxQuantityPerItem: 10,
     navigation: [{ label: "Home", href: "/" }, { label: "Shop", href: "/collections/all" }],
     trust: [],
-    footer: { columns: [{ heading: "Info", links: [{ label: "About", href: "/pages/about" }] }], copyright: "2024 Inaya", logoUrl: null },
+    footer: { columns: [{ heading: "Info", links: [{ label: "About", href: "/pages/about" }] }], copyright: "2024 Gulmaria", logoUrl: null },
     social: [{ label: "Instagram", href: "https://instagram.com" }],
-    seo: { defaultTitle: "Inaya", defaultDescription: "Shop", ogImage: null },
+    seo: { defaultTitle: "Gulmaria", defaultDescription: "Shop", ogImage: null },
     ...overrides,
   };
 }
@@ -216,7 +216,7 @@ export function fakeFacets(overrides: Partial<Facets> = {}): Facets {
   return {
     fabrics: ["Cotton", "Silk", "Chiffon"],
     pieces: [2, 3],
-    brands: ["Inaya"],
+    brands: ["Gulmaria"],
     price: { min: 500, max: 15000 },
     ...overrides,
   };

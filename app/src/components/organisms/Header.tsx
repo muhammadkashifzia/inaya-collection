@@ -10,7 +10,7 @@ import { cn } from "@/lib/format";
 import type { NavLink, SiteConfig } from "@/types";
 
 /** Bundled logo used when "image" mode is selected but nothing has been uploaded. */
-const DEFAULT_LOGO = "/anaya-collection-logo.svg";
+const DEFAULT_LOGO = "/gulmaria-logo.svg";
 
 interface HeaderProps {
   siteName: string;

@@ -17,8 +17,8 @@ env:
   CPANEL_HOST: ${{ vars.CPANEL_HOST || 'https://eastlogic.com:2083' }}
   CPANEL_USER: ${{ vars.CPANEL_USER || 'eastlogic' }}
   CPANEL_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
-  REMOTE_DIR: ${{ vars.API_REMOTE_DIR || '/home/eastlogic/anaya-api.eastlogic.com' }}
-  API_URL: ${{ vars.API_URL || 'https://anaya-api.eastlogic.com' }}
+  REMOTE_DIR: ${{ vars.API_REMOTE_DIR || '/home/eastlogic/api.gulmaria.com' }}
+  API_URL: ${{ vars.API_URL || 'https://api.gulmaria.com' }}
   PHP_HANDLER: ${{ vars.API_PHP_HANDLER || 'ea-php84' }}
 
 jobs:
@@ -163,7 +163,7 @@ jobs:
           ok=true
           for url in "$API_URL/up" "$API_URL/sanctum/csrf-cookie"; do
             code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 \
-              -H "Origin: https://anaya-admin.eastlogic.com" -H "Referer: https://anaya-admin.eastlogic.com/" "$url")
+              -H "Origin: https://admin.gulmaria.com" -H "Referer: https://admin.gulmaria.com/" "$url")
             echo "$url -> $code"
             case "$url" in
               */up) [ "$code" = "200" ] || ok=false ;;

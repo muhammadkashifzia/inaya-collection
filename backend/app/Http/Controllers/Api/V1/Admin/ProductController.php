@@ -507,7 +507,7 @@ class ProductController extends Controller
                     CURLOPT_CONNECTTIMEOUT => $timeout,
                     CURLOPT_SSL_VERIFYPEER => false,
                     CURLOPT_SSL_VERIFYHOST => 0,
-                    CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; InayaImport/1.0)',
+                    CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; GulmariaImport/1.0)',
                     CURLOPT_HTTPHEADER => ['Accept: image/*,*/*'],
                 ]);
                 $contents = curl_exec($ch);

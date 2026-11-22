@@ -7,7 +7,7 @@ import { Footer } from "../Footer";
 describe("Footer", () => {
   it("renders the store name when no logo", () => {
     render(<Footer site={fakeSiteConfig({ footer: { columns: [], copyright: "2024", logoUrl: null } })} />);
-    expect(screen.getByText("Inaya Collection")).toBeInTheDocument();
+    expect(screen.getByText("Gulmaria")).toBeInTheDocument();
   });
 
   it("renders about text", () => {
@@ -28,13 +28,13 @@ describe("Footer", () => {
   });
 
   it("renders copyright", () => {
-    render(<Footer site={fakeSiteConfig({ footer: { columns: [], copyright: "2024 Inaya Collection", logoUrl: null } })} />);
-    expect(screen.getByText(/2024 Inaya Collection/)).toBeInTheDocument();
+    render(<Footer site={fakeSiteConfig({ footer: { columns: [], copyright: "2024 Gulmaria", logoUrl: null } })} />);
+    expect(screen.getByText(/2024 Gulmaria/)).toBeInTheDocument();
   });
 
   it("renders social links", () => {
-    render(<Footer site={fakeSiteConfig({ social: [{ label: "Instagram", href: "https://instagram.com/inaya" }] })} />);
-    expect(screen.getByRole("link", { name: "Instagram" })).toHaveAttribute("href", "https://instagram.com/inaya");
+    render(<Footer site={fakeSiteConfig({ social: [{ label: "Instagram", href: "https://instagram.com/gulmaria" }] })} />);
+    expect(screen.getByRole("link", { name: "Instagram" })).toHaveAttribute("href", "https://instagram.com/gulmaria");
   });
 
   it("renders newsletter form", () => {

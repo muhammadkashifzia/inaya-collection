@@ -74,7 +74,7 @@ export default function Reviews() {
 
   return (
     <>
-      <PageMeta title="Reviews | Anaya Collection Admin" description="Moderate customer product reviews." />
+      <PageMeta title="Reviews | Gulmaria Admin" description="Moderate customer product reviews." />
       <PageHeader
         title="Reviews"
         description={counts ? `${counts.pending} pending · ${counts.approved} approved · ${counts.rejected} rejected. Only approved reviews show on the store.` : "Only approved reviews show on the store."}

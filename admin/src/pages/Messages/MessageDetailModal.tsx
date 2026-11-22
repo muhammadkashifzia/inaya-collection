@@ -71,7 +71,7 @@ export default function MessageDetailModal({ id, onClose, onChanged }: MessageDe
     }
   }
 
-  const replySubject = message ? `Re: ${message.subject ?? "Your message to Anaya Collection"}` : "";
+  const replySubject = message ? `Re: ${message.subject ?? "Your message to Gulmaria"}` : "";
   const phoneDigits = message?.phone?.replace(/\D/g, "") ?? "";
   // Local Pakistani numbers (03XX…) need the country code for wa.me links.
   const whatsappNumber = phoneDigits.startsWith("0") ? `92${phoneDigits.slice(1)}` : phoneDigits;

@@ -40,12 +40,12 @@ export default function SignInForm() {
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-start md:justify-center">
         {/* Mobile logo – visible below lg only */}
         <div className="mb-8 flex items-center justify-center lg:hidden">
-          <img src="/images/logo/anaya-collection-logo.svg" alt="Anaya Collection" className="h-16 w-auto dark:brightness-0 dark:invert" />
+          <img src="/images/logo/gulmaria-logo.svg" alt="Gulmaria" className="h-16 w-auto dark:brightness-0 dark:invert" />
         </div>
 
         <div className="mb-8">
           <h1 className="mb-2 font-display text-title-sm font-semibold text-ink-900 dark:text-white/90">Sign in</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Use your Anaya Collection staff account.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Use your Gulmaria staff account.</p>
         </div>
         <form onSubmit={onSubmit} className="space-y-5" noValidate>
           <Notice tone="error">{error && !error.field("email") ? error.message : null}</Notice>

@@ -5,7 +5,7 @@ import AuthLayout from "./AuthPageLayout";
 export default function TwoFactorSetup() {
   return (
     <>
-      <PageMeta title="Set up authenticator | Anaya Collection Admin" description="Configure multi-factor authentication for your account." />
+      <PageMeta title="Set up authenticator | Gulmaria Admin" description="Configure multi-factor authentication for your account." />
       <AuthLayout>
         <TwoFactorSetupForm />
       </AuthLayout>

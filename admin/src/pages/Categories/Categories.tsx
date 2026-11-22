@@ -229,7 +229,7 @@ export default function Categories() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <PageMeta title="Categories | Anaya Collection Admin" description="Manage collections and subcategories." />
+      <PageMeta title="Categories | Gulmaria Admin" description="Manage collections and subcategories." />
       <PageHeader title="Categories" description="Collections shown in the storefront menu and homepage." />
 
       {/* ── Split layout: form (left) + table (right) ── */}

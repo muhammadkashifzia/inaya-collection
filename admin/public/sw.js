@@ -1,5 +1,5 @@
 /*
- * Anaya Collection admin service worker.
+ * Gulmaria admin service worker.
  * Caches only the app shell and static assets on this origin. API calls go to
  * the Laravel backend (another origin) and are never cached, so admin data is
  * always live and never stored on the device.
@@ -99,10 +99,10 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data.json();
   } catch {
-    payload = { title: "Anaya Collection", body: event.data.text() };
+    payload = { title: "Gulmaria", body: event.data.text() };
   }
 
-  const title = payload.title || "Anaya Collection Admin";
+  const title = payload.title || "Gulmaria Admin";
   const options = {
     body: payload.body || "",
     icon: payload.icon || "/pwa-192.png",

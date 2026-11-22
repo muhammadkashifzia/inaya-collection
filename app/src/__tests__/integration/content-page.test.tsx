@@ -21,14 +21,14 @@ const fakePage: ContentPage = {
 };
 
 const fakeSite: SiteConfig = {
-  name: "Inaya Collection", logoType: "text", logoUrl: null, tagline: "", about: "",
-  email: "info@inaya.pk", phone: "0300-1234567", whatsapp: "03001234567",
+  name: "Gulmaria", logoType: "text", logoUrl: null, tagline: "", about: "",
+  email: "info@gulmaria.com", phone: "0300-1234567", whatsapp: "03001234567",
   address: "123 Fashion Street, Lahore", hours: "Mon-Sat 10am-8pm",
   currencySymbol: "Rs.", announcements: [], freeShippingThreshold: null,
   shippingMethods: [], paymentMethods: [], allowGuestCheckout: true, maxQuantityPerItem: 10,
   navigation: [], trust: [],
   footer: { columns: [], copyright: "", logoUrl: null },
-  social: [{ label: "Instagram", href: "https://instagram.com/inaya" }],
+  social: [{ label: "Instagram", href: "https://instagram.com/gulmaria" }],
   seo: { defaultTitle: "", defaultDescription: "", ogImage: null },
 };
 
@@ -67,7 +67,7 @@ describe("ContactPageTemplate integration", () => {
   it("renders contact details from site config", () => {
     render(<ContactPageTemplate page={fakePage} site={fakeSite} />);
     expect(screen.getByText("0300-1234567")).toBeInTheDocument();
-    expect(screen.getByText("info@inaya.pk")).toBeInTheDocument();
+    expect(screen.getByText("info@gulmaria.com")).toBeInTheDocument();
     expect(screen.getByText("123 Fashion Street, Lahore")).toBeInTheDocument();
     expect(screen.getByText("Mon-Sat 10am-8pm")).toBeInTheDocument();
   });
@@ -80,8 +80,8 @@ describe("ContactPageTemplate integration", () => {
 
   it("renders email as a mailto link", () => {
     render(<ContactPageTemplate page={fakePage} site={fakeSite} />);
-    const emailLink = screen.getByRole("link", { name: "info@inaya.pk" });
-    expect(emailLink).toHaveAttribute("href", "mailto:info@inaya.pk");
+    const emailLink = screen.getByRole("link", { name: "info@gulmaria.com" });
+    expect(emailLink).toHaveAttribute("href", "mailto:info@gulmaria.com");
   });
 
   it("renders WhatsApp link", () => {
@@ -92,7 +92,7 @@ describe("ContactPageTemplate integration", () => {
 
   it("renders social links", () => {
     render(<ContactPageTemplate page={fakePage} site={fakeSite} />);
-    expect(screen.getByRole("link", { name: "Instagram" })).toHaveAttribute("href", "https://instagram.com/inaya");
+    expect(screen.getByRole("link", { name: "Instagram" })).toHaveAttribute("href", "https://instagram.com/gulmaria");
   });
 
   it("renders CMS sections alongside contact info", () => {

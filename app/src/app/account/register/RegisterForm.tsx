@@ -26,7 +26,7 @@ export function RegisterForm() {
     setError(null);
     try {
       await signUp({ ...form, email: form.email.trim() });
-      toast.success("Account Created", "Welcome to Anaya Collection!");
+      toast.success("Account Created", "Welcome to Gulmaria!");
       router.replace(next);
     } catch (err) {
       setError(err instanceof ApiError ? err : new ApiError("Could not create your account.", 0));
