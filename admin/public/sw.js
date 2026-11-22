@@ -4,7 +4,7 @@
  * the Laravel backend (another origin) and are never cached, so admin data is
  * always live and never stored on the device.
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = `admin-shell-${VERSION}`;
 const ASSETS_CACHE = `admin-assets-${VERSION}`;
 const SHELL_URL = "/index.html";
