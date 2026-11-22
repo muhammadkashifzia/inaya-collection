@@ -40,7 +40,7 @@ export default function SignInForm() {
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-start md:justify-center">
         {/* Mobile logo – visible below lg only */}
         <div className="mb-8 flex items-center justify-center lg:hidden">
-          <img src="/images/logo/gulmaria-logo.svg" alt="Gulmaria" className="h-16 w-auto dark:brightness-0 dark:invert" />
+          <img src="/images/logo/gulmaria-logo-white-HD.png" alt="Gulmaria" className="h-16 w-auto" />
         </div>
 
         <div className="mb-8">

@@ -368,10 +368,10 @@ const AppSidebar: React.FC = () => {
             {isExpanded || isHovered ? (
               <span className="flex flex-col items-start gap-1">
                 <img
-                  src="/images/logo/gulmaria-logo.svg"
+                  src="/images/logo/gulmaria-logo-white-HD.png"
                   alt="Gulmaria"
-                  width={600}
-                  height={258}
+                  width={2700}
+                  height={1095}
                   className="h-16 w-auto"
                 />
                 <span className="block ps-1 text-[11px] tracking-[0.3em] text-ink-300 uppercase">Admin</span>

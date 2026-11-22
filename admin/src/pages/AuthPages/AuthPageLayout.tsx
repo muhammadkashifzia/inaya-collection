@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <GridShape />
             <div className="flex max-w-sm flex-col items-center text-center">
               <span className="mb-6">
-                <img src="/images/logo/gulmaria-logo.svg" alt="Gulmaria" className="h-20 w-auto" />
+                <img src="/images/logo/gulmaria-logo-white-HD.png" alt="Gulmaria" className="h-20 w-auto" />
               </span>
               <p className="mt-2 text-xs tracking-[0.4em] text-ink-300 uppercase">Store admin</p>
               <p className="mt-8 text-sm text-ink-200">Manage products, orders, customers and your storefront in one place.</p>
