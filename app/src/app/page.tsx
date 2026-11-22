@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: site.seo.defaultDescription || site.about,
       url: base,
       siteName: site.name,
-      images: site.seo.ogImage ? [site.seo.ogImage] : undefined,
+      images: [site.seo.ogImage ?? "/og-image.png"],
     },
   };
 }

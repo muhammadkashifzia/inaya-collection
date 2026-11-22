@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps<"/collections/[slug
     title: c.metaTitle ?? c.title,
     description: c.metaDescription ?? c.description ?? undefined,
     alternates: { canonical: `/collections/${slug}` },
-    openGraph: { type: "website", title: c.metaTitle ?? c.title, description: c.metaDescription ?? c.description ?? undefined },
+    openGraph: { type: "website", title: c.metaTitle ?? c.title, description: c.metaDescription ?? c.description ?? undefined, images: ["/og-image.png"] },
   };
 }
 
