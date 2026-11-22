@@ -21,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: { siteName: site.name, type: "website", images: [site.seo.ogImage ?? "/og-image.png"] },
     twitter: { card: "summary_large_image", title: site.seo.defaultTitle || `${site.name} | ${site.tagline}`, description: site.seo.defaultDescription || site.about, images: [site.seo.ogImage ?? "/og-image.png"] },
     alternates: { canonical: "/" },
+    verification: { google: "QGvKQDXq3Tiqb7STFgkqm-iooGkuLnLr46Gv8sHX-kM" },
     applicationName: site.name,
     appleWebApp: { capable: true, title: site.name, statusBarStyle: "default" },
     icons: {

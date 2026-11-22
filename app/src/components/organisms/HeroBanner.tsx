@@ -110,20 +110,22 @@ function Slide({ banner }: { banner: Banner }) {
 
 /** Shared banner content: images, overlay, text, and CTA buttons. */
 function SlideContent({ banner, active = true }: { banner: Banner; active?: boolean }) {
+  // Only the visible slide is the page's H1; inactive carousel slides use H2 to avoid multiple H1s.
+  const HeadingTag = active ? "h1" : "h2";
   return (
     <>
       <AppImage src={banner.mobileImage ?? banner.image} alt="" fill preload={active} sizes="100vw" className="object-cover md:hidden" />
       <AppImage src={banner.image} alt="" fill preload={active} sizes="100vw" className="hidden object-cover md:block" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10 md:bg-gradient-to-r md:from-black/70 md:via-black/30 md:to-transparent" aria-hidden="true" />
       <Container className="absolute inset-0 flex flex-col items-start justify-end pb-10 text-left text-white sm:pb-14 md:justify-center md:pb-0">
-        <h1
+        <HeadingTag
           className={cn(
             "max-w-xl font-heading text-[28px] font-semibold leading-tight sm:text-4xl md:text-6xl transition-all duration-700 ease-out",
             active ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
           )}
         >
           {banner.title}
-        </h1>
+        </HeadingTag>
         {banner.subtitle && (
           <p
             className={cn(
